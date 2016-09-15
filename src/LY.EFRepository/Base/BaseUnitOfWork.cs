@@ -6,26 +6,26 @@ using System.Diagnostics;
 namespace LY.EFRepository
 {
     [DebuggerStepThrough]
-    public class UnitOfWork : IUnitOfWork
+    public class BaseUnitOfWork<Tkey> : IBaseUnitOfWork<Tkey>
     {
         private readonly DbContext _dbContext;
 
-        public UnitOfWork(LYDbContext dbContext)
+        public BaseUnitOfWork(LYDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public virtual void RegisterAdded(EntityBase entityBase)
+        public virtual void RegisterAdded(BaseEntity<Tkey> entityBase)
         {
-            _dbContext.Set<EntityBase>().Add(entityBase);
+            _dbContext.Set<BaseEntity<Tkey>>().Add(entityBase);
         }
 
-        public virtual void RegisterChangeded(EntityBase entityBase)
+        public virtual void RegisterChangeded(BaseEntity<Tkey> entityBase)
         {
             _dbContext.Entry(entityBase).State = EntityState.Modified;
         }
 
-        public virtual void RegisterRemoved(EntityBase entityBase)
+        public virtual void RegisterRemoved(BaseEntity<Tkey> entityBase)
         {
             _dbContext.Entry(entityBase).State = EntityState.Deleted;
         }

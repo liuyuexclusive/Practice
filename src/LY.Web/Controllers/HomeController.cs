@@ -13,11 +13,11 @@ namespace LY.Web.Controllers
 
     public class HomeController : Controller
     {
-        IRepository<Role> _roleRepo;
+        private readonly IRoleRepo _roleRepo;
 
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IRepository<Role> roleRepo,
+        public HomeController(IRoleRepo roleRepo,
             ILogger<HomeController> logger
             )
         {
@@ -35,11 +35,10 @@ namespace LY.Web.Controllers
             ViewData["Message"] = "Your application description page.";
 
             //var test = _roleRepo.Get(x => true, new System.Linq.Expressions.Expression<Func<Role, object>>[] { x => x.RoleUserMappingList }, new System.Linq.Expressions.Expression<Func<object, object>>[] { x => ((RoleUserMapping)x).User });
+            //var test1 = _roleRepo.Get(x => true);
 
-            var test = _roleRepo.Get(x => true, new System.Linq.Expressions.Expression<Func<Role, object>>[] { x => x.RoleUserMappingList }, null );
-
-            var xxx = test.RoleUserMappingList;
-
+            //var test2 = _roleRepo.Get(x => true, x => x.RoleUserMappingList);
+            var test = _roleRepo.QueryInclude();
 
             _logger.LogDebug("LogDebug");
             _logger.LogCritical("LogCritical");

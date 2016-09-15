@@ -9,7 +9,7 @@ namespace LY.Domain
     ///  代表一个资源库。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public interface IRepository<TEntity> where TEntity : EntityBase
+    public interface IBaseRepository<Tkey,TEntity> where TEntity : BaseEntity<Tkey>
     {
         /// <summary>
         /// 检查是否存在满足条件的实体。
@@ -40,7 +40,7 @@ namespace LY.Domain
         /// </summary>
         /// <param name="id">实体主键。</param>
         /// <returns>实体对象。</returns>
-        TEntity Get(int id);
+        TEntity Get(Tkey id);
 
         /// <summary>
         /// 获取指定的实体。
@@ -52,26 +52,16 @@ namespace LY.Domain
         /// <summary>
         /// 获取指定的实体。
         /// </summary>
-        /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <param name="path">关联查询路径。</param>
         /// <param name="expression">查询条件表达式。</param>
         /// <returns>实体对象。</returns>
-        TEntity Get(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>>[] includes, Expression<Func<object, object>>[] thenIncludes);
+        TEntity Get<TProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TProperty>> path);
 
-
+        
         /// <summary>
         /// 获取所有实体。
         /// </summary>
         /// <returns>实体列表。</returns>
-        IList<TEntity> GetAll();
-
-        /// <summary>
-        /// 获取所有实体。
-        /// </summary>
-        /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <param name="path">关联查询路径。</param>
-        /// <returns>实体列表。</returns>
-        IList<TEntity> GetAll<TProperty>(Expression<Func<TEntity, TProperty>> path);
+        IList<TEntity> Query();
 
 
         /// <summary>
@@ -85,38 +75,18 @@ namespace LY.Domain
         /// 根据指定的条件查询实体。
         /// </summary>
         /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <typeparam name="TKey">排序属性。</typeparam>
+        /// <typeparam name="TOrderProperty">排序属性。</typeparam>
         /// <param name="expression">查询条件表达式。</param>
         /// <param name="orderby">排序属性选择器。</param>
         /// <param name="isAscending">是否按升序排序。</param>
         /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TKey>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TKey>> @orderby, bool isAscending);
+        IList<TEntity> Query<TOrderProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TOrderProperty>> @orderby, bool isAscending);
+
 
         /// <summary>
         /// 根据指定的条件查询实体。
         /// </summary>
-        /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <param name="path">关联查询路径。</param>
-        /// <param name="expression">查询条件表达式。</param>
-        /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TProperty>(Expression<Func<TEntity, TProperty>> path, Expression<Func<TEntity, bool>> expression);
-
-        /// <summary>
-        /// 根据指定的条件查询实体。
-        /// </summary>
-        /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <typeparam name="TKey">排序属性。</typeparam>
-        /// <param name="path">关联查询路径。</param>
-        /// <param name="expression">查询条件表达式。</param>
-        /// <param name="keySelector">排序属性选择器。</param>
-        /// <param name="isAscending">是否按升序排序。</param>
-        /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TProperty, TKey>(Expression<Func<TEntity, TProperty>> path, Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TKey>> keySelector, bool isAscending);
-
-        /// <summary>
-        /// 根据指定的条件查询实体。
-        /// </summary>
-        /// <typeparam name="TKey">排序属性。</typeparam>
+        /// <typeparam name="TOrderProperty">排序属性。</typeparam>
         /// <param name="expression">查询条件表达式。</param>
         /// <param name="keySelector">排序属性选择器。</param>
         /// <param name="isAscending">是否按升序排序。</param>
@@ -124,24 +94,9 @@ namespace LY.Domain
         /// <param name="pageSize">每页显示的记录数（小于等于0时表示不分页）。</param>
         /// <param name="totalRecordCount">符合条件的总记录数。</param>
         /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TKey>(Expression<Func<TEntity, bool>> expression,
-            Expression<Func<TEntity, TKey>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount);
+        IList<TEntity> Query<TOrderProperty>(Expression<Func<TEntity, bool>> expression,
+            Expression<Func<TEntity, TOrderProperty>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount);
 
-        /// <summary>
-        /// 根据指定的条件查询实体。
-        /// </summary>
-        /// <typeparam name="TProperty">关联查询属性。</typeparam>
-        /// <typeparam name="TKey">排序属性。</typeparam>
-        /// <param name="path">关联查询路径。</param>
-        /// <param name="expression">查询条件表达式。</param>
-        /// <param name="keySelector">排序属性选择器。</param>
-        /// <param name="isAscending">是否按升序排序。</param>
-        /// <param name="pageIndex">当前页索引（从1开始）。</param>
-        /// <param name="pageSize">每页显示的记录数（小于等于0时表示不分页）。</param>
-        /// <param name="totalRecordCount">符合条件的总记录数。</param>
-        /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TProperty, TKey>(Expression<Func<TEntity, TProperty>> path, Expression<Func<TEntity, bool>> expression,
-            Expression<Func<TEntity, TKey>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount);
 
         /// <summary>
         /// 新增实体。
@@ -159,7 +114,7 @@ namespace LY.Domain
         /// 删除实体。
         /// </summary>
         /// <param name="id">实体主键。</param>
-        void Delete(int id);
+        void Delete(Tkey id);
 
         /// <summary>
         /// 删除实体。
@@ -183,7 +138,7 @@ namespace LY.Domain
         /// 按需删除实体（调用后即时提交到数据库，无需调用UnitOfWork.Commit）。
         /// </summary>
         /// <param name="id">实体主键。</param>
-        void DeleteOnDemand(int id);
+        void DeleteOnDemand(Tkey id);
 
         /// <summary>
         /// 按需删除实体（调用后即时提交到数据库，无需调用UnitOfWork.Commit）。

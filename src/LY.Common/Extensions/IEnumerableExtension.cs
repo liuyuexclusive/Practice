@@ -9,7 +9,7 @@ namespace LY.Common
     {
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> arr)
         {
-            return arr == null || arr.Count() == 0;
+            return arr == null || !arr.Any();
         }
     }
 }

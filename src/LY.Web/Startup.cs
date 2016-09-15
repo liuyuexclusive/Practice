@@ -13,6 +13,7 @@ using LY.Domain;
 using LY.Domain.Sys;
 using System.Text;
 using NLog.Extensions.Logging;
+using LY.EFRepository.Sys;
 
 namespace LY.Web
 {
@@ -40,7 +41,10 @@ namespace LY.Web
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<DbContext, LYDbContext>();
-            services.AddScoped<Domain.IRepository<Role>, EFRepository.Repository<Role>>();
+            services.AddScoped<IRepository<Role>, Repository<Role>>();
+            services.AddScoped<IRoleRepo, RoleRepo>();
+
+            services.AddScoped<IRoleRepo, RoleRepo>();
 
         }
 

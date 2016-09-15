@@ -3,6 +3,7 @@ using LY.Domain.Sys;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace LY.Test
@@ -22,7 +23,14 @@ namespace LY.Test
             //Console.WriteLine($"my name is {name}");
             //Test();
 
-            Console.WriteLine("complish");
+            //Console.WriteLine("complish");
+
+            var test2List = new List<Test2>() { new Test2() { Name = "aa", Age = 1 }, new Test2() { Name = "bb", Age = 2 } };
+
+            var test = new Test() { TestList = test2List };
+
+            var xxx = test.GetType().GetProperty("TestList").GetValue(test);
+
             Console.Read();
         }
 
@@ -40,5 +48,15 @@ namespace LY.Test
                 return "tom";
             });
         }
+    }
+    public class Test
+    {
+        public List<Test2> TestList { get; set; }
+    }
+
+    public class Test2
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
     }
 }

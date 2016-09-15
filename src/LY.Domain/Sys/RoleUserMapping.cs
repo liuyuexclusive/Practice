@@ -2,7 +2,7 @@ using System;
 
 namespace LY.Domain.Sys
 {
-    public class RoleUserMapping : EntityBase
+    public class RoleUserMapping : Entity
     {
         /// <summary>
         /// 用户ID

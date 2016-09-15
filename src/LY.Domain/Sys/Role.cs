@@ -4,7 +4,12 @@ using System.Collections.Generic;
 
 namespace LY.Domain.Sys
 {
-    public class Role : EntityBase
+    public interface IRoleRepo : IRepository<Role>
+    {
+        IList<Role> QueryInclude();
+    }
+
+    public class Role : Entity
     {
         /// <summary>
         /// 角色名称

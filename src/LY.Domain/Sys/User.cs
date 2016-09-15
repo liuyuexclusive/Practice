@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LY.Domain.Sys
 {
-    public class User : EntityBase
+    public class User : Entity
     {
         /// <summary>
         /// 账号

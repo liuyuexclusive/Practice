@@ -14,6 +14,8 @@ using LY.Domain.Sys;
 using System.Text;
 using NLog.Extensions.Logging;
 using LY.EFRepository.Sys;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 
 namespace LY.Web
 {
@@ -31,20 +33,30 @@ namespace LY.Web
 
         public IConfigurationRoot Configuration { get; }
 
+        public IContainer ApplicationContainer { get; private set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddMvc();
 
             services.AddDbContext<LYDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<DbContext, LYDbContext>();
-            services.AddScoped<IRepository<Role>, Repository<Role>>();
-            services.AddScoped<IRoleRepo, RoleRepo>();
+            //autofac
+            var builder = new ContainerBuilder();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
+            builder.RegisterType<LYDbContext>().As<DbContext>().InstancePerLifetimeScope();
+            builder.RegisterType<Repository<Role>>().As<IRepository<Role>>().InstancePerLifetimeScope();
+            builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
+            builder.RegisterType<Repository<User>>().As<IRepository<User>>().InstancePerLifetimeScope();
+            builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
 
-            services.AddScoped<IRoleRepo, RoleRepo>();
+            builder.Populate(services);
+            this.ApplicationContainer = builder.Build();
+
+            return new AutofacServiceProvider(this.ApplicationContainer);
 
         }
 

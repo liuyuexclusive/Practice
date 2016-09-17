@@ -20,12 +20,12 @@ namespace LY.EFRepository
             _dbContext.Set<BaseEntity<Tkey>>().Add(entityBase);
         }
 
-        public virtual void RegisterChangeded(BaseEntity<Tkey> entityBase)
+        public virtual void RegisterUpdated(BaseEntity<Tkey> entityBase)
         {
             _dbContext.Entry(entityBase).State = EntityState.Modified;
         }
 
-        public virtual void RegisterRemoved(BaseEntity<Tkey> entityBase)
+        public virtual void RegisterDeleted(BaseEntity<Tkey> entityBase)
         {
             _dbContext.Entry(entityBase).State = EntityState.Deleted;
         }

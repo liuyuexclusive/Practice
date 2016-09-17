@@ -121,7 +121,7 @@ namespace LY.EFRepository
 
         public virtual void Update(TEntity entity)
         {
-            _unitOfWork.RegisterChangeded(entity);
+            _unitOfWork.RegisterUpdated(entity);
         }
 
         public virtual void Delete(Tkey id)
@@ -129,25 +129,25 @@ namespace LY.EFRepository
             TEntity entity = Get(id);
             if (entity != null)
             {
-                _unitOfWork.RegisterRemoved(entity);
+                _unitOfWork.RegisterDeleted(entity);
             }
         }
 
         public virtual void Delete(TEntity entity)
         {
-            _unitOfWork.RegisterRemoved(entity);
+            _unitOfWork.RegisterDeleted(entity);
         }
 
         public virtual void AddOnDemand(TEntity entity)
         {
-            Entities.Add(entity);
-            _dbContext.SaveChanges();
+            _unitOfWork.RegisterAdded(entity);
+            _unitOfWork.Commit();
         }
 
         public virtual void UpdateOnDemand(TEntity entity)
         {
-            _dbContext.Entry<TEntity>(entity).State = EntityState.Modified;
-            _dbContext.SaveChanges();
+            _unitOfWork.RegisterUpdated(entity);
+            _unitOfWork.Commit();
         }
 
         public virtual void DeleteOnDemand(Tkey id)
@@ -155,15 +155,15 @@ namespace LY.EFRepository
             TEntity entity = Get(id);
             if (entity != null)
             {
-                _dbContext.Entry<TEntity>(entity).State = EntityState.Deleted;
-                _dbContext.SaveChanges();
+                _unitOfWork.RegisterDeleted(entity);
+                _unitOfWork.Commit();
             }
         }
 
         public virtual void DeleteOnDemand(TEntity entity)
         {
-            _dbContext.Entry<TEntity>(entity).State = EntityState.Deleted;
-            _dbContext.SaveChanges();
+            _unitOfWork.RegisterDeleted(entity);
+            _unitOfWork.Commit();
         }
     }
 }

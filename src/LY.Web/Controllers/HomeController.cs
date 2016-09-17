@@ -14,15 +14,20 @@ namespace LY.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IRoleRepo _roleRepo;
-
+        private readonly IUnitOfWork _unitOfWork;
+        public readonly IRepository<User> _userRepo;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(IRoleRepo roleRepo,
-            ILogger<HomeController> logger
+            ILogger<HomeController> logger,
+            IUnitOfWork unitOfWork,
+            IRepository<User> userRepo
             )
         {
             _roleRepo = roleRepo;
             _logger = logger;
+            _unitOfWork = unitOfWork;
+            _userRepo = userRepo;
         }
 
         public IActionResult Index()
@@ -30,23 +35,26 @@ namespace LY.Web.Controllers
             return View();
         }
 
+        public IActionResult Test()
+        {
+
+            var test = _roleRepo.QueryInclude();
+
+            var user = _userRepo.Get(1);
+            user.Mobile = "456";
+            _userRepo.UpdateOnDemand(user);
+            _logger.LogDebug("done");
+            //_logger.LogCritical("LogCritical");
+            //_logger.LogError("LogError");
+            //_logger.LogInformation("LogInformation");
+            //_logger.LogTrace("LogTrace");
+            //_logger.LogWarning("LogWarning");
+            return View();
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-
-            //var test = _roleRepo.Get(x => true, new System.Linq.Expressions.Expression<Func<Role, object>>[] { x => x.RoleUserMappingList }, new System.Linq.Expressions.Expression<Func<object, object>>[] { x => ((RoleUserMapping)x).User });
-            //var test1 = _roleRepo.Get(x => true);
-
-            //var test2 = _roleRepo.Get(x => true, x => x.RoleUserMappingList);
-            var test = _roleRepo.QueryInclude();
-
-            _logger.LogDebug("LogDebug");
-            _logger.LogCritical("LogCritical");
-            _logger.LogError("LogError");
-            _logger.LogInformation("LogInformation");
-            _logger.LogTrace("LogTrace");
-            _logger.LogWarning("LogWarning");
-
             return View();
         }
 

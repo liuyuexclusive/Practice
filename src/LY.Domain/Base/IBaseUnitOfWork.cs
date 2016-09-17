@@ -8,8 +8,8 @@ namespace LY.Domain
     public interface IBaseUnitOfWork<Tkey>
     {
         void RegisterAdded(BaseEntity<Tkey> entityBase);
-        void RegisterChangeded(BaseEntity<Tkey> entityBase);
-        void RegisterRemoved(BaseEntity<Tkey> entityBase);
+        void RegisterUpdated(BaseEntity<Tkey> entityBase);
+        void RegisterDeleted(BaseEntity<Tkey> entityBase);
         void Commit();
     }
 }

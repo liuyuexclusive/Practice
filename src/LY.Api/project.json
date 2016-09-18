@@ -4,34 +4,21 @@
       "version": "1.0.0",
       "type": "platform"
     },
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
-    "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.0.0-preview2-final",
-      "type": "build"
-    },
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Logging": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "Pomelo.EntityFrameworkCore.MySql": "1.0.0",
-    "Microsoft.EntityFrameworkCore": "1.0.1",
-    "LY.EFRepository": "1.0.0-*",
-    "System.Text.Encoding.CodePages": "4.0.1",
-    "NLog.Extensions.Logging": "1.0.0-rtm-alpha4",
-    "Autofac.Extensions.DependencyInjection": "4.0.0",
-    "LY.Application": "1.0.0-*",
-    "StackExchange.Redis": "1.1.605",
-    "Microsoft.AspNetCore.Session": "1.0.0"
+    "Swashbuckle.SwaggerGen": "6.0.0-beta902",
+    "Swashbuckle.SwaggerUi": "6.0.0-beta902"
   },
 
   "tools": {
-    "BundlerMinifier.Core": "2.0.238",
-    "Microsoft.AspNetCore.Razor.Tools": "1.0.0-preview2-final",
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final"
   },
 
@@ -46,7 +33,8 @@
 
   "buildOptions": {
     "emitEntryPoint": true,
-    "preserveCompilationContext": true
+    "preserveCompilationContext": true,
+    "xmlDoc": true
   },
 
   "runtimeOptions": {
@@ -61,13 +49,11 @@
       "Views",
       "Areas/**/Views",
       "appsettings.json",
-      "web.config",
-      "nlog.config" //add nlog config
+      "web.config"
     ]
   },
 
   "scripts": {
-    "prepublish": [ "bower install", "dotnet bundle" ],
     "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
   }
 }

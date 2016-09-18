@@ -2,6 +2,7 @@
 using LY.Domain.Sys;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -23,13 +24,7 @@ namespace LY.Test
             //Console.WriteLine($"my name is {name}");
             //Test();
 
-            //Console.WriteLine("complish");
-
-            var test2List = new List<Test2>() { new Test2() { Name = "aa", Age = 1 }, new Test2() { Name = "bb", Age = 2 } };
-
-            var test = new Test() { TestList = test2List };
-
-            var xxx = test.GetType().GetProperty("TestList").GetValue(test);
+            //Assembly.Load(new AssemblyName(@"‪D:\MyFiles\Code\practice\src\LY.Test\bin\Debug\netcoreapp1.0\LY.Common.dll"));
 
             Console.Read();
         }

@@ -16,6 +16,10 @@ using NLog.Extensions.Logging;
 using LY.EFRepository.Sys;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using System.IO;
+using System.Reflection;
+using LY.Common;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace LY.Web
 {
@@ -44,6 +48,15 @@ namespace LY.Web
             services.AddDbContext<LYDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            services.AddSingleton<IDistributedCache>(
+                serviceProvider =>
+                    new RedisCache(new RedisCacheOptions
+                    {
+                        Configuration = "127.0.0.1:6379",
+                        InstanceName = "Sample:"
+                    }));
+            services.AddSession();
+
             //autofac
             var builder = new ContainerBuilder();
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerLifetimeScope();
@@ -51,8 +64,8 @@ namespace LY.Web
             builder.RegisterType<Repository<Role>>().As<IRepository<Role>>().InstancePerLifetimeScope();
             builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
             builder.RegisterType<Repository<User>>().As<IRepository<User>>().InstancePerLifetimeScope();
-            builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
-
+            
+            //var repositoryAssemblyPath = Path.Combine(Directory.GetCurrentDirectory(),Configuration.GetSection("DIdll:RepositoryAssemblyName").Value);
             builder.Populate(services);
             this.ApplicationContainer = builder.Build();
 
@@ -61,7 +74,7 @@ namespace LY.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -86,6 +99,10 @@ namespace LY.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
+
+            appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }
 }

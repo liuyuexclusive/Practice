@@ -7,6 +7,7 @@ using LY.EFRepository;
 using LY.Domain;
 using LY.Domain.Sys;
 using Microsoft.Extensions.Logging;
+using LY.Common;
 
 namespace LY.Web.Controllers
 {
@@ -39,6 +40,9 @@ namespace LY.Web.Controllers
         {
 
             var test = _roleRepo.QueryInclude();
+
+            User xxx;
+            IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
 
             var user = _userRepo.Get(1);
             user.Mobile = "456";

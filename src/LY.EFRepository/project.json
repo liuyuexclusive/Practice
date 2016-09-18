@@ -2,15 +2,16 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "Microsoft.EntityFrameworkCore": "1.0.0",
+    
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "Microsoft.EntityFrameworkCore": "1.0.1",
+    "LinqKit.Microsoft.EntityFrameworkCore": "1.0.5",
     "Pomelo.EntityFrameworkCore.MySql": "1.0.0",
     "NETStandard.Library": "1.6.0",
     "LY.Domain": "1.0.0-*",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
-    "LinqKit.Microsoft.EntityFrameworkCore": "1.0.5",
     "LY.Common": "1.0.0-*"
   },
 

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LY.Service
+namespace LY.Service.Sys
 {
-    public class Class1
+    public class RoleService
     {
-        public Class1()
-        {
-        }
+
     }
 }

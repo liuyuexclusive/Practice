@@ -16,6 +16,8 @@ using NLog.Extensions.Logging;
 using LY.EFRepository.Sys;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using System.IO;
+using System.Reflection;
 
 namespace LY.Web
 {
@@ -51,8 +53,8 @@ namespace LY.Web
             builder.RegisterType<Repository<Role>>().As<IRepository<Role>>().InstancePerLifetimeScope();
             builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
             builder.RegisterType<Repository<User>>().As<IRepository<User>>().InstancePerLifetimeScope();
-            builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
-
+            
+            //var repositoryAssemblyPath = Path.Combine(Directory.GetCurrentDirectory(),Configuration.GetSection("DIdll:RepositoryAssemblyName").Value);
             builder.Populate(services);
             this.ApplicationContainer = builder.Build();
 
@@ -61,7 +63,7 @@ namespace LY.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -86,6 +88,8 @@ namespace LY.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }
 }

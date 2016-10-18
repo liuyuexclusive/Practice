@@ -16,7 +16,7 @@ namespace LY.Web.Controllers
     {
         private readonly IRoleRepo _roleRepo;
         private readonly IUnitOfWork _unitOfWork;
-        public readonly IRepository<User> _userRepo;
+        private readonly IRepository<User> _userRepo;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(IRoleRepo roleRepo,
@@ -42,7 +42,7 @@ namespace LY.Web.Controllers
             var test = _roleRepo.QueryInclude();
 
             User xxx;
-            IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
+            //IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
 
             var user = _userRepo.Get(1);
             user.Mobile = "456";

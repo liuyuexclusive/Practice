@@ -47,14 +47,13 @@ namespace LY.Web
 
             services.AddDbContext<LYDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             //services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-            services.AddSingleton<IDistributedCache>(
-                serviceProvider =>
-                    new RedisCache(new RedisCacheOptions
-                    {
-                        Configuration = "127.0.0.1:6379",
-                        InstanceName = "Sample:"
-                    }));
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = "127.0.0.1:6379",
+            //            InstanceName = "Sample:"
+            //        }));
             services.AddSession();
 
             //autofac
@@ -64,8 +63,7 @@ namespace LY.Web
             builder.RegisterType<Repository<Role>>().As<IRepository<Role>>().InstancePerLifetimeScope();
             builder.RegisterType<RoleRepo>().As<IRoleRepo>().InstancePerLifetimeScope();
             builder.RegisterType<Repository<User>>().As<IRepository<User>>().InstancePerLifetimeScope();
-            
-            //var repositoryAssemblyPath = Path.Combine(Directory.GetCurrentDirectory(),Configuration.GetSection("DIdll:RepositoryAssemblyName").Value);
+
             builder.Populate(services);
             this.ApplicationContainer = builder.Build();
 

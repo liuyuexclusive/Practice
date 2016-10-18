@@ -15,7 +15,13 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Swashbuckle.SwaggerGen": "6.0.0-beta902",
-    "Swashbuckle.SwaggerUi": "6.0.0-beta902"
+    "Swashbuckle.SwaggerUi": "6.0.0-beta902",
+    "LY.Domain": "1.0.0-*",
+    "LY.Common": "1.0.0-*",
+    "LY.Application": "1.0.0-*",
+    "LY.EFRepository": "1.0.0-*",
+    "System.Text.Encoding.CodePages": "4.0.1",
+    "NLog.Extensions.Logging": "1.0.0-rtm-alpha4"
   },
 
   "tools": {

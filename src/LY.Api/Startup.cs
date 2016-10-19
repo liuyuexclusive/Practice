@@ -45,9 +45,8 @@ namespace LY.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //services.AddMvc();
             //数据库
-            services.AddDbContext<LYDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<LYDbContext>();
             //全局路由设置
             services.AddMvc(options =>
             {   // 路由参数在此处仍然是有效的，比如添加一个版本号

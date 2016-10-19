@@ -12,8 +12,6 @@ namespace LY.EFRepository
 {
     public class LYDbContext : DbContext
     {
-        private static readonly IServiceProvider _serviceProvider = new ServiceCollection().AddEntityFrameworkMySql().BuildServiceProvider();
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -22,7 +20,7 @@ namespace LY.EFRepository
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json").Build().GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseInternalServiceProvider(_serviceProvider).UseMySql(connStr);
+            optionsBuilder.UseMySql(connStr);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

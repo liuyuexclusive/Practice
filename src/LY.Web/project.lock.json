@@ -10503,7 +10503,6 @@
       "Microsoft.AspNetCore.Server.Kestrel >= 1.0.0",
       "Microsoft.AspNetCore.Session >= 1.0.0",
       "Microsoft.AspNetCore.StaticFiles >= 1.0.0",
-      "Microsoft.EntityFrameworkCore >= 1.0.1",
       "Microsoft.Extensions.Configuration.EnvironmentVariables >= 1.0.0",
       "Microsoft.Extensions.Configuration.Json >= 1.0.0",
       "Microsoft.Extensions.Logging >= 1.0.0",
@@ -10511,7 +10510,7 @@
       "Microsoft.NETCore.App >= 1.0.0",
       "Microsoft.VisualStudio.Web.BrowserLink.Loader >= 14.0.0",
       "NLog.Extensions.Logging >= 1.0.0-rtm-alpha4",
-      "Pomelo.EntityFrameworkCore.MySql >= 1.0.0",
+      "Newtonsoft.Json >= 9.0.1",
       "StackExchange.Redis >= 1.1.605",
       "System.Text.Encoding.CodePages >= 4.0.1"
     ],

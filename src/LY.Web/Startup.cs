@@ -66,7 +66,6 @@ namespace LY.Web
 
             builder.Populate(services);
             this.ApplicationContainer = builder.Build();
-
             return new AutofacServiceProvider(this.ApplicationContainer);
 
         }

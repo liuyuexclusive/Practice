@@ -14,10 +14,10 @@ namespace LY.Api.Controllers
     {
         private readonly IRoleRepo _roleRepo;
         private readonly ILogger<TestController> _logger;
-        public TestController(IRoleRepo roleRepo, ILogger<TestController> logger)
+        public TestController(IRoleRepo roleRepo, ILoggerFactory logger)
         {
             _roleRepo = roleRepo;
-            _logger = logger;
+            _logger = logger.CreateLogger<TestController>();
         }
 
         [HttpGet]
@@ -30,6 +30,7 @@ namespace LY.Api.Controllers
         [Route("diy")]
         public IEnumerable<string> DIY()
         {
+            //throw new Exception("手动制造的异常");
             var xxx = _roleRepo.QueryInclude();
             _logger.LogInformation("测试成功了哈哈哈");
             return new string[] { "value1", "value2" };

@@ -18,6 +18,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using System.Text;
 using NLog.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace LY.Api
 {
@@ -45,6 +46,7 @@ namespace LY.Api
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            //数据库
             services.AddDbContext<LYDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             //全局路由设置
             services.AddMvc(opt =>
@@ -52,9 +54,7 @@ namespace LY.Api
                 opt.UseCentralRoutePrefix(new RouteAttribute("api"));
             });
 
-            services.AddSession();
-
-            #region Swagger
+            #region swagger ui
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
             {
@@ -65,7 +65,7 @@ namespace LY.Api
                     Description = "A simple api to search using geo location in Elasticsearch",
                     TermsOfService = "None"
                 });
-                options.IncludeXmlComments(Path.Combine(BasePath, "bin", "Debug", "netcoreapp1.0",Configuration["Swagger:Path"]));
+                options.IncludeXmlComments(Path.Combine(BasePath, "bin", "Debug", "netcoreapp1.0", Configuration["Swagger:Path"]));
                 options.DescribeAllEnumsAsStrings();
             });
             #endregion
@@ -86,16 +86,18 @@ namespace LY.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
-
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             loggerFactory.AddNLog();
-
+            app.UseVisitLogger();
             app.UseSwagger();
             app.UseSwaggerUi();
-            app.UseStaticFiles();
-            app.UseMvc();
-            app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
+            //app.Use(async (context, next) =>
+            //{
+            //    await context.Response.WriteAsync("Hello World!");
+            //});
             appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
+
+            app.UseMvc();
         }
     }
 }

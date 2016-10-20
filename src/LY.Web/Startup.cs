@@ -50,7 +50,7 @@ namespace LY.Web
                     new RedisCache(new RedisCacheOptions
                     {
                         Configuration = "127.0.0.1:6379",
-                        InstanceName = "Sample:"
+                        InstanceName = "LY:"
                     })
             );
             //services.AddSession();

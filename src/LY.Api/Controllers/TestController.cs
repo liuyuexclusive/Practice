@@ -32,7 +32,7 @@ namespace LY.Api.Controllers
         {
             //throw new Exception("手动制造的异常");
             var xxx = _roleRepo.QueryInclude();
-            _logger.LogInformation("测试成功了哈哈哈");
+            _logger.LogInformation("测试成功了");
             return new string[] { "value1", "value2" };
         }
 

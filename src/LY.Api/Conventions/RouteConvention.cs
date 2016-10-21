@@ -34,7 +34,7 @@ namespace LY.Api
                 if (unmatchedSelectors.Any())
                 {
                     foreach (var selectorModel in unmatchedSelectors)
-                    {                    // 添加一个 路由前缀
+                    {   // 添加一个 路由前缀
                         selectorModel.AttributeRouteModel = _centralPrefix;
                     }
                 }

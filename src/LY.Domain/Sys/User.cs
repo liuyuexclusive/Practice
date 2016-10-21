@@ -34,6 +34,6 @@ namespace LY.Domain.Sys
         /// <summary>
         /// 所属角色
         /// </summary>
-        public virtual IList<RoleUserMapping> RoleUserMappingList { get; set; }
+        public IList<RoleUserMapping> RoleUserMappingList { get; set; }
     }
 }

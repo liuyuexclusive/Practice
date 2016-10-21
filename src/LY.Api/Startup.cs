@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +15,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using System.Text;
 using NLog.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using LY.Common;
 
 namespace LY.Api
 {
@@ -45,6 +43,10 @@ namespace LY.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+<<<<<<< HEAD
+=======
+            //services.AddMvc();
+>>>>>>> 96ce407dca7eb7f8eba7e35427d494e093cc7692
             //数据库
             services.AddDbContext<LYDbContext>();
             //全局路由设置
@@ -53,7 +55,15 @@ namespace LY.Api
                 options.UseCentralRoutePrefix(new RouteAttribute("api"));
                 options.Filters.Add(typeof(ExceptionFilterAttribute));
             });
-
+            //redis
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = Configuration["Redis:Configuration"],
+            //            InstanceName = "LY:"
+            //        })
+            //);
             #region swagger ui
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>

@@ -43,17 +43,20 @@ namespace LY.Web
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(options=> {
+                options.Filters.Add(typeof(ExceptionFilterAttribute));
+            });
             services.AddDbContext<LYDbContext>();
-            services.AddSingleton<IDistributedCache>(
-                serviceProvider =>
-                    new RedisCache(new RedisCacheOptions
-                    {
-                        Configuration = "127.0.0.1:6379",
-                        InstanceName = "LY:"
-                    })
-            );
-            //services.AddSession();
+            //redis
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = Configuration["Redis:Configuration"],
+            //            InstanceName = "LY:"
+            //        })
+            //);
+            services.AddSession();
 
             //autofac
             var builder = new ContainerBuilder();
@@ -96,8 +99,7 @@ namespace LY.Web
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
-
+            app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
             appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
         }
     }

@@ -19,15 +19,12 @@ namespace LY.Web.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<User> _userRepo;
         private readonly ILogger<HomeController> _logger;
-        IDistributedCache _cache;
         public HomeController(IRoleRepo roleRepo,
             ILogger<HomeController> logger,
             IUnitOfWork unitOfWork,
-            IRepository<User> userRepo,
-            IDistributedCache cache
+            IRepository<User> userRepo
             )
         {
-            _cache = cache;
             _roleRepo = roleRepo;
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -43,9 +40,8 @@ namespace LY.Web.Controllers
         {
             var test = _roleRepo.QueryInclude();
             var xxx = Newtonsoft.Json.JsonConvert.SerializeObject(test.Take(3).Select(x => new { x.ID, x.Name, x.Description }));
-            _cache.SetString("a", xxx);
-            _cache.Refresh("a");
-            var yyy = _cache.GetString("a");
+
+            throw new Exception("手动抛异常");
             //User xxx;
             ////IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
 

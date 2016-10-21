@@ -14,7 +14,7 @@ namespace LY.Domain.Sys
         /// </summary>
         public int RoleId { set; get; }
 
-        public virtual Role Role { get; set; }
-        public virtual User User { get; set; }
+        public Role Role { get; set; }
+        public User User { get; set; }
     }
 }

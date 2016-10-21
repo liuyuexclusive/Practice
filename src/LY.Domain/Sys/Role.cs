@@ -22,6 +22,6 @@ namespace LY.Domain.Sys
         public string Description { set; get; }
 
 
-        public virtual IList<RoleUserMapping> RoleUserMappingList { get; set; }
+        public IList<RoleUserMapping> RoleUserMappingList { get; set; }
     }
 }

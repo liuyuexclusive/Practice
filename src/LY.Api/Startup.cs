@@ -43,10 +43,7 @@ namespace LY.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-<<<<<<< HEAD
-=======
             //services.AddMvc();
->>>>>>> 96ce407dca7eb7f8eba7e35427d494e093cc7692
             //数据库
             services.AddDbContext<LYDbContext>();
             //全局路由设置

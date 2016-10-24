@@ -19,7 +19,7 @@ namespace LY.Service.Sys
         {
             if (!string.IsNullOrEmpty(user.Email))
             {
-                throw new BusinessException("ÓÊÏä²»ÄÜÎª¿Õ");
+                throw new BusinessException("é‚®ç®±ä¸èƒ½ä¸ºç©º");
             }
         }
     }

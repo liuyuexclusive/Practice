@@ -1,15 +1,14 @@
 using LY.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace LY.Domain.Sys
 {
     public class User : Entity
     {
-        /// <summary>
-        /// 账号
-        /// </summary>
-        public string Account { set; get; }
+        [Required(ErrorMessage = "邮箱不能为空")]
+        public string Email { set; get; }
 
         /// <summary>
         /// 密码

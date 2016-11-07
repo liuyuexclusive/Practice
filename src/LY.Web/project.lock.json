@@ -4154,6 +4154,33 @@
         "runtime": {
           "netstandard1.6/LY.EFRepository.dll": {}
         }
+      },
+      "LY.Initializer/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.6",
+        "dependencies": {
+          "LY.EFRepository": "1.0.0",
+          "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+          "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
+          "Microsoft.AspNetCore.Mvc": "1.0.0",
+          "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "1.0.1",
+          "Microsoft.Extensions.Configuration": "1.0.0",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
+          "Microsoft.Extensions.Configuration.Json": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
+          "NETStandard.Library": "1.6.0",
+          "NLog.Extensions.Logging": "1.0.0-rtm-alpha4",
+          "System.Text.Encoding.CodePages": "4.0.1"
+        },
+        "compile": {
+          "netstandard1.6/LY.Initializer.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/LY.Initializer.dll": {}
+        }
       }
     }
   },
@@ -10492,13 +10519,20 @@
       "type": "project",
       "path": "../LY.EFRepository/project.json",
       "msbuildProject": "../LY.EFRepository/LY.EFRepository.xproj"
+    },
+    "LY.Initializer/1.0.0": {
+      "type": "project",
+      "path": "../LY.Initializer/project.json",
+      "msbuildProject": "../LY.Initializer/LY.Initializer.xproj"
     }
   },
   "projectFileDependencyGroups": {
     "": [
       "Autofac.Extensions.DependencyInjection >= 4.0.0",
       "LY.Application >= 1.0.0-*",
-      "LY.EFRepository >= 1.0.0-*",
+      "LY.Common >= 1.0.0-*",
+      "LY.Domain >= 1.0.0-*",
+      "LY.Initializer >= 1.0.0-*",
       "Microsoft.AspNetCore.Diagnostics >= 1.0.0",
       "Microsoft.AspNetCore.Mvc >= 1.0.0",
       "Microsoft.AspNetCore.Razor.Tools >= 1.0.0-preview2-final",

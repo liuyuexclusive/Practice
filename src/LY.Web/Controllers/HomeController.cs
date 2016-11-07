@@ -9,6 +9,7 @@ using LY.Domain.Sys;
 using Microsoft.Extensions.Logging;
 using LY.Common;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LY.Web.Controllers
 {
@@ -36,12 +37,17 @@ namespace LY.Web.Controllers
             return View();
         }
 
-        public IActionResult Test()
+        [AllowAnonymous]
+        public async Task<IActionResult> Test()
         {
-            var test = _roleRepo.QueryInclude();
-            var xxx = Newtonsoft.Json.JsonConvert.SerializeObject(test.Take(3).Select(x => new { x.ID, x.Name, x.Description }));
+            var xxx = await Task.Run<string>(
+                () =>
+                {
+                    var test = _roleRepo.QueryInclude();
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(test.Take(3).Select(x => new { x.ID, x.Name, x.Description }));
+                });
 
-            throw new Exception("手动抛异常");
+            //throw new Exception("手动抛异常");
             //User xxx;
             ////IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
 

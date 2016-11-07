@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace LY.Web
+namespace LY.Initializer
 {
     public class ExceptionFilterAttribute : Attribute, IExceptionFilter
     {

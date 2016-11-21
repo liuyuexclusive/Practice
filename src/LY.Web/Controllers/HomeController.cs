@@ -10,26 +10,24 @@ using Microsoft.Extensions.Logging;
 using LY.Common;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace LY.Web.Controllers
 {
-
     public class HomeController : Controller
     {
-        private readonly IRoleRepo _roleRepo;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<User> _userRepo;
+        private readonly IRepository<Role> _roleRepo;
         private readonly ILogger<HomeController> _logger;
-        public HomeController(IRoleRepo roleRepo,
+        public HomeController(
             ILogger<HomeController> logger,
             IUnitOfWork unitOfWork,
-            IRepository<User> userRepo
+            IRepository<Role> roleRepo
             )
         {
-            _roleRepo = roleRepo;
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _userRepo = userRepo;
+            _roleRepo = roleRepo;
         }
 
         public IActionResult Index()
@@ -43,10 +41,19 @@ namespace LY.Web.Controllers
             var xxx = await Task.Run<string>(
                 () =>
                 {
-                    var test = _roleRepo.QueryInclude();
-                    return Newtonsoft.Json.JsonConvert.SerializeObject(test.Take(3).Select(x => new { x.ID, x.Name, x.Description }));
-                });
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    int count;
 
+                    var paths = new NavigationPropertyPath<Role>[] {
+                        new NavigationPropertyPath<Role>(x => x.RoleUserMappingList, x => ((RoleUserMapping)x).User)
+                    };
+
+                    var test = _roleRepo.Query(x => true, x => x.ID, true, 1, 100, out count, paths);
+                    sw.Stop();
+                    ViewBag.Times = sw.Elapsed.TotalSeconds;
+                    return "ok";
+                });
             //throw new Exception("手动抛异常");
             //User xxx;
             ////IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));

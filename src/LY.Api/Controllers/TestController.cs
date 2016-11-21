@@ -6,15 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using LY.Domain.Sys;
 using LY.Common;
 using Microsoft.Extensions.Logging;
+using LY.Domain;
 
 namespace LY.Api.Controllers
 {
     [Route("test")]
     public class TestController : Controller
     {
-        private readonly IRoleRepo _roleRepo;
+        private readonly IRepository<Role> _roleRepo;
         private readonly ILogger<TestController> _logger;
-        public TestController(IRoleRepo roleRepo, ILoggerFactory logger)
+        public TestController(IRepository<Role> roleRepo, ILoggerFactory logger)
         {
             _roleRepo = roleRepo;
             _logger = logger.CreateLogger<TestController>();
@@ -30,7 +31,6 @@ namespace LY.Api.Controllers
         [Route("diy")]
         public IEnumerable<string> DIY()
         {
-            var xxx = _roleRepo.QueryInclude();
             _logger.LogInformation("测试成功了哈哈哈");
             return new string[] { "value1", "value2" };
         }

@@ -1,14 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace LY.Domain.Sys
 {
-    public interface IRoleRepo : IRepository<Role>
-    {
-        IList<Role> QueryInclude();
-    }
-
     public class Role : Entity
     {
         /// <summary>

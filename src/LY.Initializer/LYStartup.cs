@@ -68,20 +68,36 @@ namespace LY.Initializer
             //autofac
             var builder = new ContainerBuilder();
 
-            var repositoryAssembly = Assembly.Load(new AssemblyName("LY.EFRepository"));
-            var types = repositoryAssembly.ExportedTypes;
+            RegisterRepository(builder);
+            RegisterService(builder);
+
+            builder.Populate(services);
+            this.ApplicationContainer = builder.Build();
+            return new AutofacServiceProvider(this.ApplicationContainer);
+        }
+
+        private void RegisterRepository(ContainerBuilder builder)
+        {
+            var assembly = Assembly.Load(new AssemblyName("LY.EFRepository"));
+            var types = assembly.ExportedTypes;
 
             builder.RegisterType(types.FirstOrDefault(t => t.Name.Equals("LYDbContext"))).As<DbContext>().InstancePerLifetimeScope();
 
             builder.RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("Repository`1"))).As(typeof(IRepository<>));
 
-            builder.RegisterAssemblyTypes(repositoryAssembly)
+            builder.RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.Equals("UnitOfWork") || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
                 .AsImplementedInterfaces();
+        }
 
-            builder.Populate(services);
-            this.ApplicationContainer = builder.Build();
-            return new AutofacServiceProvider(this.ApplicationContainer);
+        private void RegisterService(ContainerBuilder builder)
+        {
+            var assembly = Assembly.Load(new AssemblyName("LY.Application"));
+            var types = assembly.ExportedTypes;
+
+            builder.RegisterAssemblyTypes(assembly)
+                .Where(t => t.Name.Equals("Service"))
+                .AsImplementedInterfaces();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

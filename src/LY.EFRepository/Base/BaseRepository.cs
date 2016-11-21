@@ -20,9 +20,27 @@ namespace LY.EFRepository
     public class BaseRepository<Tkey, TEntity> : IBaseRepository<Tkey, TEntity> where TEntity : BaseEntity<Tkey>
     {
         private readonly IBaseUnitOfWork<Tkey> _unitOfWork;
+
         private readonly DbContext _dbContext;
 
-        [DebuggerStepThrough]
+        private IQueryable<TEntity> GetPathQuery(params NavigationPropertyPath<TEntity>[] paths)
+        {
+            var result = Entities.AsExpandable();
+            if (!paths.IsNullOrEmpty())
+            {
+                foreach (var path in paths)
+                {
+                    var includData = (IIncludableQueryable<TEntity, object>)result.Include(path.Include);
+                    result = includData;
+                    foreach (var thenIncludes in path.ThenIncludes)
+                    {
+                        result = includData.ThenInclude(thenIncludes);
+                    }
+                }
+            }
+            return result;
+        }
+
         public BaseRepository(IBaseUnitOfWork<Tkey> unitOfWork, DbContext dbContext)
         {
             _unitOfWork = unitOfWork;
@@ -50,46 +68,42 @@ namespace LY.EFRepository
             return Entities.AsExpandable().Where(expression).Max(selector);
         }
 
-        public virtual TEntity Get(Tkey id)
+        public virtual TEntity Get(Tkey id, params NavigationPropertyPath<TEntity>[] paths)
         {
-            return Entities.FirstOrDefault(a => a.ID.Equals(id));
+            
+            return GetPathQuery(paths).FirstOrDefault(a => a.ID.Equals(id));
         }
 
-        public virtual TEntity Get(Expression<Func<TEntity, bool>> expression)
+        public virtual TEntity Get(Expression<Func<TEntity, bool>> expression, params NavigationPropertyPath<TEntity>[] paths)
         {
-            return Entities.AsExpandable().FirstOrDefault(expression);
+            return GetPathQuery(paths).FirstOrDefault(expression);
         }
 
-        public virtual TEntity Get<TProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TProperty>> path)
+        public virtual IList<TEntity> Query(params NavigationPropertyPath<TEntity>[] paths)
         {
-            return Entities.Include(path).AsExpandable().FirstOrDefault(expression);
+            return GetPathQuery(paths).ToList();
         }
 
-        public virtual IList<TEntity> Query()
+        public virtual IList<TEntity> Query(Expression<Func<TEntity, bool>> expression, params NavigationPropertyPath<TEntity>[] paths)
         {
-            return Entities.ToList();
+            return GetPathQuery(paths).Where(expression).ToList();
         }
 
-        public virtual IList<TEntity> Query(Expression<Func<TEntity, bool>> expression)
+        public virtual IList<TEntity> Query<TKey>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TKey>> @orderby, bool isAscending, params NavigationPropertyPath<TEntity>[] paths)
         {
-            return Entities.AsExpandable().Where(expression).ToList();
-        }
-
-        public virtual IList<TEntity> Query<TKey>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TKey>> @orderby, bool isAscending)
-        {
-            var entities = Entities.AsExpandable().Where(expression);
+            var query = GetPathQuery(paths).Where(expression);
             if (isAscending)
             {
-                return entities.OrderBy(@orderby).ToList();
+                return query.OrderBy(@orderby).ToList();
             }
-            return entities.OrderByDescending(@orderby).ToList();
+            return query.OrderByDescending(@orderby).ToList();
         }
 
         public virtual IList<TEntity> Query<TKey>(Expression<Func<TEntity, bool>> expression,
-            Expression<Func<TEntity, TKey>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount)
+            Expression<Func<TEntity, TKey>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount, params NavigationPropertyPath<TEntity>[] paths)
         {
             totalRecordCount = 0;
-            var query = Entities.AsExpandable().Where(expression);
+            var query = GetPathQuery(paths).Where(expression);
 
             if (isAscending)
             {

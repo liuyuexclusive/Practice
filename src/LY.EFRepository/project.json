@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    
+
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "Microsoft.EntityFrameworkCore": "1.0.1",
     "Pomelo.EntityFrameworkCore.MySql": "1.0.0",

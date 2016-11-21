@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 namespace LY.EFRepository
 {
-    [DebuggerStepThrough]
     public class BaseUnitOfWork<Tkey> : IBaseUnitOfWork<Tkey>
     {
         private readonly DbContext _dbContext;

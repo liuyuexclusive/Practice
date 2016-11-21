@@ -9,7 +9,7 @@ namespace LY.Domain
     ///  代表一个资源库。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public interface IBaseRepository<Tkey,TEntity> where TEntity : BaseEntity<Tkey>
+    public interface IBaseRepository<Tkey, TEntity> where TEntity : BaseEntity<Tkey>
     {
         /// <summary>
         /// 检查是否存在满足条件的实体。
@@ -40,28 +40,21 @@ namespace LY.Domain
         /// </summary>
         /// <param name="id">实体主键。</param>
         /// <returns>实体对象。</returns>
-        TEntity Get(Tkey id);
+        TEntity Get(Tkey id, params NavigationPropertyPath<TEntity>[] paths);
 
         /// <summary>
         /// 获取指定的实体。
         /// </summary>
         /// <param name="expression">查询条件表达式。</param>
         /// <returns>实体对象。</returns>
-        TEntity Get(Expression<Func<TEntity, bool>> expression);
+        TEntity Get(Expression<Func<TEntity, bool>> expression, params NavigationPropertyPath<TEntity>[] paths);
 
-        /// <summary>
-        /// 获取指定的实体。
-        /// </summary>
-        /// <param name="expression">查询条件表达式。</param>
-        /// <returns>实体对象。</returns>
-        TEntity Get<TProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TProperty>> path);
 
-        
         /// <summary>
         /// 获取所有实体。
         /// </summary>
         /// <returns>实体列表。</returns>
-        IList<TEntity> Query();
+        IList<TEntity> Query(params NavigationPropertyPath<TEntity>[] paths);
 
 
         /// <summary>
@@ -69,7 +62,7 @@ namespace LY.Domain
         /// </summary>
         /// <param name="expression">查询条件表达式。</param>
         /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query(Expression<Func<TEntity, bool>> expression);
+        IList<TEntity> Query(Expression<Func<TEntity, bool>> expression, params NavigationPropertyPath<TEntity>[] paths);
 
         /// <summary>
         /// 根据指定的条件查询实体。
@@ -80,7 +73,7 @@ namespace LY.Domain
         /// <param name="orderby">排序属性选择器。</param>
         /// <param name="isAscending">是否按升序排序。</param>
         /// <returns>符合条件的实体列表。</returns>
-        IList<TEntity> Query<TOrderProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TOrderProperty>> @orderby, bool isAscending);
+        IList<TEntity> Query<TOrderProperty>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, TOrderProperty>> @orderby, bool isAscending, params NavigationPropertyPath<TEntity>[] paths);
 
 
         /// <summary>
@@ -95,7 +88,7 @@ namespace LY.Domain
         /// <param name="totalRecordCount">符合条件的总记录数。</param>
         /// <returns>符合条件的实体列表。</returns>
         IList<TEntity> Query<TOrderProperty>(Expression<Func<TEntity, bool>> expression,
-            Expression<Func<TEntity, TOrderProperty>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount);
+            Expression<Func<TEntity, TOrderProperty>> keySelector, bool isAscending, int pageIndex, int pageSize, out int totalRecordCount, params NavigationPropertyPath<TEntity>[] paths);
 
 
         /// <summary>

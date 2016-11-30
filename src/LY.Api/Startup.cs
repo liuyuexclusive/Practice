@@ -46,7 +46,7 @@ namespace LY.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public override void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, loggerFactory, appLifetime);//必须放前面
+            base.Configure(app, loggerFactory, appLifetime);//must put in the front
             // swagger ui
             app.UseSwagger();
             app.UseSwaggerUi();

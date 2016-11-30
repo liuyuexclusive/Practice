@@ -6,13 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using LY.EFRepository;
 using Autofac;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 using LY.Domain;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using NLog.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace LY.Initializer
 {

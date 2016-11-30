@@ -14,7 +14,9 @@ namespace LY.Web
 
         public override void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, loggerFactory, appLifetime);//必须放前面
+            base.Configure(app, loggerFactory, appLifetime);//must put in the front
+
+            //error page
             if (Env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

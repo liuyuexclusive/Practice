@@ -8,7 +8,7 @@ namespace LY.Web.Models
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage ="邮箱不能为空")]
+        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }

@@ -1,80 +1,32 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using LY.EFRepository;
-using Autofac;
-using System.Reflection;
-using LY.Domain;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using LY.Domain;
+using LY.EFRepository;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Logging;
-using System.Text;
-using NLog.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace LY.Initializer
 {
     public class LYStartup
     {
-        public LYStartup(IHostingEnvironment env)
+        public LYStartup()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Env = env;
-            Configuration = builder.Build();
+
         }
 
-        /// <summary>
-        /// appsettings.json配置
-        /// </summary>
-        public IConfigurationRoot Configuration { get; }
-
-        /// <summary>
-        /// HostingEnvironment
-        /// </summary>
-        public IHostingEnvironment Env { get; }
-
+        #region private
         /// <summary>
         /// autofac容器
         /// </summary>
         private IContainer ApplicationContainer { get; set; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<LYDbContext>();
-
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(typeof(ExceptionFilterAttribute));
-            });
-
-            //redis
-            //services.AddSingleton<IDistributedCache>(
-            //    serviceProvider =>
-            //        new RedisCache(new RedisCacheOptions
-            //        {
-            //            Configuration = Configuration["Redis:Configuration"],
-            //            InstanceName = "LY:"
-            //        })
-            //);
-            //services.AddSession();
-
-            //autofac
-            var builder = new ContainerBuilder();
-
-            RegisterRepository(builder);
-            RegisterService(builder);
-
-            builder.Populate(services);
-            this.ApplicationContainer = builder.Build();
-            return new AutofacServiceProvider(this.ApplicationContainer);
-        }
 
         private void RegisterRepository(ContainerBuilder builder)
         {
@@ -98,6 +50,33 @@ namespace LY.Initializer
             builder.RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.Equals("Service"))
                 .AsImplementedInterfaces();
+        } 
+        #endregion
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext<LYDbContext>();
+            //redis
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = Configuration["Redis:Configuration"],
+            //            InstanceName = "LY:"
+            //        })
+            //);
+            //services.AddSession();
+
+            //autofac
+            var builder = new ContainerBuilder();
+
+            RegisterRepository(builder);
+            RegisterService(builder);
+
+            builder.Populate(services);
+            this.ApplicationContainer = builder.Build();
+            return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -105,8 +84,6 @@ namespace LY.Initializer
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             loggerFactory.AddNLog();
-            app.UseVisitLogger();
-            app.UseStaticFiles();
 
             //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
             appLifetime.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());

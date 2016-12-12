@@ -5,7 +5,9 @@
     "NETStandard.Library": "1.6.1",
     "Autofac.Extensions.DependencyInjection": "4.0.0",
     "StackExchange.Redis": "1.1.608",
-    "Microsoft.AspNetCore.Session": "1.1.0"
+    "Microsoft.AspNetCore.Session": "1.1.0",
+    "NetMQ": "4.0.0-rc5",
+    "Newtonsoft.Json": "9.0.1"
   },
 
   "frameworks": {

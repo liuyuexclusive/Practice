@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LY.Web
 {
-    public class Startup : LYStartup
+    public class Startup : LYWebStartup
     {
         public Startup(IHostingEnvironment env) : base(env)
         {
@@ -17,7 +17,7 @@ namespace LY.Web
             base.Configure(app, loggerFactory, appLifetime);//must put in the front
 
             //error page
-            if (Env.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();

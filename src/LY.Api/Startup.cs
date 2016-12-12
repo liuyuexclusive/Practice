@@ -9,7 +9,7 @@ using LY.Initializer;
 
 namespace LY.Api
 {
-    public class Startup : LYStartup
+    public class Startup : LYWebStartup
     {
         public Startup(IHostingEnvironment env) : base(env)
         {
@@ -36,7 +36,7 @@ namespace LY.Api
                     Description = "A simple api to search using geo location in Elasticsearch",
                     TermsOfService = "None"
                 });
-                options.IncludeXmlComments(Path.Combine(Env.ContentRootPath, "bin", "Debug", "netcoreapp1.0", Configuration["Swagger:Path"]));
+                options.IncludeXmlComments(Path.Combine(HostingEnvironment.ContentRootPath, "bin", "Debug", "netcoreapp1.0", ConfigurationRoot["Swagger:Path"]));
                 options.DescribeAllEnumsAsStrings();
             });
 

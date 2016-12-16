@@ -1,16 +1,9 @@
-﻿using NetMQ;
-using NetMQ.Sockets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Reflection;
-using LY.Common.NetMQ;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using LY.Initializer;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using LY.Common;
 
 namespace LY.Daemon
 {
@@ -18,12 +11,12 @@ namespace LY.Daemon
     {
         public static void Main(string[] args)
         {
-            LYStartup starp = new LYStartup();
-            starp.ConfigureServices(new ServiceCollection());
+            LogUtil.Logger<Program>().LogDebug("hehehaha");
 
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            LYMQ lyMQ = new LYMQ("tcp://127.0.0.1:5555");
-            lyMQ.StartServer();
+
+            Console.Read();
+            //LYMQ lyMQ = new LYMQ("tcp://127.0.0.1:5555");
+            //lyMQ.StartServer();
         }
     }
 }

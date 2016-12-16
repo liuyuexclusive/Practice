@@ -11,6 +11,7 @@ using LY.Common;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
+using LY.Service.Sys;
 
 namespace LY.Web.Controllers
 {
@@ -22,7 +23,8 @@ namespace LY.Web.Controllers
         public HomeController(
             ILogger<HomeController> logger,
             IUnitOfWork unitOfWork,
-            IRepository<Role> roleRepo
+            IRepository<Role> roleRepo,
+            UserService userService
             )
         {
             _logger = logger;

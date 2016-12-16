@@ -12,9 +12,9 @@ namespace LY.Web
 
         }
 
-        public override void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
+        public override void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, loggerFactory, appLifetime);//must put in the front
+            base.Configure(app, appLifetime);//must put in the front
 
             //error page
             if (HostingEnvironment.IsDevelopment())

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Logging;
+using LY.Common;
+using System.Text;
 
 namespace LY.Initializer
 {
-    public class LYWebStartup : LYStartup
+    public class LYWebStartup
     {
         public LYWebStartup(IHostingEnvironment env)
         {
@@ -29,25 +30,37 @@ namespace LY.Initializer
         /// HostingEnvironment
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; }
-        
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ExceptionFilterAttribute));
             });
-
-            return base.ConfigureServices(services);
+            //redis
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = Configuration["Redis:Configuration"],
+            //            InstanceName = "LY:"
+            //        })
+            //);
+            //services.AddSession();
+            LYStartup startup = new LYStartup();
+            return startup.Start(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public override void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
+        public virtual void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, loggerFactory, appLifetime);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             app.UseVisitLogger();
             app.UseStaticFiles();
+            //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
+            appLifetime.ApplicationStopped.Register(() => IocManager.Container.Dispose());
         }
     }
 }

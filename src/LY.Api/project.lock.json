@@ -4329,7 +4329,9 @@
         "dependencies": {
           "Autofac.Extensions.DependencyInjection": "4.0.0",
           "Microsoft.AspNetCore.Session": "1.1.0",
+          "Microsoft.Extensions.Logging": "1.1.0",
           "NETStandard.Library": "1.6.1",
+          "NLog.Extensions.Logging": "1.0.0-rtm-alpha5",
           "NetMQ": "4.0.0-rc5",
           "Newtonsoft.Json": "9.0.1",
           "StackExchange.Redis": "1.1.608"

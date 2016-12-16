@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using LY.Common;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,14 +14,11 @@ namespace LY.Initializer
     {
         private readonly RequestDelegate _next;
 
-        private readonly ILogger _logger;
-
         private VisitLog _visitLog;
 
-        public VisitLogMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+        public VisitLogMiddleware(RequestDelegate next)
         {
             _next = next;
-            _logger = loggerFactory.CreateLogger<VisitLogMiddleware>();
         }
 
         public async Task Invoke(HttpContext context)
@@ -44,7 +42,7 @@ namespace LY.Initializer
         private Task ResponseCompletedCallback(object obj)
         {
             _visitLog.ExcuteEndTime = DateTime.Now;
-            _logger.LogTrace($"VisitLog: {_visitLog.ToString()}");
+            LogUtil.Logger<VisitLogMiddleware>().LogTrace($"VisitLog: {_visitLog.ToString()}");
             return Task.FromResult(0);
         }
     }

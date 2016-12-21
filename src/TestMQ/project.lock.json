@@ -909,11 +909,10 @@
           "lib/netstandard1.0/Microsoft.Extensions.Configuration.Abstractions.dll": {}
         }
       },
-      "Microsoft.Extensions.Configuration.EnvironmentVariables/1.1.0": {
+      "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Extensions.Configuration": "1.1.0",
-          "NETStandard.Library": "1.6.1"
+          "Microsoft.Extensions.Configuration": "1.0.0"
         },
         "compile": {
           "lib/netstandard1.3/Microsoft.Extensions.Configuration.EnvironmentVariables.dll": {}
@@ -1323,26 +1322,6 @@
         },
         "runtime": {
           "lib/netstandard1.3/_._": {}
-        }
-      },
-      "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
-          "Microsoft.Extensions.FileProviders.Physical": "1.0.0",
-          "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
-          "Microsoft.Win32.Registry": "4.0.0",
-          "System.Collections": "4.0.11",
-          "System.Net.Sockets": "4.1.0",
-          "System.Runtime.Loader": "4.0.0",
-          "System.Text.Encoding": "4.0.11",
-          "System.Threading": "4.0.11"
-        },
-        "compile": {
-          "lib/netstandard1.5/Microsoft.VisualStudio.Web.BrowserLink.Loader.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.5/Microsoft.VisualStudio.Web.BrowserLink.Loader.dll": {}
         }
       },
       "Microsoft.Win32.Primitives/4.3.0": {
@@ -4098,6 +4077,8 @@
         "dependencies": {
           "Autofac.Extensions.DependencyInjection": "4.0.0",
           "Microsoft.AspNetCore.Session": "1.1.0",
+          "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
+          "Microsoft.Extensions.Configuration.Json": "1.1.0",
           "Microsoft.Extensions.Logging": "1.1.0",
           "NETStandard.Library": "1.6.1",
           "NLog.Extensions.Logging": "1.0.0-rtm-alpha5",
@@ -4119,10 +4100,7 @@
           "LY.Application": "1.0.0",
           "LY.Common": "1.0.0",
           "LY.Initializer": "1.0.0",
-          "Microsoft.NETCore.App": "1.1.0",
-          "NetMQ": "4.0.0-rc5",
-          "Newtonsoft.Json": "9.0.1",
-          "System.Text.Encoding.CodePages": "4.3.0"
+          "Microsoft.NETCore.App": "1.1.0"
         },
         "compile": {
           "netcoreapp1.0/LY.Daemon.dll": {}
@@ -4154,10 +4132,6 @@
           "LY.Domain": "1.0.0",
           "LinqKit.Microsoft.EntityFrameworkCore": "1.1.9",
           "Microsoft.EntityFrameworkCore": "1.1.0",
-          "Microsoft.Extensions.Configuration": "1.1.0",
-          "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
-          "Microsoft.Extensions.Configuration.Json": "1.1.0",
-          "Microsoft.Extensions.DependencyInjection": "1.1.0",
           "NETStandard.Library": "1.6.1",
           "Pomelo.EntityFrameworkCore.MySql": "1.1.0"
         },
@@ -4178,14 +4152,8 @@
           "Microsoft.AspNetCore.Mvc": "1.1.0",
           "Microsoft.AspNetCore.StaticFiles": "1.1.0",
           "Microsoft.EntityFrameworkCore": "1.1.0",
-          "Microsoft.Extensions.Configuration": "1.1.0",
-          "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
-          "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
-          "Microsoft.Extensions.Configuration.Json": "1.1.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
-          "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
           "NETStandard.Library": "1.6.1",
-          "NLog.Extensions.Logging": "1.0.0-rtm-alpha5",
           "System.Text.Encoding.CodePages": "4.0.1"
         },
         "compile": {
@@ -4973,12 +4941,12 @@
         "lib/netstandard1.0/Microsoft.Extensions.Configuration.Abstractions.xml"
       ]
     },
-    "Microsoft.Extensions.Configuration.EnvironmentVariables/1.1.0": {
-      "sha512": "7AWmPQoX4Kx0Kf4VAig5yKbCziHjO6F2povXeToOaWuZnKahi5qXCG7wrWtATFrheOQLfkrqxxLyarTP3J1mnA==",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0": {
+      "sha512": "A0yqS98VtPNlFkFI7YBlwkAekUHE/9mMeNc+K4RmgTjCrskuk6pX3LGhDU7aD5CPYc9Px7M2To/2u4xDSnRikg==",
       "type": "package",
-      "path": "Microsoft.Extensions.Configuration.EnvironmentVariables/1.1.0",
+      "path": "Microsoft.Extensions.Configuration.EnvironmentVariables/1.0.0",
       "files": [
-        "Microsoft.Extensions.Configuration.EnvironmentVariables.1.1.0.nupkg.sha512",
+        "Microsoft.Extensions.Configuration.EnvironmentVariables.1.0.0.nupkg.sha512",
         "Microsoft.Extensions.Configuration.EnvironmentVariables.nuspec",
         "lib/net451/Microsoft.Extensions.Configuration.EnvironmentVariables.dll",
         "lib/net451/Microsoft.Extensions.Configuration.EnvironmentVariables.xml",
@@ -5372,19 +5340,6 @@
         "ref/portable-net45+win8+wpa81/_._",
         "ref/win8/_._",
         "ref/wpa81/_._"
-      ]
-    },
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0": {
-      "sha512": "f01OAOfsctcN7gSa05qYK8AgU1E/BFeZizvszNJMXY3BMJbYSj+3+YqyLunkMSf7LN92kcl7gQsAY9FayEH3ag==",
-      "type": "package",
-      "path": "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0",
-      "files": [
-        "Microsoft.VisualStudio.Web.BrowserLink.Loader.14.0.0.nupkg.sha512",
-        "Microsoft.VisualStudio.Web.BrowserLink.Loader.nuspec",
-        "lib/net451/Microsoft.VisualStudio.Web.BrowserLink.Loader.dll",
-        "lib/net451/Microsoft.VisualStudio.Web.BrowserLink.Loader.xml",
-        "lib/netstandard1.5/Microsoft.VisualStudio.Web.BrowserLink.Loader.dll",
-        "lib/netstandard1.5/Microsoft.VisualStudio.Web.BrowserLink.Loader.xml"
       ]
     },
     "Microsoft.Win32.Primitives/4.3.0": {

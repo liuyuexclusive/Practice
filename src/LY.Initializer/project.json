@@ -3,20 +3,14 @@
 
   "dependencies": {
     "LY.EFRepository": "1.0.0-*",
-    "Microsoft.AspNetCore.Hosting.Abstractions": "1.1.0",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
-    "Microsoft.EntityFrameworkCore": "1.1.0",
-    "Microsoft.Extensions.Configuration": "1.1.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
-    "Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
-    "Microsoft.Extensions.Configuration.Json": "1.1.0",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.1",
+    "Microsoft.EntityFrameworkCore": "1.0.1",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "NETStandard.Library": "1.6.1",
     "System.Text.Encoding.CodePages": "4.0.1",
-    "NLog.Extensions.Logging": "1.0.0-rtm-alpha5",
-    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.1.0"
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0"
   },
 
   "frameworks": {

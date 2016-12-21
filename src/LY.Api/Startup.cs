@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using LY.Initializer;
+using LY.Common;
 
 namespace LY.Api
 {
@@ -36,7 +37,7 @@ namespace LY.Api
                     Description = "A simple api to search using geo location in Elasticsearch",
                     TermsOfService = "None"
                 });
-                options.IncludeXmlComments(Path.Combine(HostingEnvironment.ContentRootPath, "bin", "Debug", "netcoreapp1.0", ConfigurationRoot["Swagger:Path"]));
+                options.IncludeXmlComments(Path.Combine(HostingEnvironment.ContentRootPath, "bin", "Debug", "netcoreapp1.0", ConfigUtil.ConfigurationRoot["Swagger:Path"]));
                 options.DescribeAllEnumsAsStrings();
             });
 

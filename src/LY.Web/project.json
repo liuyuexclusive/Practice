@@ -1,33 +1,26 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.1.0",
+      "version": "1.0.3",
       "type": "platform"
     },
-    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.1",
+    "Microsoft.AspNetCore.Mvc": "1.0.1",
     "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.1.0-preview4-final",
+      "version": "1.0.0-preview2-final",
       "type": "build"
     },
     "LY.Application": "1.0.0-*",
     "LY.Initializer": "1.0.0-*",
     "LY.Common": "1.0.0-*",
     "LY.Domain": "1.0.0-*",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
-    "Microsoft.AspNetCore.StaticFiles": "1.1.0",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
-    "Microsoft.Extensions.Configuration.Json": "1.1.0",
-    "Microsoft.Extensions.Logging": "1.1.0",
-    "NLog.Extensions.Logging": "1.0.0-rtm-alpha5",
-    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.1",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.1.0",
     "System.Text.Encoding.CodePages": "4.3.0",
-    "Autofac.Extensions.DependencyInjection": "4.0.0",
     "StackExchange.Redis": "1.1.608",
-    "Microsoft.AspNetCore.Session": "1.1.0",
-    "Newtonsoft.Json": "9.0.1"
+    "Microsoft.AspNetCore.Session": "1.0.0"
   },
 
   "tools": {

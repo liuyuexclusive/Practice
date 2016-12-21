@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
 using LY.Domain.Sys;
+using LY.Common;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace LY.EFRepository
 {
@@ -16,10 +11,7 @@ namespace LY.EFRepository
         {
             base.OnConfiguring(optionsBuilder);
 
-            string connStr = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json").Build().GetConnectionString("DefaultConnection");
-
+            string connStr = ConfigUtil.ConfigurationRoot.GetConnectionString("DefaultConnection");
             optionsBuilder.UseMySql(connStr);
         }
 

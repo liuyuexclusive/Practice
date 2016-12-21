@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using LY.Common;
@@ -12,19 +11,8 @@ namespace LY.Initializer
     {
         public LYWebStartup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
             HostingEnvironment = env;
-            ConfigurationRoot = builder.Build();
         }
-
-        /// <summary>
-        /// appsettings.json配置
-        /// </summary>
-        public IConfigurationRoot ConfigurationRoot { get; }
 
         /// <summary>
         /// HostingEnvironment

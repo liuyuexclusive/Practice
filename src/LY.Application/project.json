@@ -4,8 +4,7 @@
   "dependencies": {
     "NETStandard.Library": "1.6.1",
     "LY.Domain": "1.0.0-*",
-    "LY.Common": "1.0.0-*",
-    "RabbitMQ.Client": "4.1.1"
+    "LY.Common": "1.0.0-*"
   },
 
   "frameworks": {

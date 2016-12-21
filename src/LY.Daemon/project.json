@@ -10,11 +10,8 @@
     "LY.Initializer": "1.0.0-*",
     "Microsoft.NETCore.App": {
       "type": "platform",
-      "version": "1.1.0"
-    },
-    "NetMQ": "4.0.0-rc5",
-    "Newtonsoft.Json": "9.0.1",
-    "System.Text.Encoding.CodePages": "4.3.0"
+      "version": "1.0.1"
+    }
   },
 
   "frameworks": {

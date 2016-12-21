@@ -3,16 +3,11 @@ using Autofac.Extensions.DependencyInjection;
 using LY.Common;
 using LY.Domain;
 using LY.EFRepository;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace LY.Initializer
 {
@@ -80,7 +75,6 @@ namespace LY.Initializer
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
             RegisterDaemon(_containerBuilder);
-            _containerBuilder.RegisterType<LoggerFactory>().As<ILoggerFactory>();
             _containerBuilder.Populate(services);
         }
     }

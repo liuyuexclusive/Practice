@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 
 namespace LY.Common.NetMQ
 {
-    public class MQSendDTO
+    internal class MQSendDTO
     {
         /// <summary>
         /// 执行类名
         /// </summary>
-        public string HandlerTypeName { get; set; }
+        internal string HandlerTypeName { get; set; }
         /// <summary>
         /// 执行方法名
         /// </summary>
-        public string HandlerMethodName { get; set; }
+        internal string HandlerMethodName { get; set; }
         /// <summary>
         /// 参数类名
         /// </summary>
-        public string ParameterTypeName { get; set; }
+        internal string ParameterTypeName { get; set; }
         /// <summary>
         /// 参数JSON字符串
         /// </summary>
-        public string ParameterContent { get; set; }
+        internal string ParameterContent { get; set; }
     }
 }

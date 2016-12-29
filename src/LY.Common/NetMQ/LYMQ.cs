@@ -13,9 +13,8 @@ namespace LY.Common.NetMQ
 {
     public class LYMQ
     {
-        public LYMQ(string address)
+        public LYMQ()
         {
-            Address = address;
         }
 
         /// <summary>
@@ -55,11 +54,12 @@ namespace LY.Common.NetMQ
                         {
                             handlerType.GetMethod(transfer.HandlerMethodName).Invoke(Activator.CreateInstance(handlerType), parameters.ToArray());
                         }
-                        serverSocket.SendFrame("成功了");
+                        serverSocket.SendFrame(JsonConvert.SerializeObject(new MQResultDTO() { Status = MQResultStatus.Sucess, Msg = "OK" }));
                     }
                     catch (Exception ex)
                     {
-                        serverSocket.SendFrame(ex.Message);
+                        serverSocket.SendFrame(JsonConvert.SerializeObject(new MQResultDTO() { Status = MQResultStatus.Fail, Msg = ex.Message }));
+                        LogUtil.Logger<LYMQ>().LogError(ex.ToString());
                     }
                 }
             }
@@ -71,58 +71,42 @@ namespace LY.Common.NetMQ
         /// <param name="handlerTypeName">类名</param>
         /// <param name="handlerMethodName">方法名</param>
         /// <param name="parameterObj">参数对象</param>
-        public void Send(string handlerTypeName, string handlerMethodName, object parameterObj)
+        public MQResultDTO Send(string handlerTypeName, string handlerMethodName, object parameterObj = null)
         {
-            try
+            using (NetMQSocket clientSocket = new RequestSocket())
             {
-                using (NetMQSocket clientSocket = new RequestSocket())
+                clientSocket.Connect(Address);
+
+                string parameterTypeName = string.Empty;
+                string parameterContent = string.Empty;
+                if (parameterObj != null)
                 {
-                    clientSocket.Connect(Address);
-
-                    string parameterTypeName = string.Empty;
-                    string parameterContent = string.Empty;
-                    if (parameterObj != null)
-                    {
-                        parameterTypeName = parameterObj.GetType().Name;
-                        parameterContent = JsonConvert.SerializeObject(parameterObj);
-                    }
-                    MQSendDTO transfer = new MQSendDTO()
-                    {
-                        HandlerTypeName = handlerTypeName,
-                        HandlerMethodName = handlerMethodName,
-                        ParameterTypeName = parameterTypeName,
-                        ParameterContent = parameterContent
-                    };
-                    clientSocket.SendFrame(JsonConvert.SerializeObject(transfer));
-
-                    string answer = clientSocket.ReceiveFrameString();
+                    parameterTypeName = parameterObj.GetType().Name;
+                    parameterContent = JsonConvert.SerializeObject(parameterObj);
                 }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                MQSendDTO transfer = new MQSendDTO()
+                {
+                    HandlerTypeName = handlerTypeName,
+                    HandlerMethodName = handlerMethodName,
+                    ParameterTypeName = parameterTypeName,
+                    ParameterContent = parameterContent
+                };
+                clientSocket.SendFrame(JsonConvert.SerializeObject(transfer));
+
+                MQResultDTO result = JsonConvert.DeserializeObject<MQResultDTO>(clientSocket.ReceiveFrameString());
+                return result;
             }
         }
 
-        private string GetSendContent(string handlerTypeName, string handlerMethodName, object parameterObj = null)
+        /// <summary>
+        /// MQ服务端地址
+        /// </summary>
+        private string Address
         {
-            string parameterTypeName = string.Empty;
-            string parameterContent = string.Empty;
-            if (parameterObj != null)
+            get
             {
-                parameterTypeName = parameterObj.GetType().Name;
-                parameterContent = JsonConvert.SerializeObject(parameterObj);
+                return ConfigUtil.ConfigurationRoot["LYMQ:Address"];
             }
-            MQSendDTO transfer = new MQSendDTO()
-            {
-                HandlerTypeName = handlerTypeName,
-                HandlerMethodName = handlerMethodName,
-                ParameterTypeName = parameterTypeName,
-                ParameterContent = parameterContent
-            };
-            return JsonConvert.SerializeObject(transfer);
         }
-
-        private string Address { get; }
     }
 }

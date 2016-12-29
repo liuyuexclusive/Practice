@@ -4,6 +4,8 @@ using NLog.Extensions.Logging;
 using LY.Initializer;
 using Microsoft.Extensions.DependencyInjection;
 using LY.Common;
+using LY.Common.NetMQ;
+using System.Text;
 
 namespace LY.Daemon
 {
@@ -11,12 +13,10 @@ namespace LY.Daemon
     {
         public static void Main(string[] args)
         {
-            LogUtil.Logger<Program>().LogDebug("hehehaha");
-
-
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            LYMQ lyMQ = new LYMQ();
+            lyMQ.StartServer();
             Console.Read();
-            //LYMQ lyMQ = new LYMQ("tcp://127.0.0.1:5555");
-            //lyMQ.StartServer();
         }
     }
 }

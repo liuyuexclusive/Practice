@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace LY.Common.NetMQ
 {
+    /// <summary>
+    /// 返回结果对象
+    /// </summary>
     public class MQResultDTO
     {
         /// <summary>
@@ -13,14 +16,9 @@ namespace LY.Common.NetMQ
         public MQResultStatus Status { get; set; }
 
         /// <summary>
-        /// 返回状态
+        /// 返回信息
         /// </summary>
         public string Msg { get; set; }
-
-        /// <summary>
-        /// 参数JSON字符串
-        /// </summary>
-        public string ResultContent { get; set; }
     }
     public enum MQResultStatus
     {

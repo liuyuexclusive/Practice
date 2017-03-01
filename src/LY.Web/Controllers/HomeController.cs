@@ -45,31 +45,32 @@ namespace LY.Web.Controllers
                 {
                     Stopwatch sw = new Stopwatch();
                     sw.Start();
-                    int count;
+                    //int count;
 
-                    var paths = new NavigationPropertyPath<Role>[] {
-                        new NavigationPropertyPath<Role>(x => x.RoleUserMappingList, x => ((RoleUserMapping)x).User)
-                    };
+                    //var paths = new NavigationPropertyPath<Role>[] {
+                    //    new NavigationPropertyPath<Role>(x => x.RoleUserMappingList, x => ((RoleUserMapping)x).User)
+                    //};
 
-                    var test = _roleRepo.Query(x => true, x => x.ID, true, 1, 100, out count, paths);
+                    //var test = _roleRepo.Query(x => true, x => x.ID, true, 1, 100, out count, paths);
                     sw.Stop();
                     ViewBag.Times = sw.Elapsed.TotalSeconds;
                     return "ok";
                 });
-            //throw new Exception("手动抛异常");
-            //User xxx;
-            ////IocManager.Resolve<IRepository<User>>(a => xxx = a.Get(1));
-
-            //var user = _userRepo.Get(1);
-            //user.Mobile = "456";
-            //_userRepo.UpdateOnDemand(user);
-            //_logger.LogDebug("done");
-            //_logger.LogCritical("LogCritical");
-            //_logger.LogError("LogError");
-            //_logger.LogInformation("LogInformation");
-            //_logger.LogTrace("LogTrace");
-            //_logger.LogWarning("LogWarning");
             return View();
+        }
+
+        public async Task<IActionResult> GetTestData()
+        {
+
+            return await Task.Run<JsonResult>(() =>
+            {
+                var data = new List<object>() {
+                    new { Name="呵呵",Age=11,Gender="男" },
+                    new { Name="哈哈",Age=11,Gender="女" },
+                    new { Name="嘿嘿",Age=11,Gender="男" }
+                };
+                return Json(data);
+            });
         }
 
         public IActionResult About()

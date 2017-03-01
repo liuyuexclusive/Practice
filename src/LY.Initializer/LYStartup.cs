@@ -75,6 +75,7 @@ namespace LY.Initializer
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
             RegisterDaemon(_containerBuilder);
+
             _containerBuilder.Populate(services);
         }
     }

@@ -1,6 +1,8 @@
-﻿using LY.Initializer;
+﻿using System;
+using LY.Initializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace LY.Web
@@ -10,6 +12,11 @@ namespace LY.Web
         public Startup(IHostingEnvironment env) : base(env)
         {
 
+        }
+
+        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            return base.ConfigureServices(services);
         }
 
         public override void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
@@ -27,6 +34,7 @@ namespace LY.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            //route
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

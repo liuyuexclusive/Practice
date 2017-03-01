@@ -49,7 +49,8 @@ namespace LY.Api.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        [Route("diy3")]
+        public void DIY([FromBody]string value)
         {
         }
     }

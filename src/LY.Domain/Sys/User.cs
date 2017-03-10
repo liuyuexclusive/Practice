@@ -7,7 +7,7 @@ namespace LY.Domain.Sys
 {
     public class User : Entity
     {
-        [Required(ErrorMessage = "邮箱不能为空")]
+        [Required]
         public string Email { set; get; }
 
         /// <summary>

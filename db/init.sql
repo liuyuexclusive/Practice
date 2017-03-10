@@ -2,7 +2,8 @@
 SQLyog Enterprise - MySQL GUI v8.1 
 MySQL - 5.6.21 : Database - ly
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 /*!40101 SET SQL_MODE=''*/;
@@ -28,13 +29,13 @@ DROP TABLE IF EXISTS `sys_user`;
 
 CREATE TABLE `sys_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `account` archar(16) NOT NULL COMMENT '账号',
+  `email` VARCHAR(16) NOT NULL COMMENT '邮箱/账号',
   `password` varchar(255) DEFAULT NULL COMMENT '密码',
   `name` varchar(16) DEFAULT NULL COMMENT '名称',
   `mobile` varchar(16) DEFAULT NULL COMMENT '电话',
   `laston` datetime NULL COMMENT '最后登录时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UQ_sys_user_account` (`account`),
+  UNIQUE KEY `UQ_sys_user_email` (`email`),
   UNIQUE KEY `UQ_sys_user_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='用户表';
 

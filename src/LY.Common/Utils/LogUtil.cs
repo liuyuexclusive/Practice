@@ -13,7 +13,6 @@ namespace LY.Common
 
         public static ILogger Logger<T>()
         {
-
             if (_loggerFactory == null)
             {
                 _loggerFactory = new LoggerFactory();

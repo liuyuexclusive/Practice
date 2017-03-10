@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LY.Web {
+namespace LY.Web.Resources {
     using System;
     using System.Reflection;
     

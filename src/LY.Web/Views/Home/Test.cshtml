@@ -1,48 +1,21 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-<div id="app">
+﻿<div id="app">
+    <ly-table :columns="columns" :url="url"></ly-table>
     <ly-table :columns="columns" :url="url"></ly-table>
 </div>
 
 @section scripts{
     <script>
-        Vue.component("ly-table", {
-            props: ["columns", "url"],
-            template: '<table class="table table-bordered table-hover">\
-                        <thead><tr><th v-for="column in columns">{{column.title}}</th></tr></thead>\
-                        <tbody><tr v-for="row in rows"><td v-for="column in columns">{{row[column.name]}}</td></tr></tbody>\
-                       </table>',
-            computed: {
-                rows: function () {
-                    var result = [];
-                    $.ajax({
-                        url: this.url,
-                        async: false,
-                        data: {},
-                        success: function (data) {
-                            console.log(data);
-                            result = data;
-                        }
-                    });
-                    result.unshift({ name: "test", gender: "不男不女", age: 99 });
-                    return result;
-                }
-            }
-        });
-
         var app = new Vue({
             el: "#app",
             data: {
                 columns: [
                     { name: "name", title: "姓名" },
                     { name: "gender", title: "性别" },
-                    { name: "age", title: "年纪" }
+                    { name: "age", title: "年纪" },
+                    { name: "age", title: "年纪2" }
                 ],
                 url: "@Url.Action("GetTestData","Home")"
             }
         });
-
     </script>
 }

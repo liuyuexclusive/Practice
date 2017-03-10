@@ -20,16 +20,19 @@ namespace LY.Web.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Role> _roleRepo;
         private readonly ILogger<HomeController> _logger;
+        private readonly IRepository<User> _userRepo;
         public HomeController(
             ILogger<HomeController> logger,
             IUnitOfWork unitOfWork,
             IRepository<Role> roleRepo,
-            UserService userService
+            UserService userService,
+            IRepository<User> userRepo
             )
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _roleRepo = roleRepo;
+            _userRepo = userRepo;
         }
 
         public IActionResult Index()
@@ -40,35 +43,37 @@ namespace LY.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Test()
         {
-            var xxx = await Task.Run<string>(
-                () =>
-                {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    //int count;
+            //var xxx = await Task.Run<string>(
+            //    () =>
+            //    {
+            //        Stopwatch sw = new Stopwatch();
+            //        sw.Start();
+            //        int count;
 
-                    //var paths = new NavigationPropertyPath<Role>[] {
-                    //    new NavigationPropertyPath<Role>(x => x.RoleUserMappingList, x => ((RoleUserMapping)x).User)
-                    //};
+            //        var paths = new NavigationPropertyPath<Role>[] {
+            //            new NavigationPropertyPath<Role>(x => x.RoleUserMappingList, x => ((RoleUserMapping)x).User)
+            //        };
 
-                    //var test = _roleRepo.Query(x => true, x => x.ID, true, 1, 100, out count, paths);
-                    sw.Stop();
-                    ViewBag.Times = sw.Elapsed.TotalSeconds;
-                    return "ok";
-                });
+            //        var test = _roleRepo.Query(x => true, x => x.ID, true, 1, 100, out count, paths);
+
+            //        sw.Stop();
+            //        ViewBag.Times = sw.Elapsed.TotalSeconds;
+            //        return "ok";
+            //    });
             return View();
         }
 
         public async Task<IActionResult> GetTestData()
         {
-
             return await Task.Run<JsonResult>(() =>
             {
-                var data = new List<object>() {
-                    new { Name="呵呵",Age=11,Gender="男" },
-                    new { Name="哈哈",Age=11,Gender="女" },
-                    new { Name="嘿嘿",Age=11,Gender="男" }
-                };
+                var users = _userRepo.Query();
+                var data = users.Select(x => new
+                {
+                    Name = x.Name,
+                    Age = 11,
+                    Gender = "不男不女"
+                });
                 return Json(data);
             });
         }

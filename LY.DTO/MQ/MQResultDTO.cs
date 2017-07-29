@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace LY.Common.NetMQ
+﻿namespace LY.DTO
 {
     /// <summary>
     /// 返回结果对象

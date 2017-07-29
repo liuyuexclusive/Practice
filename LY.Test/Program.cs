@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using LY.Common.LYMQ;
+using LY.DTO;
+using System;
 
 namespace LY.Test
 {
@@ -10,27 +8,16 @@ namespace LY.Test
     {
         static void Main(string[] args)
         {
-            var list = new List<string>() { };
-            var xx = list.AsQueryable();
-            Console.WriteLine(xx.ElementType);
-            Console.WriteLine(xx.Expression);
-            Console.WriteLine(xx.Provider);
-            Console.WriteLine("Hello World!");
-            Console.Read();
-        }
-    }
 
-    public class MyQueryAble : IQueryable
-    {
-        public Type ElementType => throw new NotImplementedException();
-
-        public Expression Expression => throw new NotImplementedException();
-
-        public IQueryProvider Provider => throw new NotImplementedException();
-
-        public IEnumerator GetEnumerator()
-        {
-            throw new NotImplementedException();
+            LYMQ mq = new LYMQ();
+            while (true)
+            {
+                var key = Console.ReadKey();
+                for (int i = 0; i < 100000; i++)
+                {
+                    mq.Send("TestMQHandler", "Test", new TestMQParameter() { Name = $"张大庆{i}", Age = 30 });
+                }
+            }
         }
     }
 }

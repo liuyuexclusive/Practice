@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LY.Application\LY.Application.csproj" />
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
+    <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
     <ProjectReference Include="..\LY.Initializer\LY.Initializer.csproj" />
   </ItemGroup>
 

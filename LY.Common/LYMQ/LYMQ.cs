@@ -4,12 +4,11 @@ using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Text;
 using Newtonsoft.Json;
 using System.Reflection;
+using LY.DTO;
 
-namespace LY.Common.NetMQ
+namespace LY.Common.LYMQ
 {
     public class LYMQ
     {
@@ -22,9 +21,7 @@ namespace LY.Common.NetMQ
         /// </summary>
         public void StartServer()
         {
-            var parameterTypes = Assembly.GetEntryAssembly().ExportedTypes.Where(x => (typeof(IMQParameter)).IsAssignableFrom(x));
             var handlerTypes = Assembly.GetEntryAssembly().ExportedTypes.Where(x => (typeof(IMQHandler)).IsAssignableFrom(x));
-
             using (NetMQSocket serverSocket = new ResponseSocket())
             {
                 serverSocket.Bind(Address);
@@ -36,9 +33,9 @@ namespace LY.Common.NetMQ
                         var transfer = JsonConvert.DeserializeObject<MQSendDTO>(message);
 
                         var parameters = new List<object> { };
-                        if (!string.IsNullOrEmpty(transfer.ParameterContent) && !string.IsNullOrEmpty(transfer.ParameterTypeName))
+                        if (!string.IsNullOrEmpty(transfer.ParameterContent) && !string.IsNullOrEmpty(transfer.ParameterAssemblyQualifiedName))
                         {
-                            var parameterType = parameterTypes.FirstOrDefault(x => x.Name == transfer.ParameterTypeName);
+                            var parameterType = Type.GetType(transfer.ParameterAssemblyQualifiedName);
                             if (parameterType != null)
                             {
                                 var parameterObj = JsonConvert.DeserializeObject(transfer.ParameterContent, parameterType);
@@ -77,21 +74,22 @@ namespace LY.Common.NetMQ
             {
                 clientSocket.Connect(Address);
 
-                string parameterTypeName = string.Empty;
+                string parameterAssemblyQualifiedName = string.Empty;
                 string parameterContent = string.Empty;
                 if (parameterObj != null)
                 {
-                    parameterTypeName = parameterObj.GetType().Name;
+                    parameterAssemblyQualifiedName = parameterObj.GetType().AssemblyQualifiedName;
                     parameterContent = JsonConvert.SerializeObject(parameterObj);
                 }
                 MQSendDTO transfer = new MQSendDTO()
                 {
                     HandlerTypeName = handlerTypeName,
                     HandlerMethodName = handlerMethodName,
-                    ParameterTypeName = parameterTypeName,
+                    ParameterAssemblyQualifiedName = parameterAssemblyQualifiedName,
                     ParameterContent = parameterContent
                 };
-                clientSocket.SendFrame(JsonConvert.SerializeObject(transfer));
+                string strContent = JsonConvert.SerializeObject(transfer);
+                clientSocket.SendFrame(strContent);
 
                 MQResultDTO result = JsonConvert.DeserializeObject<MQResultDTO>(clientSocket.ReceiveFrameString());
                 return result;

@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LY.Domain\LY.Domain.csproj" />
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
+    <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
   </ItemGroup>
 
 </Project>

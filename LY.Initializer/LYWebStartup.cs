@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using LY.Common;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace LY.Initializer
 {
@@ -27,15 +28,6 @@ namespace LY.Initializer
             {
                 options.Filters.Add(typeof(ExceptionFilterAttribute));
             });
-            //redis
-            //services.AddSingleton<IDistributedCache>(
-            //    serviceProvider =>
-            //        new RedisCache(new RedisCacheOptions
-            //        {
-            //            Configuration = Configuration["Redis:Configuration"],
-            //            InstanceName = "LY:"
-            //        })
-            //);
             //services.AddSession();
             LYStartup startup = new LYStartup();
             return startup.Start(services);
@@ -48,7 +40,7 @@ namespace LY.Initializer
             app.UseVisitLogger();
             app.UseStaticFiles();
             //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
-            appLifetime.ApplicationStopped.Register(() => IocManager.Container.Dispose());
+            appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
         }
     }
 }

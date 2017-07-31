@@ -3,7 +3,7 @@ using Autofac;
 
 namespace LY.Common
 {
-    public static class IocManager
+    public static class IOCManager
     {
         private static readonly ContainerBuilder _builder = new ContainerBuilder();
         private static IContainer _container = null;

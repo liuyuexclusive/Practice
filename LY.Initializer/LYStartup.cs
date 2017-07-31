@@ -4,6 +4,7 @@ using LY.Common;
 using LY.Domain;
 using LY.EFRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace LY.Initializer
 
         public LYStartup()
         {
-            _containerBuilder = IocManager.ContainerBuilder;
+            _containerBuilder = IOCManager.ContainerBuilder;
         }
 
         #region private
@@ -54,8 +55,7 @@ namespace LY.Initializer
         }
         #endregion
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider Start(IServiceCollection services)
+        private void StartCommon(IServiceCollection services, Action action = null)
         {
             services.AddDbContext<LYDbContext>();
 
@@ -63,20 +63,32 @@ namespace LY.Initializer
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
 
+            //redis
+            services.AddSingleton<IDistributedCache>(
+                serviceProvider =>
+                    new RedisCache(new RedisCacheOptions
+                    {
+                        Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
+                        InstanceName = "LY:"
+                    })
+            );
+            if (action != null)
+            {
+                action.Invoke();
+            }
             _containerBuilder.Populate(services);
-            return new AutofacServiceProvider(IocManager.Container);
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public IServiceProvider Start(IServiceCollection services)
+        {
+            StartCommon(services);
+            return new AutofacServiceProvider(IOCManager.Container);
         }
 
         public void StartDaemon(IServiceCollection services)
         {
-            services.AddDbContext<LYDbContext>();
-
-            //autofac
-            RegisterRepository(_containerBuilder);
-            RegisterService(_containerBuilder);
-            RegisterDaemon(_containerBuilder);
-
-            _containerBuilder.Populate(services);
+            StartCommon(services, () => { RegisterDaemon(_containerBuilder); });
         }
     }
 }

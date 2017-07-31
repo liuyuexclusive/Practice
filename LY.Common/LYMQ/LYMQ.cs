@@ -12,10 +12,6 @@ namespace LY.Common.LYMQ
 {
     public class LYMQ
     {
-        public LYMQ()
-        {
-        }
-
         /// <summary>
         /// 开始服务
         /// </summary>

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Welcome To LY.Web</h1>
+<h3><span id="spnTime"></span></h3>
+
+<div id="app">
+    <span v-once>{{ message }}</span>
+</div>
+
+@section scripts{
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                message: "abc"
+            }
+        });
+        app.message = "cde";
+
+
+        $(function () {
+            setInterval(function () {
+                var date = new Date();
+                $("#spnTime").text(date.toLocaleDateString() + date.toLocaleTimeString());
+            }, 1000);
+        })
+    </script>
+}

@@ -10,7 +10,7 @@ using LY.DTO;
 
 namespace LY.Common.LYMQ
 {
-    public class LYMQ
+    public class LYMQ : IMQ
     {
         /// <summary>
         /// 开始服务
@@ -52,7 +52,7 @@ namespace LY.Common.LYMQ
                     catch (Exception ex)
                     {
                         serverSocket.SendFrame(JsonConvert.SerializeObject(new MQResultDTO() { Status = MQResultStatus.Fail, Msg = ex.Message }));
-                        LogUtil.Logger<LYMQ>().LogError(ex.ToString());
+                        LogUtil.Logger<IMQ>().LogError(ex.ToString());
                     }
                 }
             }
@@ -99,7 +99,8 @@ namespace LY.Common.LYMQ
         {
             get
             {
-                return ConfigUtil.ConfigurationRoot["LYMQ:Address"];
+                var xx = ConfigUtil.ConfigurationRoot["LYMQ:Address"];
+                return xx;
             }
         }
     }

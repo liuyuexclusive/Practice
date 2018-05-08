@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using LY.Common;
+using LY.Common.LYMQ;
 using LY.Domain;
 using LY.EFRepository;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,12 @@ namespace LY.Initializer
                 .AsSelf();
         }
 
+
+        private void RegisterCommon(ContainerBuilder builder)
+        {
+            builder.RegisterType<LYMQ>().AsImplementedInterfaces();
+        }
+
         private void RegisterDaemon(ContainerBuilder builder)
         {
             var assembly = Assembly.Load(new AssemblyName("LY.Daemon"));
@@ -63,6 +70,7 @@ namespace LY.Initializer
             //autofac
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
+            RegisterCommon(_containerBuilder);
             if (action != null)
             {
                 action.Invoke();

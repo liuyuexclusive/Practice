@@ -1,21 +1,33 @@
-﻿<div id="app">
+﻿<input type="button" onclick="query()" value="Query" />
+
+<div id="app">
     <ly-table :columns="columns" :url="url"></ly-table>
     <ly-table :columns="columns" :url="url"></ly-table>
 </div>
 
+
+
+@*<div id="lyLoading">
+        <div class="loading">loading......</div>
+        <div class="screen-mask"></div>
+    </div>*@
+
 @section scripts{
-    <script>
-        var app = new Vue({
-            el: "#app",
-            data: {
-                columns: [
-                    { name: "name", title: "姓名" },
-                    { name: "gender", title: "性别" },
-                    { name: "age", title: "年纪" },
-                    { name: "age", title: "年纪2" }
-                ],
-                url: "@Url.Action("GetTestData","Home")"
-            }
-        });
-    </script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            columns: [
+                { name: "name", title: "姓名" },
+                { name: "gender", title: "性别" },
+                { name: "age", title: "年纪" },
+                { name: "age", title: "年纪2" }
+            ],
+            url: "@Url.Action("GetTestData","Home")"
+        }
+    });
+    function query() {
+        console.log(app);
+    }
+</script>
 }

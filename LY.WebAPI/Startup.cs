@@ -50,7 +50,7 @@ namespace LY.WebAPI
             base.Configure(app, appLifetime);//must put in the front
             // swagger ui
             app.UseSwagger();
-            app.UseSwaggerUi();
+            app.UseSwaggerUi("swagger");
             app.UseMvc();
         }
     }

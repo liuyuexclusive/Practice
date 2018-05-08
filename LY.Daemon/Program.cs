@@ -17,8 +17,8 @@ namespace LY.Daemon
             try
             {
                 Console.WriteLine("开始启动监听服务");
-                LYMQ lyMQ = new LYMQ();
-                lyMQ.StartServer();
+                IMQ mq = new LYMQ();
+                mq.StartServer();
             }
             catch (Exception ex)
             {

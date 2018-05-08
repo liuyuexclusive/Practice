@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    background-color: #ffffff;
 }
 
 /* Wrapping element */
@@ -35,4 +36,22 @@ textarea {
   .carousel-caption {
     display: none
   }
+}
+
+.loading {
+    z-index: 10000;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+.screen-mask {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background-color: lightgray;
+    opacity: 0.4;
 }

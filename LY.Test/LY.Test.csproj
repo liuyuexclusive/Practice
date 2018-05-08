@@ -6,12 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LY.Application\LY.Application.csproj" />
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
-    <ProjectReference Include="..\LY.Domain\LY.Domain.csproj" />
-    <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
-    <ProjectReference Include="..\LY.EFRepository\LY.EFRepository.csproj" />
-    <ProjectReference Include="..\LY.Initializer\LY.Initializer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

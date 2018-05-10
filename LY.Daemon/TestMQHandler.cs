@@ -5,9 +5,11 @@ namespace LY.Daemon
 {
     public class TestMQHandler : IMQHandler
     {
-        public void Test(TestMQParameter param)
+        public TestMQResultDTO Test(TestMQParameter param)
         {
-            Console.WriteLine($"成功了，我叫{param.Name},我今年{param.Age}岁");
+            string result = $"成功了，我叫{param.Name},我今年{param.Age}岁";
+            Console.WriteLine(result);
+            return new TestMQResultDTO() { ReturnMsg = result };
         }
     }
 }

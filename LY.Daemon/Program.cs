@@ -3,6 +3,7 @@ using LY.Common.LYMQ;
 using LY.Initializer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 

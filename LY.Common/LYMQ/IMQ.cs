@@ -8,6 +8,7 @@ namespace LY.Common.LYMQ
     public interface IMQ
     {
         void StartServer();
+        T Send<T>(string handlerTypeName, string handlerMethodName, object parameterObj = null) where T : MQResultDTO;
         MQResultDTO Send(string handlerTypeName, string handlerMethodName, object parameterObj = null);
     }
 }

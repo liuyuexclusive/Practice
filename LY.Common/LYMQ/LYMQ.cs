@@ -23,10 +23,23 @@ namespace LY.Common.LYMQ
                 serverSocket.Bind(Address);
                 while (true)
                 {
+                    string message = serverSocket.ReceiveFrameString();
+                    object returnObj= null;
                     try
                     {
-                        string message = serverSocket.ReceiveFrameString();
                         var transfer = JsonConvert.DeserializeObject<MQSendDTO>(message);
+
+                        var handlerType = handlerTypes.FirstOrDefault(x => x.Name == transfer.HandlerTypeName);
+                        if (handlerType == null)
+                        {
+                            throw new Exception($"无法找到处理类{transfer.HandlerTypeName}");
+                        }
+
+                        var method = handlerType.GetMethod(transfer.HandlerMethodName);
+                        if (method == null)
+                        {
+                            throw new Exception($"处理类{transfer.HandlerTypeName}缺少方法{transfer.HandlerMethodName}");
+                        }
 
                         var parameters = new List<object> { };
                         if (!string.IsNullOrEmpty(transfer.ParameterContent) && !string.IsNullOrEmpty(transfer.ParameterAssemblyQualifiedName))
@@ -42,17 +55,28 @@ namespace LY.Common.LYMQ
                             }
                         }
 
-                        var handlerType = handlerTypes.FirstOrDefault(x => x.Name == transfer.HandlerTypeName);
-                        if (handlerType != null && !string.IsNullOrEmpty(transfer.HandlerMethodName))
+                        returnObj = method.Invoke(Activator.CreateInstance(handlerType), parameters.ToArray());
+
+                        if (returnObj != null)
                         {
-                            handlerType.GetMethod(transfer.HandlerMethodName).Invoke(Activator.CreateInstance(handlerType), parameters.ToArray());
+                            returnObj.GetType().GetProperty("Status").SetValue(returnObj, MQResultStatus.Sucess);
                         }
-                        serverSocket.SendFrame(JsonConvert.SerializeObject(new MQResultDTO() { Status = MQResultStatus.Sucess, Msg = "OK" }));
+                        else
+                        {
+                            returnObj = new MQResultDTO()
+                            {
+                                Status = MQResultStatus.Sucess
+                            };
+                        }
                     }
                     catch (Exception ex)
                     {
-                        serverSocket.SendFrame(JsonConvert.SerializeObject(new MQResultDTO() { Status = MQResultStatus.Fail, Msg = ex.Message }));
-                        LogUtil.Logger<IMQ>().LogError(ex.ToString());
+                        returnObj = new MQResultDTO() { Status = MQResultStatus.Fail, Msg = ex.Message };
+                    }
+                    finally
+                    {
+                        serverSocket.Return(returnObj);
+                        LogUtil.Logger<LYMQ>().LogError(JsonConvert.SerializeObject(returnObj));
                     }
                 }
             }
@@ -64,7 +88,7 @@ namespace LY.Common.LYMQ
         /// <param name="handlerTypeName">类名</param>
         /// <param name="handlerMethodName">方法名</param>
         /// <param name="parameterObj">参数对象</param>
-        public MQResultDTO Send(string handlerTypeName, string handlerMethodName, object parameterObj = null)
+        public T Send<T>(string handlerTypeName, string handlerMethodName, object parameterObj = null) where T : MQResultDTO
         {
             using (NetMQSocket clientSocket = new RequestSocket())
             {
@@ -87,9 +111,20 @@ namespace LY.Common.LYMQ
                 string strContent = JsonConvert.SerializeObject(transfer);
                 clientSocket.SendFrame(strContent);
 
-                MQResultDTO result = JsonConvert.DeserializeObject<MQResultDTO>(clientSocket.ReceiveFrameString());
+                T result = JsonConvert.DeserializeObject<T>(clientSocket.ReceiveFrameString());
                 return result;
             }
+        }
+
+        /// <summary>
+        /// 发送
+        /// </summary>
+        /// <param name="handlerTypeName">类名</param>
+        /// <param name="handlerMethodName">方法名</param>
+        /// <param name="parameterObj">参数对象</param>
+        public MQResultDTO Send(string handlerTypeName, string handlerMethodName, object parameterObj = null)
+        {
+            return Send<MQResultDTO>(handlerTypeName, handlerMethodName, parameterObj);
         }
 
         /// <summary>
@@ -102,6 +137,14 @@ namespace LY.Common.LYMQ
                 var xx = ConfigUtil.ConfigurationRoot["LYMQ:Address"];
                 return xx;
             }
+        }
+    }
+
+    public static class LYMQExtension
+    {
+        public static void Return(this NetMQSocket serverSocket,object obj)
+        {
+            serverSocket.SendFrame(JsonConvert.SerializeObject(obj));
         }
     }
 }

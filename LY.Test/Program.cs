@@ -12,7 +12,7 @@ namespace LY.Test
             while (true)
             {
                 Console.ReadKey();
-                mq.Send("TestMQHandler", "Test", new TestMQParameter() { Name = "hh", Age = 89 });
+                TestMQResultDTO xx = mq.Send<TestMQResultDTO>("TestMQHandler", "Test", new TestMQParameter() { Name = "hh", Age = 89 });
             }
         }
     }

@@ -1,6 +1,6 @@
-﻿namespace LY.DTO
+﻿namespace LY.Common.LYMQ
 {
-    public class MQSendDTO
+    public class MQSend
     {
         /// <summary>
         /// 执行类名

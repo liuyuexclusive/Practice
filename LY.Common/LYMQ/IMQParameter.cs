@@ -1,4 +1,4 @@
-﻿namespace LY.DTO
+﻿namespace LY.Common.LYMQ
 {
     public interface IMQParameter
     {

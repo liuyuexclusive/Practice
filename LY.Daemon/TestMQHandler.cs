@@ -1,4 +1,5 @@
-﻿using LY.DTO;
+﻿using LY.Common.LYMQ;
+using LY.DTO;
 using System;
 
 namespace LY.Daemon

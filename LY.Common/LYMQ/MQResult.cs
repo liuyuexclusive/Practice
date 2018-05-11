@@ -1,9 +1,9 @@
-﻿namespace LY.DTO
+﻿namespace LY.Common.LYMQ
 {
     /// <summary>
     /// 返回结果对象
     /// </summary>
-    public class MQResultDTO
+    public class MQResult
     {
         /// <summary>
         /// 返回状态

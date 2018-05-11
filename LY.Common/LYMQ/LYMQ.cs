@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Reflection;
-using LY.DTO;
 
 namespace LY.Common.LYMQ
 {
@@ -27,7 +26,7 @@ namespace LY.Common.LYMQ
                     object returnObj= null;
                     try
                     {
-                        var transfer = JsonConvert.DeserializeObject<MQSendDTO>(message);
+                        var transfer = JsonConvert.DeserializeObject<MQSend>(message);
 
                         var handlerType = handlerTypes.FirstOrDefault(x => x.Name == transfer.HandlerTypeName);
                         if (handlerType == null)
@@ -63,7 +62,7 @@ namespace LY.Common.LYMQ
                         }
                         else
                         {
-                            returnObj = new MQResultDTO()
+                            returnObj = new MQResult()
                             {
                                 Status = MQResultStatus.Sucess
                             };
@@ -71,11 +70,11 @@ namespace LY.Common.LYMQ
                     }
                     catch (Exception ex)
                     {
-                        returnObj = new MQResultDTO() { Status = MQResultStatus.Fail, Msg = ex.Message };
+                        returnObj = new MQResult() { Status = MQResultStatus.Fail, Msg = ex.Message };
                     }
                     finally
                     {
-                        serverSocket.Return(returnObj);
+                        serverSocket.SendFrame(JsonConvert.SerializeObject(returnObj));
                         LogUtil.Logger<LYMQ>().LogError(JsonConvert.SerializeObject(returnObj));
                     }
                 }
@@ -88,7 +87,7 @@ namespace LY.Common.LYMQ
         /// <param name="handlerTypeName">类名</param>
         /// <param name="handlerMethodName">方法名</param>
         /// <param name="parameterObj">参数对象</param>
-        public T Send<T>(string handlerTypeName, string handlerMethodName, object parameterObj = null) where T : MQResultDTO
+        public T Send<T>(string handlerTypeName, string handlerMethodName, object parameterObj = null) where T : MQResult
         {
             using (NetMQSocket clientSocket = new RequestSocket())
             {
@@ -101,7 +100,7 @@ namespace LY.Common.LYMQ
                     parameterAssemblyQualifiedName = parameterObj.GetType().AssemblyQualifiedName;
                     parameterContent = JsonConvert.SerializeObject(parameterObj);
                 }
-                MQSendDTO transfer = new MQSendDTO()
+                MQSend transfer = new MQSend()
                 {
                     HandlerTypeName = handlerTypeName,
                     HandlerMethodName = handlerMethodName,
@@ -122,9 +121,9 @@ namespace LY.Common.LYMQ
         /// <param name="handlerTypeName">类名</param>
         /// <param name="handlerMethodName">方法名</param>
         /// <param name="parameterObj">参数对象</param>
-        public MQResultDTO Send(string handlerTypeName, string handlerMethodName, object parameterObj = null)
+        public MQResult Send(string handlerTypeName, string handlerMethodName, object parameterObj = null)
         {
-            return Send<MQResultDTO>(handlerTypeName, handlerMethodName, parameterObj);
+            return Send<MQResult>(handlerTypeName, handlerMethodName, parameterObj);
         }
 
         /// <summary>
@@ -134,17 +133,8 @@ namespace LY.Common.LYMQ
         {
             get
             {
-                var xx = ConfigUtil.ConfigurationRoot["LYMQ:Address"];
-                return xx;
+                return ConfigUtil.ConfigurationRoot["LYMQ:Address"];
             }
-        }
-    }
-
-    public static class LYMQExtension
-    {
-        public static void Return(this NetMQSocket serverSocket,object obj)
-        {
-            serverSocket.SendFrame(JsonConvert.SerializeObject(obj));
         }
     }
 }

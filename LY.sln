@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.Daemon", "LY.Daemon\LY.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.WebAPI", "LY.WebAPI\LY.WebAPI.csproj", "{CCEF94EB-2667-4791-A216-086C73016B92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LY.Test", "LY.Test\LY.Test.csproj", "{42D46075-9CB0-4D46-A4C2-EC6EFD75255F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.Test", "LY.Test\LY.Test.csproj", "{42D46075-9CB0-4D46-A4C2-EC6EFD75255F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

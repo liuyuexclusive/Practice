@@ -7,24 +7,37 @@ using LY.Domain.Sys;
 using LY.Common;
 using Microsoft.Extensions.Logging;
 using LY.Domain;
+using Microsoft.AspNetCore.Cors;
 
 namespace LY.WebAPI.Controllers
 {
     [Route("test")]
+    [EnableCors("cors")]
     public class TestController : Controller
     {
         private readonly IRepository<Role> _roleRepo;
         private readonly ILogger<TestController> _logger;
-        public TestController(IRepository<Role> roleRepo, ILoggerFactory logger)
+        private readonly IRepository<User> _userRepo;
+        public TestController(IRepository<Role> roleRepo, ILoggerFactory logger, IRepository<User> userRepo)
         {
             _roleRepo = roleRepo;
             _logger = logger.CreateLogger<TestController>();
+            _userRepo = userRepo;
         }
 
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("GetTestData")]
+        public async Task<object> GetTestData()
         {
-            return new string[] { "hello" };
+            return await Task.Run<object>(() =>
+            {
+                return _userRepo.Queryable.Select(x => new
+                {
+                    Name = x.Name,
+                    Age = 11,
+                    Gender = "不男不女"
+                }).ToList();
+            });
         }
 
         [HttpGet]

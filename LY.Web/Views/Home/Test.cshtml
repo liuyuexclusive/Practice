@@ -1,6 +1,4 @@
-﻿<input type="button" onclick="query()" value="Query" />
-
-<div id="app">
+﻿<div id="app">
     <ly-table :columns="columns" :url="url"></ly-table>
     <ly-table :columns="columns" :url="url"></ly-table>
 </div>
@@ -10,11 +8,19 @@
 @*<div id="lyLoading">
         <div class="loading">loading......</div>
         <div class="screen-mask"></div>
-    </div>*@
+</div>*@
 
 @section scripts{
+
 <script>
-    var app = new Vue({
+    $.ajax({
+        url: "http://localhost:58977/api/test/diy",
+        success: function (data) {
+            console.log(data);
+        }
+    });
+
+    @*var app = new Vue({
         el: "#app",
         data: {
             columns: [
@@ -25,9 +31,6 @@
             ],
             url: "@Url.Action("GetTestData","Home")"
         }
-    });
-    function query() {
-        console.log(app);
-    }
+    });*@
 </script>
 }

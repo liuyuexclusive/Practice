@@ -68,8 +68,7 @@ namespace LY.Web.Controllers
         {
             return await Task.Run<JsonResult>(() =>
             {
-                var users = _userRepo.Query();
-                var data = users.Select(x => new
+                var data = _userRepo.Queryable.Select(x => new
                 {
                     Name = x.Name,
                     Age = 11,

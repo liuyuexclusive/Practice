@@ -41,6 +41,11 @@ namespace LY.WebAPI
                 options.DescribeAllEnumsAsStrings();
             });
 
+            //添加cors服务
+            services.AddCors(options =>
+              options.AddPolicy("cors", p => p.WithOrigins("http://localhost:60651").AllowAnyMethod().AllowAnyHeader())
+            );
+
             return base.ConfigureServices(services);
         }
 
@@ -52,6 +57,7 @@ namespace LY.WebAPI
             app.UseSwagger();
             app.UseSwaggerUi("swagger");
             app.UseMvc();
+            app.UseCors("cors");
         }
     }
 }

@@ -25,7 +25,7 @@ namespace LY.Initializer
         #region private
         private void RegisterRepository(ContainerBuilder builder)
         {
-            var assembly = Assembly.Load(new AssemblyName("LY.EFRepository"));
+            var assembly = Assembly.Load(new AssemblyName("LY.EFRepository")); 
             var types = assembly.ExportedTypes;
 
             builder.RegisterType(types.FirstOrDefault(t => t.Name.Equals("LYDbContext"))).As<DbContext>().InstancePerLifetimeScope();
@@ -45,7 +45,6 @@ namespace LY.Initializer
                 .Where(t => t.Name.EndsWith("Service"))
                 .AsSelf();
         }
-
 
         private void RegisterCommon(ContainerBuilder builder)
         {

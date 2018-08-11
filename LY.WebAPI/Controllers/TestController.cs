@@ -8,6 +8,7 @@ using LY.Common;
 using Microsoft.Extensions.Logging;
 using LY.Domain;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.EntityFrameworkCore;
 
 namespace LY.WebAPI.Controllers
 {

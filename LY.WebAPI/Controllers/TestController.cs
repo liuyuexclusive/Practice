@@ -9,21 +9,18 @@ using Microsoft.Extensions.Logging;
 using LY.Domain;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
+using LY.Service.Sys;
 
 namespace LY.WebAPI.Controllers
 {
     [Route("test")]
     [EnableCors("cors")]
-    public class TestController : Controller
+    public class TestController : ControllerBase
     {
-        private readonly IRepository<Role> _roleRepo;
-        private readonly ILogger<TestController> _logger;
-        private readonly IRepository<User> _userRepo;
-        public TestController(IRepository<Role> roleRepo, ILoggerFactory logger, IRepository<User> userRepo)
+        public ILogger<TestController> Logger { get; set; }
+        public UserService _userService { get; set; }
+        public TestController()
         {
-            _roleRepo = roleRepo;
-            _logger = logger.CreateLogger<TestController>();
-            _userRepo = userRepo;
         }
 
         [HttpGet]
@@ -32,12 +29,7 @@ namespace LY.WebAPI.Controllers
         {
             return await Task.Run<object>(() =>
             {
-                return _userRepo.Queryable.Select(x => new
-                {
-                    Name = x.Name,
-                    Age = 11,
-                    Gender = "不男不女"
-                }).ToList();
+                return _userService.GetUser();
             });
         }
 
@@ -45,7 +37,7 @@ namespace LY.WebAPI.Controllers
         [Route("diy")]
         public IEnumerable<string> DIY()
         {
-            _logger.LogInformation("测试成功了哈哈哈");
+            Logger.LogInformation("测试成功了哈哈哈");
             return new string[] { "value1", "value2" };
         }
 

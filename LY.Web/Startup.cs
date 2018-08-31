@@ -1,27 +1,68 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using LY.Common;
 using LY.Initializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace LY.Web
 {
-    public class Startup : LYWebStartup
+    public class Startup
     {
-        public Startup(IHostingEnvironment env) : base(env)
-        {
+        /// <summary>
+        /// HostingEnvironment
+        /// </summary>
+        public IHostingEnvironment HostingEnvironment { get; }
 
+
+        public Startup(IHostingEnvironment env)  
+        {
+            HostingEnvironment = env;
         }
 
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            return base.ConfigureServices(services);
+            //locallization
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.Configure<RequestLocalizationOptions>(opts =>
+            {
+                var supportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("zh-CN")
+                };
+                opts.SupportedCultures = supportedCultures;
+                opts.SupportedUICultures = supportedCultures;
+            });
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ExceptionFilterAttribute));
+            })
+            .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+            //services.AddSession();
+            LYStartup startup = new LYStartup();
+            return startup.StartWeb(services);
         }
 
-        public override void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, appLifetime);//must put in the front
+            //must put in the front
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            app.UseVisitLogger();
+            app.UseStaticFiles();
+            //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
+            appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
+
+            //locallization
+            app.UseRequestLocalization(app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value);
 
             //error page
             if (HostingEnvironment.IsDevelopment())

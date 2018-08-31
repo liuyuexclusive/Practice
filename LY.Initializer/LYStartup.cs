@@ -28,38 +28,42 @@ namespace LY.Initializer
             var assembly = Assembly.Load(new AssemblyName("LY.EFRepository")); 
             var types = assembly.ExportedTypes;
 
-            builder.RegisterType(types.FirstOrDefault(t => t.Name.Equals("LYDbContext"))).As<DbContext>().InstancePerLifetimeScope();
+            builder
+                .RegisterType(types.FirstOrDefault(t => t.Name.Equals("LYDbContext")))
+                .As<DbContext>()
+                .InstancePerLifetimeScope()
+                .PropertiesAutowired();
 
-            builder.RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("Repository`1"))).As(typeof(IRepository<>));
+            builder
+                .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("Repository`1")))
+                .As(typeof(IRepository<>))
+                .PropertiesAutowired();
 
-            builder.RegisterAssemblyTypes(assembly)
+            builder
+                .RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.Equals("UnitOfWork") || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
-                .AsImplementedInterfaces();
+                .AsImplementedInterfaces()
+                .PropertiesAutowired();
         }
 
         private void RegisterService(ContainerBuilder builder)
         {
             var assembly = Assembly.Load(new AssemblyName("LY.Application"));
 
-            builder.RegisterAssemblyTypes(assembly)
+            builder
+                .RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.EndsWith("Service"))
-                .AsSelf();
+                .AsSelf()
+                .PropertiesAutowired();
         }
 
         private void RegisterCommon(ContainerBuilder builder)
-        {
-            builder.RegisterType<LYMQ>().AsImplementedInterfaces();
+        { 
+            builder
+                .RegisterType<LYMQ>()
+                .AsImplementedInterfaces()
+                .PropertiesAutowired();
         }
-
-        private void RegisterDaemon(ContainerBuilder builder)
-        {
-            var assembly = Assembly.Load(new AssemblyName("LY.Daemon"));
-
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.Equals("Test"))
-                .AsSelf();
-        }
-        #endregion
 
         private void StartCommon(IServiceCollection services, Action action = null)
         {
@@ -67,9 +71,10 @@ namespace LY.Initializer
             services.AddDbContext<LYDbContext>();
 
             //autofac
+            RegisterCommon(_containerBuilder);
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
-            RegisterCommon(_containerBuilder);
+            
             if (action != null)
             {
                 action.Invoke();
@@ -86,9 +91,16 @@ namespace LY.Initializer
             );
             _containerBuilder.Populate(services);
         }
+        #endregion
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider Start(IServiceCollection services)
+
+        public IServiceProvider StartWebAPI(IServiceCollection services)
+        {
+            StartCommon(services);
+            return new AutofacServiceProvider(IOCManager.Container);
+        }
+
+        public IServiceProvider StartWeb(IServiceCollection services)
         {
             StartCommon(services);
             return new AutofacServiceProvider(IOCManager.Container);
@@ -96,7 +108,15 @@ namespace LY.Initializer
 
         public void StartDaemon(IServiceCollection services)
         {
-            StartCommon(services, () => { RegisterDaemon(_containerBuilder); });
+            StartCommon(services, () => {
+
+                var assembly = Assembly.Load(new AssemblyName("LY.Daemon"));
+
+                _containerBuilder.RegisterAssemblyTypes(assembly)
+                    .Where(t => t.Name.Equals("Test"))
+                    .AsSelf()
+                    .PropertiesAutowired();
+            });
         }
     }
 }

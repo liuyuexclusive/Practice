@@ -12,7 +12,7 @@ using LY.Web.Models;
 namespace WebApplication2.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : LY.Initializer.ControllerBase
     {
         private readonly ILogger _logger;
 

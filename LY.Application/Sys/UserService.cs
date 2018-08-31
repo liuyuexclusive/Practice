@@ -10,12 +10,11 @@ namespace LY.Service.Sys
 {
     public class UserService
     {
-        private readonly IRepository<User> _userRepo;
-        private readonly ILogger<UserService> _logger;
-        public UserService(IRepository<User> userRepo, ILogger<UserService> logger)
+        public ILogger<UserService> Logger { get; set; }
+        public IRepository<User> UserRepo { get; set; }
+        public UserService()
         {
-            _userRepo = userRepo;
-            _logger = logger;
+
         }
         
         public void Register(User user)
@@ -27,7 +26,17 @@ namespace LY.Service.Sys
         }
         public void Test()
         {
-            _logger.LogDebug("测试service记日志成功");
+            Logger.LogDebug("测试service记日志成功");
+        }
+
+        public object GetUser()
+        {
+            return UserRepo.Queryable.Select(x => new
+            {
+                Name = x.Name,
+                Age = 11,
+                Gender = "不男不女"
+            }).ToList();
         }
     }
 }

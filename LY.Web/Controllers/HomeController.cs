@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace LY.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : LY.Initializer.ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Role> _roleRepo;

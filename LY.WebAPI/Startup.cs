@@ -10,20 +10,26 @@ using LY.Common;
 
 namespace LY.WebAPI
 {
-    public class Startup : LYWebStartup
+    public class Startup
     {
-        public Startup(IHostingEnvironment env) : base(env)
-        {
+        /// <summary>
+        /// HostingEnvironment
+        /// </summary>
+        public IHostingEnvironment HostingEnvironment { get; }
 
+        public Startup(IHostingEnvironment env)
+        {
+            HostingEnvironment = env;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public override IServiceProvider ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //全局路由设置
+            //globle route prefix
             services.AddMvc(options =>
-            {   // 路由参数在此处仍然是有效的，比如添加一个版本号
+            {    
                 options.UseCentralRoutePrefix(new RouteAttribute("api"));
+                options.Filters.Add(typeof(ExceptionFilterAttribute));
             });
 
             //swagger ui
@@ -46,13 +52,21 @@ namespace LY.WebAPI
               options.AddPolicy("cors", p => p.WithOrigins("http://localhost:60651").AllowAnyMethod().AllowAnyHeader())
             );
 
-            return base.ConfigureServices(services);
+            //services.AddSession();
+            LYStartup startup = new LYStartup();
+            return startup.StartWebAPI(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public override void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
         {
-            base.Configure(app, appLifetime);//must put in the front
+            //must put in the front
+            //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            app.UseVisitLogger();
+            app.UseStaticFiles();
+            //app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(30) });
+            appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
+
             // swagger ui
             app.UseSwagger();
             app.UseSwaggerUi("swagger");

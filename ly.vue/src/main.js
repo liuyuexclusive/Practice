@@ -5,13 +5,42 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
+
 Vue.use(ElementUI)
 
+
 import i18n from './i18n/i18n'
+import {store} from '@/vuex'
 
 Vue.config.productionTip = false
 
+
+
 /* eslint-disable no-new */
+
+router.beforeEach((to, from, next) => {
+  //alert(to.name)
+  if (to.matched.some(record => record.meta.requireAuth)){  // 判断该路由是否需要登录权限
+    if (localStorage.token) {  // 判断当前的token是否存在 ； 登录存入的token
+      store.state.currentMenuName=to.name;
+      next();
+    }
+    else {
+      next({
+        path: '/',
+        query: {redirect: to.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+      })
+    }
+  }
+  else {
+    store.state.currentMenuName=to.name;
+    next();
+  }
+}
+)
+
+
 new Vue({
   el: '#app',
   router,

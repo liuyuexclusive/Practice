@@ -17,9 +17,9 @@ namespace LY.EFRepository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Role>().ToTable("sys_role");
-            modelBuilder.Entity<User>().ToTable("sys_user");
-            modelBuilder.Entity<RoleUserMapping>().ToTable("sys_roleusermapping");
+            modelBuilder.Entity<Sys_Role>().ToTable("sys_role");
+            modelBuilder.Entity<Sys_User>().ToTable("sys_user");
+            modelBuilder.Entity<Sys_RoleUserMapping>().ToTable("sys_roleusermapping");
             base.OnModelCreating(modelBuilder);
         }
     }

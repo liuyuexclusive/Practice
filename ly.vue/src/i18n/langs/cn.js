@@ -1,6 +1,7 @@
 import enLocale from 'element-ui/lib/locale/lang/zh-CN'
 const cn = {
   message: {
+    'websitename':'ly.web',
     'hello':'你好',
     'user':'用户',
     'add':'新增',

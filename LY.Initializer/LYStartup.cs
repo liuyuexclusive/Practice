@@ -80,15 +80,15 @@ namespace LY.Initializer
                 action.Invoke();
             }
 
-            //redis
-            services.AddSingleton<IDistributedCache>(
-                serviceProvider =>
-                    new RedisCache(new RedisCacheOptions
-                    {
-                        Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
-                        InstanceName = "LY:"
-                    })
-            );
+            ////redis
+            //services.AddSingleton<IDistributedCache>(
+            //    serviceProvider =>
+            //        new RedisCache(new RedisCacheOptions
+            //        {
+            //            Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
+            //            InstanceName = "LY:"
+            //        })
+            //);
             _containerBuilder.Populate(services);
         }
         #endregion

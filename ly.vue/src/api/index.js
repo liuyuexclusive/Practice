@@ -1,36 +1,46 @@
 import axios from "axios";
+import { Message, MessageBox } from "element-ui";
 let base = "http://localhost:58976/";
 
-let authorization = { Authorization: "Bearer " + localStorage.token };
-
-var request = (url, method, params) => {
+export const request = (url, method, params) => {
     var config = {
-        url: `${base}`+ url,
+        url: `${base}` + url,
         method: method,
         headers: { Authorization: "Bearer " + localStorage.token }
     }
+
     if (method === "get") {
         config.params = params
-    }
-    else {
+    } else {
         config.data = params
     }
 
-    return axios(config).then(data => {
-        return data.data;
-    }).catch(error => {
-        if (error.response.status === 401) {
-            alert("登录失效，请重新登录");
-            localStorage.removeItem("token");
-            window.location.href = "http://" + window.location.host + "/#/"
-        }
-        return error;
-    });
+    return axios(config)
+        .then(data => {
+            var result = data.data;
+            if (!result.Success) {
+                Message({ message: result.Message, type: "error" })
+            } else {
+                if (result.Message && result.Message != "") {
+                    Message({ message: result.Message, type: "success" })
+                }
+                return result;
+            }
+        })
+        .catch(error => {
+            switch (error.response.status) {
+                case 401:
+                    MessageBox.alert(`登录失效，请重新登录`, "", { type: "error" }).then(() => {
+                        localStorage.removeItem("token");
+                        window.location.href = "http://" + window.location.host + "/#/"
+                    })
+                    break;
+                case 404:
+                    Message({ message: `接口${error.response.config.url}不存在`, type: "error" })
+                    break;
+                default:
+                    Message({ message: `${error.response.config.statusText}`, type: "error" })
+                    break;
+            }
+        });
 }
-
-export const login = params => request(`user/login`, "put", params)
-export const register = params => request(`user/register`, "post", params)
-export const getValidateCode = params => request(`user/getValidateCode`, "get", params)
-export const getRoles = params => request(`role`, "get", params)
-export const addRole = params => request(`role/add`, "post", params)
-export const getTest = params => request(`user/getest`, "get", params)

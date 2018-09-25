@@ -16,6 +16,7 @@ using LY.DTO;
 using Mapster;
 using LY.Common.Utils;
 using Microsoft.Extensions.Caching.Distributed;
+using LY.DTO.Input;
 
 namespace LY.Service.Sys
 {
@@ -29,6 +30,20 @@ namespace LY.Service.Sys
         public UserService()
         {
 
+        }
+
+        public void Delete(BaseDeleteInput value)
+        {
+            var userList = UserRepo.Queryable.Where(x => value.IDs.Contains(x.ID));
+            if (userList.IsNullOrEmpty())
+            {
+                throw new BusinessException("指定的数据不存在");
+            }
+            foreach (var item in userList)
+            {
+                UserRepo.Delete(item);
+            }
+            UnitOfWork.Commit();
         }
 
         public void Register(RegisterInput value)
@@ -76,6 +91,7 @@ namespace LY.Service.Sys
             }
             token = GetJWTToken(user);
             user.LastOn = DateTime.Now;
+            UserRepo.Update(user);
             UnitOfWork.Commit();
             return user;
         }
@@ -106,7 +122,7 @@ namespace LY.Service.Sys
                 audience: ConfigUtil.ConfigurationRoot["JWT:Audience"],
                 issuer: ConfigUtil.ConfigurationRoot["JWT:Issuer"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

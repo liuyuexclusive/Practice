@@ -18,14 +18,42 @@ namespace LY.Service.Sys
         {
 
         }
-        public void Add(RoleAddInput value)
+        public void AddOrUpdate(RoleAddOrUpdateInput value)
         {
             if (value == null)
             {
                 throw new BusinessException("参数不能为空");
             }
-            var role = value.Adapt<Sys_Role>();
-            RoleRepo.Add(role);
+
+            if (!value.ID.HasValue)
+            {
+                var role = value.Adapt<Sys_Role>();
+                RoleRepo.Add(role);
+            }
+            else
+            {
+                var role = RoleRepo.Get(value.ID.Value);
+                if (role == null)
+                {
+                    throw new BusinessException("当前数据不存在");
+                }
+                value.Adapt(role);
+                RoleRepo.Update(role);
+            }
+            UnitOfWork.Commit();
+        }
+
+        public void Delete(BaseDeleteInput value)
+        {
+            var roleList = RoleRepo.Queryable.Where(x => value.IDs.Contains(x.ID));
+            if (roleList.IsNullOrEmpty())
+            {
+                throw new BusinessException("指定的数据不存在");
+            }
+            foreach (var item in roleList)
+            {
+                RoleRepo.Delete(item);
+            }
             UnitOfWork.Commit();
         }
     }

@@ -8,8 +8,4 @@
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Output\" />
-  </ItemGroup>
-
 </Project>

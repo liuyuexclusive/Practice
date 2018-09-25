@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
@@ -22,6 +24,13 @@ namespace LY.WebAPI
         /// HostingEnvironment
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; }
+
+        private string CurrentDir {
+            get{
+                dynamic type = (new Program()).GetType();
+                return Path.GetDirectoryName(type.Assembly.Location);
+            }
+        }
 
         public Startup(IHostingEnvironment env)
         {
@@ -58,13 +67,18 @@ namespace LY.WebAPI
                     Description = "A simple api to search using geo location in Elasticsearch",
                     TermsOfService = "None"
                 });
-                options.IncludeXmlComments(Path.Combine(HostingEnvironment.ContentRootPath, "bin", "Debug", "netcoreapp2.0", ConfigUtil.ConfigurationRoot["Swagger:Path"]));
+
+                options.IncludeXmlComments(Path.Combine(CurrentDir, ConfigUtil.ConfigurationRoot["Swagger:Path"]));
                 options.DescribeAllEnumsAsStrings();
             });
 
             //cors
             services.AddCors(options =>
-              options.AddPolicy("cors", p => p.WithOrigins(ConfigUtil.ConfigurationRoot["Cors:Origins"].Split(",")).SetPreflightMaxAge(TimeSpan.FromSeconds(3600)).AllowAnyMethod().AllowAnyHeader())
+              options.AddPolicy("cors",p => p.WithOrigins(ConfigUtil.ConfigurationRoot["Cors:Origins"].Split(","))
+                  //ungerlying policy
+                  .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))
+                  .AllowAnyMethod().AllowAnyHeader()
+              )
             );
 
             //cache

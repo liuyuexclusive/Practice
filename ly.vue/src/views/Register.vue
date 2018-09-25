@@ -30,7 +30,7 @@
 
 
 <script>
-import { register,getValidateCode } from "@/api";
+import { request } from "@/api";
 
 export default {
   data() {
@@ -50,9 +50,7 @@ export default {
 
     let validateMobile = (rule, value, callback) => {
       if (
-        !/(^$)|(^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$)/.test(
-          value
-        )
+        !/(^$)|(^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$)/.test(value)
       ) {
         callback(new Error("请输入有效电话!"));
       } else {
@@ -72,7 +70,7 @@ export default {
 
     return {
       validateText: "获取",
-      disabledGetValidateCode:false,
+      disabledGetValidateCode: false,
       formModel: {
         Email: "yu-liu@qulv.com",
         Password: "",
@@ -82,7 +80,7 @@ export default {
         ValidateCode: ""
       },
       rules: {
-        Email: [{ required: true, validator: validatEmail, trigger: "blur" }],        
+        Email: [{ required: true, validator: validatEmail, trigger: "blur" }],
         Password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         confirmPassword: [
           {
@@ -91,24 +89,21 @@ export default {
             trigger: "blur"
           }
         ],
-        Mobile:[{ validator:validateMobile, trigger: "blur" }],
+        Mobile: [{ validator: validateMobile, trigger: "blur" }],
         ValidateCode: [
           { required: true, message: "请输入验证码", trigger: "blur" }
         ]
       }
     };
   },
+
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          register(this.formModel).then(data => {
-            if (data.Success === true) {
-              this.$alert(data.Message).then(() => {
-                this.$router.push({ path: "/" });
-              });
-            } else {
-              this.$alert(data.Message, "", { type: "warning" });
+          request("User/Register", "post", this.formModel).then(data => {
+            if (data) {
+              this.$router.push({ name: "Login" });
             }
           });
         } else {
@@ -120,21 +115,24 @@ export default {
       this.$refs[formName].resetFields();
     },
     getValidateCode() {
-      getValidateCode({email:this.formModel.Email}).then(data=>{
-         console.log(data);
-      })
-      this.disabledGetValidateCode =true;
-      var i = 60;
-      this.validateText = i;      
-      var si = setInterval(()=>{
-        i--;
-        this.validateText = i;
-        if (i==0) {
-          clearInterval(si);
-          this.disabledGetValidateCode = false;
-          this.validateText = "获取";
+      request("User/GetValidateCode", "get", {
+        email: this.formModel.Email
+      }).then(data => {
+        if (data) {
+          this.disabledGetValidateCode = true;
+          var i = 60;
+          this.validateText = i;
+          var si = setInterval(() => {
+            i--;
+            this.validateText = i;
+            if (i == 0) {
+              clearInterval(si);
+              this.disabledGetValidateCode = false;
+              this.validateText = "获取";
+            }
+          }, 1000);
         }
-      },1000);
+      });
     }
   }
 };

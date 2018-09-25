@@ -14,7 +14,7 @@
                     </el-col>
                     <el-col :span="4" style="text-align:right;">
                         <div class="grid-content bg-purple">
-                            <el-dropdown v-on:command="logoff">
+                            <el-dropdown v-on:command="userHandler">
                                 <span class="el-dropdown-link">
                                     {{username}}
                                     <i class="el-icon-arrow-down el-icon--right"></i>
@@ -29,7 +29,7 @@
                 </el-row>
             </el-header>
             <el-container>
-                <div style="width:100%;padding:20px;">
+                <div style="width:100%;padding:10px;">
                     <router-view></router-view>
                 </div>
             </el-container>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import NavMenu from "@/views/NavMenu";
+import NavMenu from "@/components/NavMenu";
 import { store } from "@/vuex";
 
 export default {
@@ -60,15 +60,18 @@ export default {
     navmenu: NavMenu
   },
   methods: {
-    logoff: function(cmd) {
+    userHandler(cmd) {
       if (cmd === "logoff") {
         this.$confirm("确认注销？")
           .then(() => {
             localStorage.removeItem("token");
-            this.$router.push({ path: "/" });
+            this.$router.push({ name:"Login" });
           })
           .catch(() => {});
       }
+    },
+    test(){
+        alert(11)
     }
   }
 };

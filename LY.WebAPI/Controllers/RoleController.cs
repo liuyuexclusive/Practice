@@ -1,6 +1,8 @@
-﻿using LY.Domain;
+﻿using LY.Common;
+using LY.Domain;
 using LY.Domain.Sys;
 using LY.DTO.Input;
+using LY.DTO.Output;
 using LY.Service.Sys;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
@@ -17,35 +19,42 @@ namespace LY.WebAPI.Controllers
     [EnableCors("cors")]
     public class RoleController : ApiControllerBase
     {
-        public ILogger<UserController> _logger;
+        public ILogger<RoleController> _logger;
         public RoleService _roleService;
         public IRepository<Sys_Role> _roleRepo;
-        public RoleController(ILogger<UserController> logger, RoleService roleService, IRepository<Sys_Role> roleRepo)
+        public RoleController(ILogger<RoleController> logger, RoleService roleService, IRepository<Sys_Role> roleRepo)
         {
             _logger = logger;
             _roleService = roleService;
             _roleRepo = roleRepo;
         }
 
-        [HttpGet]
         [Authorize]
-        public async Task<Output<object>> Get()
+        [Route("GetList")]
+        public async Task<OutputList<RoleOutput>> GetList(BaseQueryInput value)
         {
-            return await Task<Output<object>>.Run(() => {
-                return new Output<object>()
-                {
-                    Data = _roleRepo.Queryable.Take(30).Select(x=> new { x.ID,x.Name,x.Description }).ToList()
-                };
-            });
+            return await OKList<RoleOutput>(
+                _roleRepo.Queryable.Paging(value).Select(x => new { x.ID, x.Name, x.Description }.Adapt<RoleOutput>()).ToList(),
+                _roleRepo.Queryable.Count()
+            );
         }
 
         [HttpPost]
         [Authorize]
-        [Route("Add")]
-        public async Task<Output> Add(RoleAddInput value)
+        [Route("AddOrUpdate")]
+        public async Task<Output> AddOrUpdate(RoleAddOrUpdateInput value)
         {
-            _roleService.Add(value);
-            return await OK();
+            _roleService.AddOrUpdate(value);
+            return await OK("操作成功");
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [Route("Delete")]
+        public async Task<Output> Delete(BaseDeleteInput value)
+        {
+            _roleService.Delete(value);
+            return await OK("删除成功");
         }
     }
 }

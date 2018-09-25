@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "user/",
+      "launchUrl": "test/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "LY.WebAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "user/",
+      "launchUrl": "test/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

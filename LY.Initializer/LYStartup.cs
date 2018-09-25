@@ -44,6 +44,7 @@ namespace LY.Initializer
                 .Where(t => t.Name.Equals("UnitOfWork") || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
                 .AsImplementedInterfaces()
                 .PropertiesAutowired();
+
         }
 
         private void RegisterService(ContainerBuilder builder)

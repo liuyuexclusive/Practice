@@ -29,12 +29,33 @@ namespace LY.WebAPI
     {
         public Output() {
             base.Success = true;
-            Message = "操作成功";
         }
 
         /// <summary>q
         /// 结果数据
         /// </summary>
         public T Data { get; set; }
+    }
+
+    /// <summary>
+    /// 返回列表数据
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class OutputList<T> : Output
+    {
+        public OutputList()
+        {
+            base.Success = true;
+        }
+
+        /// <summary>q
+        /// 结果数据
+        /// </summary>
+        public IEnumerable<T> Data { get; set; }
+
+        /// <summary>
+        /// 总数
+        /// </summary>
+        public int? Total { get; set; } 
     }
 }

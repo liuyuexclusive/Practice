@@ -1,22 +1,16 @@
 ﻿using LY.Common;
-using LY.Common.Utils;
 using LY.Domain;
 using LY.Domain.Sys;
 using LY.DTO;
+using LY.DTO.Input;
+using LY.DTO.Output;
 using LY.Service.Sys;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LY.WebAPI.Controllers
@@ -36,50 +30,30 @@ namespace LY.WebAPI.Controllers
             _userRepo = userRepo;
         }
 
-        [HttpGet]
         [Authorize]
-        //Authorization: Bearer 
-        public async Task<Output> Index(string name)
+        [Route("GetList")]
+        public async Task<OutputList<UserOutput>> GetList(BaseQueryInput value)
         {
-            var isLogin = HttpContext.Session.Keys.Contains(name);
-            if (!isLogin)
-            {
-                return new Output()
-                {
-                    Message = "还没登录就想进去？",
-                    Success = true
-                };
-            }
-            else
-            {
-                return new Output()
-                {
-                    Message = "已经登录了",
-                    Success = true
-                };
-            }
+            return await OKList<UserOutput>(
+                _userRepo.Queryable.Paging(value).Select(x => new { x.ID, x.Name, x.Email, x.Mobile, x.LastOn }.Adapt<UserOutput>()).ToList(),
+                _userRepo.Queryable.Count()
+               );
         }
 
         [HttpPost]
         [Route("Register")]
         public async Task<Output> Register(RegisterInput value)
         {
-            return await Task.Run<Output>(() =>
-            {
-                _userService.Register(value);
-                return new Output() { Success = true, Message="注册成功" };
-            });
+            _userService.Register(value);
+            return await OK("注册成功");
         }
 
         [HttpPut]
         [Route("Login")]
         public async Task<Output<object>> Login(LoginInput value)
         {
-            return await Task.Run<Output<object>>(() =>
-            {
-                var user = _userService.Login(value, out string token);
-                return new Output<object>() { Data = new { Token = token,UserName = user.Name } };
-            });
+            var user = _userService.Login(value, out string token);
+            return await OK<object>(new { Token = token, UserName = user.Name }, "登录成功");
         }
 
         [HttpGet]
@@ -90,26 +64,13 @@ namespace LY.WebAPI.Controllers
             return await OK();
         }
 
-        [HttpGet]
+        [HttpDelete]
         [Authorize]
-        [Route("GetTest")]
-        public async Task<Output<object>> GetTest() 
+        [Route("Delete")]
+        public async Task<Output> Delete(BaseDeleteInput value)
         {
-            await MailUtil.SendMailAsync("yu-liu@qulv.com", "测试");
-            return await Task<object>.Run(() =>
-            {
-                var data = new List<(string date, string name, string address)>() {
-                    ("2016-05-02","王小虎","上海市普陀区金沙江路 1518 弄"),
-                    ("2016-05-02","王小虎","上海市普陀区金沙江路 1518 弄"),
-                    ("2016-05-02","王小虎","上海市普陀区金沙江路 1518 弄"),
-                    ("2016-05-02","王小虎","上海市普陀区金沙江路 1518 弄"),
-                    ("2016-05-02","王小虎","上海市普陀区金沙江路 1518 弄")
-                };
-                return new Output<object>() { Data =data };
-            });
+            _userService.Delete(value);
+            return await OK("删除成功");
         }
     }
-
-
-
 }

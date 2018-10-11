@@ -7,8 +7,6 @@ namespace LY.Domain.Sys
 {
     public class Sys_User : Entity
     {
-        public int Status { get; set; }
-         
         /// <summary>
         /// 邮箱
         /// </summary>

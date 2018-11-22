@@ -2,7 +2,7 @@
   <div v-loading="loading">
     <el-table ref="commonPageTable" @row-dblclick="dblclick" :height="tableHight" :data="tableData" @current-change="currentChange" @selection-change="selectionChange" highlight-current-row>
       <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column v-for="item in columnData" :prop="item.prop" :label="item.label"></el-table-column>
+      <el-table-column :key="item.ID" v-for="item in columnData" :prop="item.prop" :label="item.label"></el-table-column>
     </el-table>
     <el-pagination style="margin-top:10px" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageData.CurrentPage" :page-sizes="pageSizes" :page-size="pageData.CurrentPageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageData.Total">
     </el-pagination>

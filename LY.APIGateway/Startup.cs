@@ -55,7 +55,7 @@ namespace LY.APIGateway
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigUtil.ConfigurationRoot["JWT:SecurityKey"])),//拿到SecurityKey
                     };
                 });
-            services.AddOcelot(Configuration);
+            services.AddOcelot(Configuration).AddConsul();
             //services.AddOcelot(Configuration).AddConsul();
             services.AddMvc();
         }
@@ -68,7 +68,7 @@ namespace LY.APIGateway
                 c.SwaggerEndpoint("/sys/swagger.json", "SysService");
                 c.SwaggerEndpoint("/order/swagger.json", "OrderService");
             });
-           
+            app.UseWebSockets();
             await app.UseOcelot();
         }
     }

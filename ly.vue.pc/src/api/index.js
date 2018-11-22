@@ -2,9 +2,11 @@ import axios from "axios";
 import { Message, MessageBox } from "element-ui";
 let base = "http://localhost:9000/";
 
+export const gatewayHost = base
+
 export const request = (url, method, params) => {
     var config = {
-        url: `${base}` + url,
+        url: `${gatewayHost}` + url,
         method: method,
         headers: { Authorization: "Bearer " + localStorage.token }
     }
@@ -44,3 +46,5 @@ export const request = (url, method, params) => {
             }
         });
 }
+
+

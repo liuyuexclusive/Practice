@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using LY.Common;
-using LY.Common.LYMQ;
 using LY.Domain;
 using LY.EFRepository;
 using Microsoft.EntityFrameworkCore;
@@ -58,21 +57,12 @@ namespace LY.Initializer
                 .PropertiesAutowired();
         }
 
-        private void RegisterCommon(ContainerBuilder builder)
-        { 
-            builder
-                .RegisterType<LYMQ>()
-                .AsImplementedInterfaces()
-                .PropertiesAutowired();
-        }
-
         private void StartCommon(IServiceCollection services, Action action = null)
         {
             //dbContext
             services.AddDbContext<LYDbContext>();
 
             //autofac
-            RegisterCommon(_containerBuilder);
             RegisterRepository(_containerBuilder);
             RegisterService(_containerBuilder);
             
@@ -81,15 +71,15 @@ namespace LY.Initializer
                 action.Invoke();
             }
 
-            ////redis
-            //services.AddSingleton<IDistributedCache>(
-            //    serviceProvider =>
-            //        new RedisCache(new RedisCacheOptions
-            //        {
-            //            Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
-            //            InstanceName = "LY:"
-            //        })
-            //);
+            //redis
+            services.AddSingleton<IDistributedCache>(
+                serviceProvider =>
+                    new RedisCache(new RedisCacheOptions
+                    {
+                        Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
+                        InstanceName = "LY:"
+                    })
+            );
             _containerBuilder.Populate(services);
         }
         #endregion
@@ -105,19 +95,6 @@ namespace LY.Initializer
         {
             StartCommon(services);
             return new AutofacServiceProvider(IOCManager.Container);
-        }
-
-        public void StartDaemon(IServiceCollection services)
-        {
-            StartCommon(services, () => {
-
-                var assembly = Assembly.Load(new AssemblyName("LY.Daemon"));
-
-                _containerBuilder.RegisterAssemblyTypes(assembly)
-                    .Where(t => t.Name.Equals("Test"))
-                    .AsSelf()
-                    .PropertiesAutowired();
-            });
-        }
+        }       
     }
 }

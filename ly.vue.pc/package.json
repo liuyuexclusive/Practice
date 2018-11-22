@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.6",
+    "node-uuid": "^1.4.8",
     "npm": "^6.4.1",
     "vue": "^2.5.2",
     "vue-i18n": "^8.0.0",

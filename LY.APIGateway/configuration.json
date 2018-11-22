@@ -151,6 +151,17 @@
         }
       ],
       "UpstreamPathTemplate": "/User/GetValidateCode"
+    },
+    {
+      "DownstreamPathTemplate": "/ws/{type}/{id}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9001
+        }
+      ],
+      "UpstreamPathTemplate": "/ws/{type}/{id}"
     }
   ],
   "GlobalConfiguration": {

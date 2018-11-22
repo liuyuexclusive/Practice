@@ -19,5 +19,15 @@ namespace LY.Common
                 return builder.Build();
             }
         }
+
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public static string ConnStr
+        {
+            get {
+                return ConfigUtil.ConfigurationRoot.GetConnectionString("DefaultConnection");
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
 import Welcome from '@/views/Welcome.vue'
 import Register from '@/views/Register.vue'
+import Test from '@/views/sys/Test.vue'
 
 Vue.use(Router)
 
@@ -40,6 +41,7 @@ export default new Router({
         { path: '/Role', name: 'Role', component: Role, meta: { requireAuth: true } },
         { path: '/RoleEdit', name: 'RoleEdit', component: RoleEdit, meta: { requireAuth: true } },
         { path: '/User', name: 'User', component: User, meta: { requireAuth: true } },
+        { path: '/Test', name: 'Test', component: Test, meta: { requireAuth: true } },
       ]
     }
   ]

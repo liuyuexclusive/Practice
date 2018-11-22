@@ -2,6 +2,9 @@
 using LY.Common.API;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using System;
+using System.Text;
 
 namespace LY.SysService.Controllers
 {
@@ -10,13 +13,17 @@ namespace LY.SysService.Controllers
     [EnableCors("cors")]
     public class TestController : ApiControllerBase
     {
-        public TestController()
+        IDistributedCache _cache;
+        public TestController(IDistributedCache cache)
         {
+            _cache = cache;
         }
 
         public string Test()
         {
-            return "你好,接口已经启动" + ConfigUtil.ConfigurationRoot["AppName"];
+            string num = new Random().Next(1000, 9999).ToString();
+            _cache.SetString("aa", num);
+            return "你好,接口已经启动" + ConfigUtil.ConfigurationRoot["AppName"]+_cache.GetString("aa");
         }
     }
 }

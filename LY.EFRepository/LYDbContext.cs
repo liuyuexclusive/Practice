@@ -11,8 +11,7 @@ namespace LY.EFRepository
         {
             base.OnConfiguring(optionsBuilder);
 
-            string connStr = ConfigUtil.ConfigurationRoot.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseMySql(connStr);
+            optionsBuilder.UseMySql(ConfigUtil.ConnStr);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

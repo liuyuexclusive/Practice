@@ -1,5 +1,6 @@
 ﻿using LY.Common;
 using LY.Common.API;
+using LY.Common.Middlewares;
 using LY.Initializer;
 using LY.SysService.Middlewares;
 using Microsoft.AspNetCore.Builder;
@@ -10,12 +11,18 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LY.SysService
 {
     public class Startup
     {
+        public static IList<WebSocket> ListWebSocket { get; set; } = new List<WebSocket>();
         public Startup()
         {
 
@@ -72,6 +79,9 @@ namespace LY.SysService
             app.UseMvc().UseSwagger().UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "sys");
             });
+
+            app.UseWebSockets();
+            app.UseMiddleware<WebsocketHandleMiddleware>();        
             //app.UseVisitLogger();
         }
     }

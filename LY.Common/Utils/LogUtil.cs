@@ -20,5 +20,15 @@ namespace LY.Common
             }
             return _loggerFactory.CreateLogger<T>();
         }
+
+        public static ILogger Logger(string categoryName)
+        {
+            if (_loggerFactory == null)
+            {
+                _loggerFactory = new LoggerFactory();
+                _loggerFactory.AddNLog();
+            }
+            return _loggerFactory.CreateLogger(categoryName);
+        }
     }
 }

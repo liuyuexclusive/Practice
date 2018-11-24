@@ -13,12 +13,13 @@ namespace LY.DaemonService.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get()
         {
-            BackgroundJob.Enqueue(() => Console.WriteLine("Enqueue"));
-            BackgroundJob.Schedule(() => Console.WriteLine("Schedule"),TimeSpan.FromSeconds(10));
-            RecurringJob.AddOrUpdate(() => Console.WriteLine("Minutely Job"), Cron.Minutely);
-            return new string[] { "value1", "value2" };
+            return "Daemon服务启动成功";
+            //BackgroundJob.Enqueue(() => Console.WriteLine("Enqueue"));
+            //BackgroundJob.Schedule(() => Console.WriteLine("Schedule"),TimeSpan.FromSeconds(10));
+            //RecurringJob.AddOrUpdate(() => Console.WriteLine("Minutely Job"), Cron.Minutely);
+            //return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5

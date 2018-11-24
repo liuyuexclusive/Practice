@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace LY.Common.Utils
 {
+    public class MQTransfer
+    {
+        public string Topic { get; set; }
+        public string Data { get; set; }
+    }
+
+    public class MQResponseResult
+    {
+        public bool IsSuccessed { get; set; } = true;
+        public string Message { get; set; }
+    }
+
     public static class MQUtil
     {
-        public static object _lockPublishObj = new object();
-
-        /// <summary>
-        /// MQ服务端地址
-        /// </summary>
-        private static string Address
-        {
-            get
-            {
-                return ConfigUtil.ConfigurationRoot["LYMQ:Address"];
-            }
-        }
 
         private static PublisherSocket _publisher;
 
@@ -34,32 +34,80 @@ namespace LY.Common.Utils
         }
 
         /// <summary>
-        /// 发布
+        /// 启动
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="data">数据</param>
-        /// <param name="topic">主题</param>
-        public static async void Publish<T>(T data, string topic) where T : class
+        public async static void Start()
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 try
                 {
-                    string content = JsonConvert.SerializeObject(data);
-                    lock (_lockPublishObj)//防止并发导致发送失败
+                    using (ResponseSocket socket = new ResponseSocket(ConfigUtil.ResponseAddress))
                     {
-                        if (_publisher == null)
+                        while (true)
                         {
-                            _publisher = new PublisherSocket();
-                            _publisher.Bind(Address);
+                            MQResponseResult result = new MQResponseResult();
+                            try
+                            {
+                                string content = socket.ReceiveFrameString();
+                                var transfer = JsonConvert.DeserializeObject<MQTransfer>(content);
+                                if (_publisher == null)
+                                {
+                                    _publisher = new PublisherSocket();
+                                    _publisher.Bind(ConfigUtil.PublishAddress);
+                                }
+                                _publisher.SendMoreFrame(transfer.Topic).SendFrame(transfer.Data);
+                            }
+                            catch (Exception ex)
+                            {
+                                result.IsSuccessed = false;
+                                LogUtil.Logger("MQ Receive Request").LogError(ex.ToString());
+                            }
+                            finally
+                            {
+                                socket.SendFrame(JsonConvert.SerializeObject(result));
+                            }
                         }
-                        _publisher.SendMoreFrame(topic).SendFrame(content);
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogUtil.Logger("Publish").LogError(ex.ToString());
+                    LogUtil.Logger("MQ Start").LogError(ex.ToString());
                 }
             });
+        }
+
+        public static MQResponseResult Publish<T>(T data, string topic) where T : class
+        {
+            try
+            {
+                using (RequestSocket socket = new RequestSocket(ConfigUtil.ResponseAddress))
+                {
+                    var transfer = new MQTransfer()
+                    {
+                        Topic = topic
+                    };
+                    if (typeof(T).IsAssignableFrom(typeof(string)))
+                    {
+                        transfer.Data = data as string;
+                    }
+                    else
+                    {
+                        transfer.Data = JsonConvert.SerializeObject(data);
+                    }
+                    string content = JsonConvert.SerializeObject(transfer);
+                    socket.SendFrame(content);
+                    var result = JsonConvert.DeserializeObject<MQResponseResult>(socket.ReceiveFrameString());
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogUtil.Logger("MQ Publish").LogError(ex.ToString());
+                throw ex;
+            }
+
         }
 
         /// <summary>
@@ -76,7 +124,7 @@ namespace LY.Common.Utils
                 {
                     using (SubscriberSocket subscriber = new SubscriberSocket())
                     {
-                        subscriber.Connect(Address);
+                        subscriber.Connect(ConfigUtil.PublishAddress);
                         subscriber.Subscribe(topic);
                         while (true)
                         {
@@ -100,14 +148,14 @@ namespace LY.Common.Utils
                             }
                             catch (Exception ex)
                             {
-                                LogUtil.Logger("ReceiveFrameString").LogError(ex.ToString());
+                                LogUtil.Logger("MQ Receive Subscrib").LogError(ex.ToString());
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogUtil.Logger("Subscrib").LogError(ex.ToString());
+                    LogUtil.Logger("MQ Subscrib").LogError(ex.ToString());
                 }
             });
         }

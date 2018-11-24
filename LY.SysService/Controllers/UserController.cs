@@ -32,6 +32,7 @@ namespace LY.SysService.Controllers
             _userRepo = userRepo;
         }
 
+        [HttpPost]
         [Route("GetList")]
         public async Task<OutputList<UserOutput>> GetList(BaseQueryInput value)
         {

@@ -29,5 +29,27 @@ namespace LY.Common
                 return ConfigUtil.ConfigurationRoot.GetConnectionString("DefaultConnection");
             }
         }
+
+        /// <summary>
+        /// Response地址
+        /// </summary>
+        public static string ResponseAddress
+        {
+            get
+            {
+                return ConfigUtil.ConfigurationRoot["LYMQ:ResponseAddress"];
+            }
+        }
+
+        /// <summary>
+        /// Publish地址
+        /// </summary>
+        public static string PublishAddress
+        {
+            get
+            {
+                return ConfigUtil.ConfigurationRoot["LYMQ:PublishAddress"];
+            }
+        }
     }
 }

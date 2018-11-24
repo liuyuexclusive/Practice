@@ -65,8 +65,8 @@ namespace LY.APIGateway
             app.UseAuthentication();
             app.UseMvc().UseSwagger().UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/sys/swagger.json", "SysService");
-                c.SwaggerEndpoint("/order/swagger.json", "OrderService");
+                c.SwaggerEndpoint("/sys/swagger.json", "LY.SysService");
+                c.SwaggerEndpoint("/order/swagger.json", "LY.OrderService");
             });
             app.UseWebSockets();
             await app.UseOcelot();

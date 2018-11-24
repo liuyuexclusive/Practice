@@ -19,6 +19,7 @@ namespace LY.SysService.Controllers
             _cache = cache;
         }
 
+        [HttpGet]
         public string Test()
         {
             string num = new Random().Next(1000, 9999).ToString();

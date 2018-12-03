@@ -19,12 +19,13 @@ namespace LY.SysService.Controllers
             _cache = cache;
         }
 
+        [UnAuthorize]
         [HttpGet]
         public string Test()
         {
             string num = new Random().Next(1000, 9999).ToString();
             _cache.SetString("aa", num);
-            return "你好,接口已经启动" + ConfigUtil.ConfigurationRoot["AppName"]+_cache.GetString("aa");
+            return "你好,接口已经启动" + ConfigUtil.AppSettings["AppName"]+_cache.GetString("aa");
         }
     }
 }

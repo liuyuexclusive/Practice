@@ -17,7 +17,7 @@ namespace LY.OrderService.Controllers
         [HttpGet]
         public string Test()
         {
-            return "你好,接口已经启动"+ ConfigUtil.ConfigurationRoot["AppName"];
+            return "你好,接口已经启动"+ ConfigUtil.AppSettings["AppName"];
         }
     }
 }

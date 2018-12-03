@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Properties\launchSettings.json~RF39c0a81.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Filters\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

@@ -20,6 +20,16 @@ namespace LY.APIGateway
     {
         public Startup(IHostingEnvironment env)
         {
+            if (!File.Exists("configuration.json"))
+            {
+                using (var file = File.Create("configuration.json"))
+                {
+                    using (StreamWriter sw = new StreamWriter(file))
+                    {
+                        sw.Write("{}");
+                    }
+                }
+            }
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
             builder.SetBasePath(env.ContentRootPath)
                    //.AddJsonFile("appsettings.json")
@@ -50,23 +60,31 @@ namespace LY.APIGateway
                         ValidateAudience = true,//是否验证Audience
                         ValidateLifetime = true,//是否验证失效时间
                         ValidateIssuerSigningKey = true,//是否验证SecurityKey
-                        ValidAudience = ConfigUtil.ConfigurationRoot["JWT:Audience"],//Audience
-                        ValidIssuer = ConfigUtil.ConfigurationRoot["JWT:Issuer"],//Issuer，这两项和前面签发jwt的设置一致
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigUtil.ConfigurationRoot["JWT:SecurityKey"])),//拿到SecurityKey
+                        ValidAudience = ConfigUtil.AppSettings["JWT:Audience"],//Audience
+                        ValidIssuer = ConfigUtil.AppSettings["JWT:Issuer"],//Issuer，这两项和前面签发jwt的设置一致
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigUtil.AppSettings["JWT:SecurityKey"])),//拿到SecurityKey
                     };
                 });
-            services.AddOcelot(Configuration).AddConsul();
+            services.AddOcelot(Configuration);
             //services.AddOcelot(Configuration).AddConsul();
             services.AddMvc();
         }
 
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }
             app.UseAuthentication();
             app.UseMvc().UseSwagger().UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/sys/swagger.json", "LY.SysService");
-                c.SwaggerEndpoint("/order/swagger.json", "LY.OrderService");
+                c.SwaggerEndpoint("/LY.SysService/swagger.json", "LY.SysService");
+                c.SwaggerEndpoint("/LY.OrderService/swagger.json", "LY.OrderService");
             });
             app.UseWebSockets();
             await app.UseOcelot();

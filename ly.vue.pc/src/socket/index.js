@@ -1,9 +1,9 @@
 import { v1 } from "uuid";
 import { gatewayHost } from "@/api";
 
-export const lysocket = (type) => {
+export const sysSocket = (type) => {
     let key = v1();
-    let result = new WebSocket(gatewayHost.replace("http", "ws") + "ws/" + type + "/" + key);
+    let result = new WebSocket(gatewayHost.replace("https", "wss") + "ws/LY.SysService/" + type + "/" + key);
     result.key = key;
     return result;
 }

@@ -18,12 +18,17 @@ using System.Reflection;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
+using Microsoft.AspNetCore.Mvc.Routing;
+using System.Collections.Generic;
+using LY.Common.Utils;
 
 namespace LY.Initializer
 {
     public class LYRegister
     {
         #region private
+             
+
         private void RegisterRepository()
         {
             var assembly = Assembly.Load(new AssemblyName("LY.EFRepository"));
@@ -65,7 +70,9 @@ namespace LY.Initializer
             manager.FeatureProviders.Add(new ControllerFeatureProvider());
             var feature = new ControllerFeature();
             manager.PopulateFeature(feature);
-            IOCManager.ContainerBuilder.RegisterTypes(feature.Controllers.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
+            var controllers = feature.Controllers;
+            GatewayConfigUtil.Gen(controllers.ToArray());
+            IOCManager.ContainerBuilder.RegisterTypes(controllers.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
         }
 
         private void RegisterCommon(IServiceCollection services)
@@ -88,14 +95,14 @@ namespace LY.Initializer
                 serviceProvider =>
                     new RedisCache(new RedisCacheOptions
                     {
-                        Configuration = ConfigUtil.ConfigurationRoot["Redis:Configuration"],
+                        Configuration = ConfigUtil.AppSettings["Redis:Configuration"],
                         InstanceName = "LY:"
                     })
             );
 
             //cors
             services.AddCors(options =>
-              options.AddPolicy("cors", p => p.WithOrigins(ConfigUtil.ConfigurationRoot["Cors:Origins"].Split(","))
+              options.AddPolicy("cors", p => p.WithOrigins(ConfigUtil.AppSettings["Cors:Origins"].Split(","))
                    //ungerlying policy
                    .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))
                    .AllowAnyMethod().AllowAnyHeader()
@@ -106,15 +113,13 @@ namespace LY.Initializer
         #endregion
 
 
-        public IServiceProvider StartWebAPI(IServiceCollection services)
+        public IServiceProvider ConfigureServicesWebAPI(IServiceCollection services)
         {
-            string appName = PlatformServices.Default.Application.ApplicationName;
-
             //swagger ui
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = appName, Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, $"{appName}.xml"));
+                c.SwaggerDoc("v1", new Info { Title = ConfigUtil.AppName, Version = "v1" });
+                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, $"{ConfigUtil.AppName}.xml"));
             });
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>()); // for PropertiesAutowired

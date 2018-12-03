@@ -15,17 +15,25 @@ namespace LY.Initializer
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            return new LYRegister().StartWebAPI(services);
+            return new LYRegister().ConfigureServicesWebAPI(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IApplicationLifetime appLifetime)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
             //must put in the front
             //app.UseSession();
             //appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
-
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }
             // swagger uis
+            app.UseHttpsRedirection();
             app.UseCors("cors");
             app.UseMvc().UseSwagger().UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", PlatformServices.Default.Application.ApplicationName);

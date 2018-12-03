@@ -17,11 +17,6 @@ namespace LY.DaemonService
     {
         public static void Main(string[] args)
         {
-            MQUtil.Start();
-            MQUtil.Subscrib<TestMQDTO>(x =>
-            {
-                BackgroundJob.Schedule(() => Console.WriteLine(x.Name), TimeSpan.FromSeconds(10));
-            }, "test");
             CreateWebHostBuilder(args).Build().Run();
         }
 

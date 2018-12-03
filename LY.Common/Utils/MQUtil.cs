@@ -22,6 +22,8 @@ namespace LY.Common.Utils
     public static class MQUtil
     {
 
+        public static object _lockPublish = new object();
+
         private static PublisherSocket _publisher;
 
         /// <summary>
@@ -37,14 +39,19 @@ namespace LY.Common.Utils
         /// 启动
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public async static void Start()
+        public async static Task Start()
         {
             await Task.Run(() =>
             {
                 try
                 {
-                    using (ResponseSocket socket = new ResponseSocket(ConfigUtil.ResponseAddress))
+                    if (_publisher == null)
                     {
+                        _publisher = new PublisherSocket(ConfigUtil.PublishAddress);
+                    }
+                    using (ResponseSocket socket = new ResponseSocket())
+                    {
+                        socket.Bind(ConfigUtil.ResponseAddress);
                         while (true)
                         {
                             MQResponseResult result = new MQResponseResult();
@@ -52,21 +59,14 @@ namespace LY.Common.Utils
                             {
                                 string content = socket.ReceiveFrameString();
                                 var transfer = JsonConvert.DeserializeObject<MQTransfer>(content);
-                                if (_publisher == null)
-                                {
-                                    _publisher = new PublisherSocket();
-                                    _publisher.Bind(ConfigUtil.PublishAddress);
-                                }
                                 _publisher.SendMoreFrame(transfer.Topic).SendFrame(transfer.Data);
+                                socket.SendFrame(JsonConvert.SerializeObject(result));
                             }
                             catch (Exception ex)
                             {
                                 result.IsSuccessed = false;
-                                LogUtil.Logger("MQ Receive Request").LogError(ex.ToString());
-                            }
-                            finally
-                            {
                                 socket.SendFrame(JsonConvert.SerializeObject(result));
+                                LogUtil.Logger("MQ Receive Request").LogError(ex.ToString());
                             }
                         }
                     }
@@ -78,36 +78,43 @@ namespace LY.Common.Utils
             });
         }
 
-        public static MQResponseResult Publish<T>(T data, string topic) where T : class
+        public static Task<MQResponseResult> Publish<T>(T data, string topic) where T : class
         {
-            try
+            return Task<MQResponseResult>.Run(() =>
             {
-                using (RequestSocket socket = new RequestSocket(ConfigUtil.ResponseAddress))
+                try
                 {
-                    var transfer = new MQTransfer()
+                    using (RequestSocket socket = new RequestSocket())
                     {
-                        Topic = topic
-                    };
-                    if (typeof(T).IsAssignableFrom(typeof(string)))
-                    {
-                        transfer.Data = data as string;
-                    }
-                    else
-                    {
-                        transfer.Data = JsonConvert.SerializeObject(data);
-                    }
-                    string content = JsonConvert.SerializeObject(transfer);
-                    socket.SendFrame(content);
-                    var result = JsonConvert.DeserializeObject<MQResponseResult>(socket.ReceiveFrameString());
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogUtil.Logger("MQ Publish").LogError(ex.ToString());
-                throw ex;
-            }
+                        socket.Connect(ConfigUtil.ResponseAddress);
+                        var transfer = new MQTransfer()
+                        {
+                            Topic = topic
+                        };
+                        if (typeof(string).IsAssignableFrom(typeof(T)))
+                        {
+                            transfer.Data = data as string;
+                        }
+                        else
+                        {
+                            transfer.Data = JsonConvert.SerializeObject(data);
+                        }
+                        string content = JsonConvert.SerializeObject(transfer);
 
+                        if (socket.TrySendFrame(content))
+                        {
+                            var result = JsonConvert.DeserializeObject<MQResponseResult>(socket.ReceiveFrameString());
+                            return result;
+                        }
+                        return new MQResponseResult() { IsSuccessed = false, Message = "发送失败" };
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogUtil.Logger("MQ Publish").LogError(ex.ToString());
+                    throw ex;
+                }
+            });
         }
 
         /// <summary>
@@ -116,7 +123,7 @@ namespace LY.Common.Utils
         /// <typeparam name="T"></typeparam>
         /// <param name="action">收到数据后的行为</param>
         /// <param name="topic">主题</param>
-        public static async void Subscrib<T>(Action<T> action, string topic) where T : class
+        public static async Task Subscrib<T>(Action<T> action, string topic) where T : class
         {
             await Task.Run(() =>
             {
@@ -136,7 +143,7 @@ namespace LY.Common.Utils
                                     continue;
                                 }
                                 T result = default(T);
-                                if (typeof(T).IsAssignableFrom(typeof(string)))
+                                if (typeof(string).IsAssignableFrom(typeof(T)))
                                 {
                                     result = receiveStr as T;
                                 }

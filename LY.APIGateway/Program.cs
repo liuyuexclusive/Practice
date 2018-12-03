@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore;
+﻿using LY.Common;
+using LY.Common.Utils;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 
 namespace LY.APIGateway
 {
@@ -7,6 +12,8 @@ namespace LY.APIGateway
     {
         public static void Main(string[] args)
         {
+            MQUtil.Start();
+            MQUtil.Subscrib<IList<GatewayReRoute>>(x => GatewayConfigUtil.Update("configuration.json", x), "GatewayConfigUtilGen");
             BuildWebHost(args).Run();
         }
 

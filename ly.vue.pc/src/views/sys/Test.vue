@@ -17,7 +17,7 @@
 
 <script>
 var socket;
-import { lysocket } from '@/socket'
+import { sysSocket } from '@/socket'
 console.log(window.location.host)
 export default {
   data() {
@@ -29,7 +29,7 @@ export default {
   },
   created() {
     if (!socket) {
-      socket = lysocket("Test");
+      socket = sysSocket("Test");
       socket.onopen = event => {
         this.logs.push("open");
         console.log(socket)
@@ -38,6 +38,7 @@ export default {
         this.logs.push("close");
       };
       socket.onmessage = event => {
+        console.log(event)
         this.logs.push(event.data.toString());
       };
     }

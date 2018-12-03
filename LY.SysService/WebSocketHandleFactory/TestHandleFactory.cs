@@ -13,7 +13,7 @@ namespace LY.SysService.WebSocketHandleFactory
     {
         public void Receive(string content)
         {
-            Send("Test", "its a test");
+            Send("Test", content);
         }
 
         public void Send(string type, string content, string id = null)

@@ -42,6 +42,7 @@ namespace LY.SysService.Controllers
                );
         }
 
+        [UnAuthorize]
         [HttpPost]
         [Route("Register")]
         public async Task<Output> Register(RegisterInput value)
@@ -50,6 +51,7 @@ namespace LY.SysService.Controllers
             return await OK("注册成功");
         }
 
+        [UnAuthorize]
         [HttpPut]
         [Route("Login")]
         public async Task<Output<LoginOutput>> Login(LoginInput value)
@@ -58,6 +60,7 @@ namespace LY.SysService.Controllers
             return await OK<LoginOutput>(new LoginOutput { Token = token, UserName = user.Name }, "登录成功");
         }
 
+        [UnAuthorize]
         [HttpGet]
         [Route("GetValidateCode")]
         public async Task<Output> GetValidateCode(string email)
@@ -66,6 +69,7 @@ namespace LY.SysService.Controllers
             return await OK();
         }
 
+        [UnAuthorize]
         [HttpDelete]
         [Route("Delete")]
         public async Task<Output> Delete(BaseDeleteInput value)

@@ -1,0 +1,108 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+
+namespace LY.Common.Utils
+{
+    public static class GatewayConfigUtil
+    {
+        /// <summary>
+        /// 生成配置
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <param name="controllers"></param>
+        public static async Task Gen(params TypeInfo[] controllers)
+        {
+            if (controllers.IsNullOrEmpty())
+            {
+                return;
+            }
+            IList<GatewayReRoute> listResult = new List<GatewayReRoute>();
+
+            //socket
+            listResult.Add(new GatewayReRoute()
+            {
+                UpstreamPathTemplate = "/ws/"+ ConfigUtil.AppName +"/{type}/{id}",
+                DownstreamPathTemplate = "/ws/{type}/{id}",
+                DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                                new GatewayReRouteDownstreamHostAndPort(){
+                                    Host = ConfigUtil.Host,
+                                    Port = ConfigUtil.Port
+                                }
+                            },
+                AppName = ConfigUtil.AppName,
+                DownstreamScheme="wss"
+            });
+
+            //swagger
+            listResult.Add(new GatewayReRoute()
+            {
+                UpstreamPathTemplate = $"/{ConfigUtil.AppName}/swagger.json",
+                DownstreamPathTemplate = "/swagger/v1/swagger.json",
+                DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                                new GatewayReRouteDownstreamHostAndPort(){
+                                    Host = ConfigUtil.Host,
+                                    Port = ConfigUtil.Port
+                                }
+                            },
+                AppName = ConfigUtil.AppName               
+            });
+
+            foreach (var controller in controllers)
+            {
+                foreach (var method in controller.DeclaredMethods)
+                {
+                    if (method.CustomAttributes.Where(x => typeof(HttpMethodAttribute).IsAssignableFrom(x.AttributeType)).Count() > 0)
+                    {
+                        var isUnAuthorize = method.CustomAttributes.Where(x => typeof(UnAuthorizeAttribute).IsAssignableFrom(x.AttributeType)).Count() > 0;
+                        var routeAttribute = method.GetCustomAttribute(typeof(RouteAttribute)) as RouteAttribute;
+                        string route = routeAttribute != null ? routeAttribute.Template : method.Name;
+                        string template = $"/{controller.Name.Replace("Controller",string.Empty)}/{route}";
+                        listResult.Add(new GatewayReRoute()
+                        {
+                            AuthenticationOptions = isUnAuthorize ? null : new GatewayRouteAuthenticationOption(),
+                            DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                                new GatewayReRouteDownstreamHostAndPort(){
+                                    Host = ConfigUtil.Host,
+                                    Port = ConfigUtil.Port
+                                }
+                            },
+                            DownstreamPathTemplate = template,
+                            UpstreamPathTemplate = template,
+                            AppName = ConfigUtil.AppName
+                        });
+                    }
+                }
+            }
+
+            await MQUtil.Publish(listResult, "GatewayConfigUtilGen");
+        }
+
+
+        /// <summary>
+        /// 更新配置
+        /// </summary>
+        /// <param name="configPath"></param>
+        /// <param name="reRoutes"></param>
+        public static void Update(string configPath,IList<GatewayReRoute> reRoutes)
+        {
+            var config = JsonConvert.DeserializeObject<GatewayConfig>(File.ReadAllText(configPath));
+            if (config != null)
+            {
+                var apps = reRoutes.Select(x => x.AppName).Distinct();
+                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x => apps.Contains(x.AppName))).ToList();
+                foreach (var item in reRoutes)
+                {
+                    config.ReRoutes.Add(item);
+                }
+            }
+            File.WriteAllText(configPath, JsonConvert.SerializeObject(config,new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+        }
+    }
+}

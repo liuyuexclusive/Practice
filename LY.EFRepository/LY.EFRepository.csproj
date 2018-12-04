@@ -14,4 +14,10 @@
     <ProjectReference Include="..\LY.Domain\LY.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="connectionString.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

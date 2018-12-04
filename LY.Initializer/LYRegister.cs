@@ -95,7 +95,7 @@ namespace LY.Initializer
                 serviceProvider =>
                     new RedisCache(new RedisCacheOptions
                     {
-                        Configuration = ConfigUtil.AppSettings["Redis:Configuration"],
+                        Configuration = ConfigUtil.RedisAddress,
                         InstanceName = "LY:"
                     })
             );
@@ -119,7 +119,7 @@ namespace LY.Initializer
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = ConfigUtil.AppName, Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, $"{ConfigUtil.AppName}.xml"));
+                c.IncludeXmlComments(Path.Combine(ConfigUtil.ApplicationBasePath, $"{ConfigUtil.AppName}.xml"));
             });
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>()); // for PropertiesAutowired

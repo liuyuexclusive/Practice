@@ -4,6 +4,8 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
 
 namespace ConsoleApp1
 {
@@ -27,6 +29,7 @@ namespace ConsoleApp1
 
             //    client.Agent.ServiceDeregister("LY.SysService");
             //}
+            Console.WriteLine("hello");
             LogUtil.Logger<Program>().LogError("123");
             Console.Read();
         }

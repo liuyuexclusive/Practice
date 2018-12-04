@@ -11,28 +11,58 @@ namespace LY.Common
 {
     public static class ConfigUtil
     {
-        public static IConfigurationRoot AppSettings
+        private static IConfigurationRoot AppSettings
         {
             get
             {
-                var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                return builder.Build();
+                return ReadJsonFile("appsettings.json", Directory.GetCurrentDirectory());
             }
         }
 
-        public static IConfigurationRoot LanchSettings
+
+        private static IConfigurationRoot ConnectionStringSettings
         {
             get
             {
-                var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("Properties/launchSettings.json", optional: true, reloadOnChange: true);
-                return builder.Build();
+                return ReadJsonFile("connectionString.json");
             }
         }
 
+        private static IConfigurationRoot RedisSettings
+        {
+            get
+            {
+                return ReadJsonFile("redisSettings.json");
+            }
+        }
+
+        private static IConfigurationRoot MQSettings
+        {
+            get
+            {
+               return ReadJsonFile("mqSettings.json");
+            }
+        }
+
+        private static IConfigurationRoot ReadJsonFile(string path,string basePath = null)
+        {
+            if (basePath.IsNullOrEmpty())
+            {
+                basePath = ApplicationBasePath;
+            }
+            var builder = new ConfigurationBuilder()
+.SetBasePath(basePath)
+.AddJsonFile(path, optional: true, reloadOnChange: true);
+            return builder.Build();
+        }
+
+        public static string ApplicationBasePath
+        {
+            get
+            {
+                return PlatformServices.Default.Application.ApplicationBasePath;
+            }
+        }
 
         public static string AppName
         {
@@ -46,7 +76,12 @@ namespace LY.Common
         {
             get
             {
-                return LanchSettings[$"profiles:{AppName}:applicationUrl"];
+                var url = AppSettings["Url"];
+                if (string.IsNullOrEmpty(url))
+                {
+                    throw new Exception("无法获取url,请检查配置文件appsettings.json");
+                }
+                return url;
             }
         }
 
@@ -80,7 +115,7 @@ namespace LY.Common
         public static string ConnStr
         {
             get {
-                return ConfigUtil.AppSettings.GetConnectionString("DefaultConnection");
+                return ConfigUtil.ConnectionStringSettings.GetConnectionString("DefaultConnection");
             }
         }
 
@@ -91,7 +126,7 @@ namespace LY.Common
         {
             get
             {
-                return ConfigUtil.AppSettings["LYMQ:ResponseAddress"];
+                return ConfigUtil.MQSettings["ResponseAddress"];
             }
         }
 
@@ -102,8 +137,13 @@ namespace LY.Common
         {
             get
             {
-                return ConfigUtil.AppSettings["LYMQ:PublishAddress"];
+                return ConfigUtil.MQSettings["PublishAddress"];
             }
+        }
+
+        public static string RedisAddress
+        {
+            get { return ConfigUtil.RedisSettings["Address"]; }
         }
     }
 }

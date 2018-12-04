@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using LY.Common;
 using LY.Common.Utils;
 using LY.DTO;
 using Microsoft.AspNetCore;
@@ -22,6 +23,6 @@ namespace LY.DaemonService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>().UseUrls(ConfigUtil.ApplicationUrl);
     }
 }

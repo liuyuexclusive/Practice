@@ -102,8 +102,8 @@ namespace LY.Initializer
 
             //cors
             services.AddCors(options =>
-              options.AddPolicy("cors", p => p.WithOrigins(ConfigUtil.AppSettings["Cors:Origins"].Split(","))
-                   //ungerlying policy
+              options.AddPolicy("cors",
+                    p=>p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
                    .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))
                    .AllowAnyMethod().AllowAnyHeader()
               )

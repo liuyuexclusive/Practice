@@ -13,11 +13,12 @@ namespace LY.OrderService.Controllers
         public TestController()
         {
         }
-        
+
+        [UnAuthorize]
         [HttpGet]
         public string Test()
         {
-            return "你好,接口已经启动"+ ConfigUtil.AppSettings["AppName"];
+            return "你好,接口已经启动"+ ConfigUtil.AppName;
         }
     }
 }

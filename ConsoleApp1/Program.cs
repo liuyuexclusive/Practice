@@ -1,7 +1,9 @@
-﻿using LY.Common.Utils;
+﻿using Consul;
+using LY.Common;
 using System;
-using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ConsoleApp1
 {
@@ -9,21 +11,23 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            while (true)
-            {
-                Console.WriteLine("输入日期，格式:yyyy-MM-dd");
-                string str =  Console.ReadLine();
-                if (DateTime.TryParse(str, out DateTime date))
-                {
-                    var roomtime = (date.ToUniversalTime().Ticks - 621355968000000000) / 10000 / 1000;
-                    Console.WriteLine($"结果：{roomtime}");
-                }
-                else
-                {
-                    Console.WriteLine("格式错误");
-                }
-            }
+            //using (var client = new ConsulClient())
+            //{
+            //    client.Agent.ServiceRegister(new AgentServiceRegistration() {
+            //        ID="LY.SysService",
+            //        Name="LY.Service",
+            //        Address = "localhost",
+            //        Port=9001,                  
+            //        Check = new AgentServiceCheck() {
+            //           HTTP = "https://localhost:9001/health",
+            //           Interval = TimeSpan.FromSeconds(5),
+            //           Timeout = TimeSpan.FromSeconds(1)
+            //        }
+            //    });
 
+            //    client.Agent.ServiceDeregister("LY.SysService");
+            //}
+            LogUtil.Logger<Program>().LogError("123");
             Console.Read();
         }
     }

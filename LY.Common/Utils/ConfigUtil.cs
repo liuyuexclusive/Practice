@@ -54,7 +54,7 @@ namespace LY.Common
         {
             get
             {
-                return new Regex(Const._httpRegex).Match(ApplicationUrl).Groups[1].Value;
+                return new Regex(Const.Regex._httpRegex).Match(ApplicationUrl).Groups[1].Value;
             }
         }
 
@@ -62,7 +62,7 @@ namespace LY.Common
         {
             get
             {
-                if (int.TryParse(new Regex(Const._httpRegex).Match(ApplicationUrl).Groups[2].Value, out int result))
+                if (int.TryParse(new Regex(Const.Regex._httpRegex).Match(ApplicationUrl).Groups[2].Value, out int result))
                 {
                     return result;
                 }

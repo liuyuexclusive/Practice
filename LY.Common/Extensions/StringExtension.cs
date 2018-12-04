@@ -38,5 +38,10 @@ namespace LY.Common.Extensions
                 throw new BusinessException("请输入有效电话");
             }
         }
+
+        public static string GetHttpMethod(this string typeName)
+        {
+            return new Regex(Const.Regex._httpMethodRegex).Match(typeName).Groups[1].Value;
+        }
     }
 }

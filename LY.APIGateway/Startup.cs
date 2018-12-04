@@ -60,13 +60,12 @@ namespace LY.APIGateway
                         ValidateAudience = true,//是否验证Audience
                         ValidateLifetime = true,//是否验证失效时间
                         ValidateIssuerSigningKey = true,//是否验证SecurityKey
-                        ValidAudience = ConfigUtil.AppSettings["JWT:Audience"],//Audience
-                        ValidIssuer = ConfigUtil.AppSettings["JWT:Issuer"],//Issuer，这两项和前面签发jwt的设置一致
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigUtil.AppSettings["JWT:SecurityKey"])),//拿到SecurityKey
+                        ValidAudience = Const.JWT.Audience,//Audience
+                        ValidIssuer = Const.JWT.Issuer,//Issuer，这两项和前面签发jwt的设置一致
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Const.JWT.SecurityKey)),//拿到SecurityKey
                     };
                 });
-            services.AddOcelot(Configuration);
-            //services.AddOcelot(Configuration).AddConsul();
+            services.AddOcelot(Configuration).AddConsul();
             services.AddMvc();
         }
 

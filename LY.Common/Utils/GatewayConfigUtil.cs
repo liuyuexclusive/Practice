@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LY.Common.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json;
 using System;
@@ -58,11 +59,12 @@ namespace LY.Common.Utils
             {
                 foreach (var method in controller.DeclaredMethods)
                 {
-                    if (method.CustomAttributes.Where(x => typeof(HttpMethodAttribute).IsAssignableFrom(x.AttributeType)).Count() > 0)
+                     var httpMethods = method.CustomAttributes.Where(x => typeof(HttpMethodAttribute).IsAssignableFrom(x.AttributeType));
+                    if (httpMethods.Count() > 0)
                     {
                         var isUnAuthorize = method.CustomAttributes.Where(x => typeof(UnAuthorizeAttribute).IsAssignableFrom(x.AttributeType)).Count() > 0;
                         var routeAttribute = method.GetCustomAttribute(typeof(RouteAttribute)) as RouteAttribute;
-                        string route = routeAttribute != null ? routeAttribute.Template : method.Name;
+                        string route = routeAttribute != null ? routeAttribute.Template : string.Empty;
                         string template = $"/{controller.Name.Replace("Controller",string.Empty)}/{route}";
                         listResult.Add(new GatewayReRoute()
                         {
@@ -75,6 +77,7 @@ namespace LY.Common.Utils
                             },
                             DownstreamPathTemplate = template,
                             UpstreamPathTemplate = template,
+                            UpstreamHttpMethod = httpMethods.Select(x => x.AttributeType.Name.GetHttpMethod()).ToList(),
                             AppName = ConfigUtil.AppName
                         });
                     }

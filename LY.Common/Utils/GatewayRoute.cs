@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,6 +14,8 @@ namespace LY.Common
     public class GatewayReRoute
     {
         public string UpstreamPathTemplate { get; set; }
+        [JsonProperty(PropertyName = " UpstreamHttpMethod ")]
+        public IList<string> UpstreamHttpMethod { get; set; }
         public string DownstreamPathTemplate { get; set; }
         public IList<GatewayReRouteDownstreamHostAndPort> DownstreamHostAndPorts { get; set; } = new List<GatewayReRouteDownstreamHostAndPort>();
         public string DownstreamScheme { get; set; } = "https";
@@ -35,7 +38,7 @@ namespace LY.Common
     {
         public string RequestIdKey { get; set; } = "OcRequestId";
         public string AdministrationPath { get; set; } = "/administration";
-        public ServiceDiscoveryProvider ServiceDiscoveryProvider { get; set; }
+        public ServiceDiscoveryProvider ServiceDiscoveryProvider { get; set; } = new ServiceDiscoveryProvider();
     }
 
     public class ServiceDiscoveryProvider

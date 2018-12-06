@@ -259,3 +259,23 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/runConsul.bat
+/runGateway.bat
+/runOrderService.bat
+/runRedis.bat
+/runSysService.bat
+/tools/consul/conf/web.json
+/tools/consul/consul.exe
+/tools/redis/EventLog.dll
+/tools/redis/Redis on Windows Release Notes.docx
+/tools/redis/Redis on Windows.docx
+/tools/redis/Windows Service Documentation.docx
+/tools/redis/dump.rdb
+/tools/redis/redis-benchmark.exe
+/tools/redis/redis-check-aof.exe
+/tools/redis/redis-check-dump.exe
+/tools/redis/redis-cli.exe
+/tools/redis/redis-server.exe
+/tools/redis/redis.windows-service.conf
+/tools/redis/redis.windows.conf
+/tools/redis/temp-22652.rdb

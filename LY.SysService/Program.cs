@@ -20,6 +20,7 @@ namespace LY.SysService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().UseUrls(ConfigUtil.ApplicationUrl);
+                .UseStartup<Startup>()
+                .UseUrls(ConfigUtil.ApplicationUrl);
     }
 }

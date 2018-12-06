@@ -1,5 +1,6 @@
 ﻿using LY.Common;
 using LY.Common.Middlewares;
+using LY.Common.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,12 @@ namespace LY.Initializer
             //must put in the front
             //app.UseSession();
             //appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
+            appLifetime.ApplicationStarted.Register(()=> {
+                ConsulUtil.ServiceRegister();
+            });
+            appLifetime.ApplicationStopped.Register(() => {
+                ConsulUtil.ServiceDeRegister();
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

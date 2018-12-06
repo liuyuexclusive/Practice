@@ -13,25 +13,47 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            //using (var client = new ConsulClient())
-            //{
-            //    client.Agent.ServiceRegister(new AgentServiceRegistration() {
-            //        ID="LY.SysService",
-            //        Name="LY.Service",
-            //        Address = "localhost",
-            //        Port=9001,                  
-            //        Check = new AgentServiceCheck() {
-            //           HTTP = "https://localhost:9001/health",
-            //           Interval = TimeSpan.FromSeconds(5),
-            //           Timeout = TimeSpan.FromSeconds(1)
-            //        }
-            //    });
-
-            //    client.Agent.ServiceDeregister("LY.SysService");
-            //}
-            Console.WriteLine("hello");
-            LogUtil.Logger<Program>().LogError("123");
+            Test();
             Console.Read();
+        }
+
+        static async void Test()
+        {
+            using (var client = new ConsulClient())
+            {
+                await client.Agent.ServiceRegister(new AgentServiceRegistration()
+                {
+                    ID = "LY.SysService",
+                    Name = "LY.Service",
+                    Address = "localhost",
+                    Port = 9001,
+                    Check = new AgentServiceCheck()
+                    {
+                        HTTP = "https://localhost:9001/health",
+                        Interval = TimeSpan.FromSeconds(10),
+                        Timeout = TimeSpan.FromSeconds(1)
+                    }
+                });
+
+                await client.Agent.ServiceRegister(new AgentServiceRegistration()
+                {
+                    ID = "LY.SysService",
+                    Name = "LY.Service",
+                    Address = "localhost",
+                    Port = 9001,
+                    Check = new AgentServiceCheck()
+                    {
+                        HTTP = "https://localhost:9001/health",
+                        Interval = TimeSpan.FromSeconds(10),
+                        Timeout = TimeSpan.FromSeconds(1)
+                    }
+                });
+
+                var xx = client.PreparedQuery.Create(new PreparedQueryDefinition() { Name= "LY.Service" });
+
+                Console.WriteLine("hello");
+            }
+
         }
     }
 }

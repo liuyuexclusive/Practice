@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>LY.APIGateway</name>
+        <name>LY.Gateway</name>
     </assembly>
     <members>
     </members>

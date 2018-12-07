@@ -48,7 +48,7 @@ namespace LY.APIGateway
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "APIGateway", Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(ConfigUtil.ApplicationBasePath, "LY.APIGateway.xml"));
+                c.IncludeXmlComments(Path.Combine(ConfigUtil.CurrentDirectory, "LY.APIGateway.xml"));
             });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

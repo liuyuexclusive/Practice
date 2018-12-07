@@ -119,7 +119,7 @@ namespace LY.Initializer
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = ConfigUtil.AppName, Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(ConfigUtil.ApplicationBasePath, $"{ConfigUtil.AppName}.xml"));
+                c.IncludeXmlComments(Path.Combine(ConfigUtil.CurrentDirectory, $"{ConfigUtil.AppName}.xml"));
             });
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>()); // for PropertiesAutowired

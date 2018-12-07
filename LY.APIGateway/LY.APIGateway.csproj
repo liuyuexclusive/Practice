@@ -6,7 +6,11 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\netcoreapp2.2\LY.APIGateway.xml</DocumentationFile>
+    <DocumentationFile>LY.APIGateway.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>LY.APIGateway.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

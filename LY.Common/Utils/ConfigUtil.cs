@@ -15,7 +15,7 @@ namespace LY.Common
         {
             get
             {
-                return ReadJsonFile("appsettings.json", Directory.GetCurrentDirectory());
+                return ReadJsonFile("appsettings.json", CurrentDirectory);
             }
         }
 
@@ -61,6 +61,14 @@ namespace LY.Common
             get
             {
                 return PlatformServices.Default.Application.ApplicationBasePath;
+            }
+        }
+
+        public static string CurrentDirectory
+        {
+            get
+            {
+                return Directory.GetCurrentDirectory();
             }
         }
 

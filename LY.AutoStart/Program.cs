@@ -60,6 +60,7 @@ namespace LY.AutoStart
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine($"cd {dic.FullName}");
                 sb.AppendLine($"dotnet restore");
+                sb.AppendLine($"dotnet build");
                 sb.AppendLine($"dotnet publish -c Release -o D:\\MyFiles\\Code\\practicePublish\\{dic.Name}");
                 sb.AppendLine($"dotnet D:\\MyFiles\\Code\\practicePublish\\{dic.Name}\\{dic.Name}.dll");
                 using (FileStream fs = File.Create($"{dic.Name}.bat"))

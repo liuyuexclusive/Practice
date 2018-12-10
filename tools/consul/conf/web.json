@@ -1,0 +1,36 @@
+{
+    "services": [
+        {
+            "id": "LY.SysService",
+            "name": "LY.Service",
+            "address": "localhost",
+            "port": 9001,
+            "checks": [
+                {
+                  "name": "LY.SysService_Check",
+                  "http": "https://localhost:9001/health",
+                  "interval": "10s",
+                  "tls_skip_verify": false,
+                  "method": "GET",
+                  "timeout": "1s"
+                }
+              ]
+        },
+        {
+            "id": "LY.OrderService",
+            "name": "LY.Service",
+            "address": "localhost",
+            "port": 9002,
+            "checks": [
+                {
+                  "name": "LY.OrderService_Check",
+                  "http": "https://localhost:9002/health",
+                  "interval": "10s",
+                  "tls_skip_verify": false,
+                  "method": "GET",
+                  "timeout": "1s"
+                }
+              ]
+        }
+    ]
+}

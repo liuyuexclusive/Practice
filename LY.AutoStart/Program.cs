@@ -5,12 +5,20 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LY.AutoStart
 {
     class Program
     {
         static void Main(string[] args)
+        {
+            Process.Start("D:\\MyFiles\\Code\\practice\\tools\\redis\\redis-server.exe");
+            //Start(ref args);
+        }
+
+        private static void Start(ref string[] args)
         {
             try
             {
@@ -69,6 +77,7 @@ namespace LY.AutoStart
                         process.WaitForExit();
                     }
                 }
+                Console.WriteLine("build sucess");
                 //kill
                 KillDotnet();
                 foreach (var dic in targets)
@@ -85,14 +94,28 @@ namespace LY.AutoStart
                     using (Process process = new Process())
                     {
                         process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
-                        process.Start();
+                        if (process.Start())
+                        {
+                            Console.WriteLine($"{dic.Name} start sucess");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{dic.Name} start fail");
+                        }
+                    }
+                    if (dic.Name.EndsWith("Gateway"))
+                    {
+                        Thread.Sleep(5000);
                     }
                 }
             }
             catch (Exception ex)
             {
-                KillDotnet();
                 Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                KillDotnet();
             }
         }
 

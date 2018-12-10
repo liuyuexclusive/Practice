@@ -82,7 +82,11 @@ namespace LY.AutoStart
                         sw.WriteLine(sb.ToString());
                         sw.Flush();
                     }
-                    Process.Start(Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat"));
+                    using (Process process = new Process())
+                    {
+                        process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
+                        process.Start();
+                    }
                 }
             }
             catch (Exception ex)

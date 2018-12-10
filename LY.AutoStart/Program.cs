@@ -23,28 +23,20 @@ namespace LY.AutoStart
                 Console.WriteLine("请输入workspace名称");
                 return;
             }
-            var workspace = new DirectoryInfo(Directory.GetCurrentDirectory());
-            var root = workspace.Root;
-            while (true)
+            var workspace = $"C:\\Program Files (x86)\\Jenkins\\workspace\\{args[0]}";
+            if (!Directory.Exists(workspace))
             {
-                if (workspace.FullName == root.FullName)
-                {
-                    Console.WriteLine($"无法找到workspace{args[0]}");
-                    return;
-                }
-                if (workspace.Name == args[0])
-                {
-                    break;
-                }
-                workspace = workspace.Parent;
+                Console.WriteLine($"无法找到workspace{workspace}");
+                return;
             }
+            var dirWorkspace = new DirectoryInfo(workspace);
             var targets = new List<DirectoryInfo>() { };
-            var gateway = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
+            var gateway = dirWorkspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
             if (gateway != null)
             {
                 targets.Add(gateway);
             }
-            targets.AddRange(workspace.GetDirectories().Where(x => x.Name.EndsWith("Service")));
+            targets.AddRange(dirWorkspace.GetDirectories().Where(x => x.Name.EndsWith("Service")));
 
             //kill
             foreach (var existProcess in Process.GetProcessesByName("dotnet"))

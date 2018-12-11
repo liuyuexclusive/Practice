@@ -135,14 +135,7 @@ namespace LY.AutoStart
                     using (Process process = new Process())
                     {
                         process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
-                        if (process.Start())
-                        {
-                            Console.WriteLine($"{dic.Name} start sucess");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{dic.Name} start fail");
-                        }
+                        process.Start();
                     }
                     if (dic.Name.EndsWith("Daemon"))
                     {

@@ -12,6 +12,8 @@ namespace LY.AutoStart
 {
     class Program
     {
+        public static string publishDir = @"D:\MyFiles\Code\practicePublish";
+
         static void Main(string[] args)
         {
             Start(ref args);
@@ -59,98 +61,144 @@ namespace LY.AutoStart
                 }
                 targets.AddRange(workspace.GetDirectories().Where(x => x.Name.EndsWith("Service")));
                 KillDotnet();
+                Ready(workspace);
 
-                //redis
-                var redisProcess = Process.GetProcessesByName("redis-server");
-                if (redisProcess != null && redisProcess.Length>0)
-                {
-                    foreach (var item in redisProcess)
-                    {
-                        item.Kill();
-                    }
-                }
-                Process.Start(Path.Combine(workspace.FullName, "tools", "redis", "redis-server.exe"));
-
-                //consul
-                var consulProcess = Process.GetProcessesByName("consul");
-                if (consulProcess != null && consulProcess.Length > 0)
-                {
-                    foreach (var item in redisProcess)
-                    {
-                        item.Kill();
-                    }
-                }
-
-                using (FileStream fs = File.Create("consul.bat"))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"cd {Path.Combine(workspace.FullName, "tools", "consul")}");
-                    sb.AppendLine($"consul.exe agent -dev");
-                    StreamWriter sw = new StreamWriter(fs);
-                    sw.WriteLine(sb.ToString());
-                    sw.Flush();
-                }
-                Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "consul.bat"));
-                
 
                 //build
-                foreach (var dic in targets)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"cd {dic.FullName}");
-                    sb.AppendLine($"dotnet restore");
-                    sb.AppendLine($"dotnet build");
-                    sb.AppendLine($"dotnet publish -c Release -o D:\\MyFiles\\Code\\practicePublish\\{dic.Name}");
-                    sb.AppendLine($"exit");
-                    using (FileStream fs = File.Create($"{dic.Name}_build.bat"))
-                    {
-                        StreamWriter sw = new StreamWriter(fs);
-                        sw.WriteLine(sb.ToString());
-                        sw.Flush();
-                    }
-                    using (Process process = new Process())
-                    {
-                        process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_build.bat");
-                        process.Start();
-                        process.WaitForExit();
-                    }
-                }
-                Console.WriteLine("build sucess");
+                Build(targets);
 
                 //kill bulid process
                 KillDotnet();
 
                 //start
-                foreach (var dic in targets)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"cd D:\\MyFiles\\Code\\practicePublish\\{dic.Name}");
-                    sb.AppendLine($"dotnet {dic.Name}.dll");
-                    using (FileStream fs = File.Create($"{dic.Name}_run.bat"))
-                    {
-                        StreamWriter sw = new StreamWriter(fs);
-                        sw.WriteLine(sb.ToString());
-                        sw.Flush();
-                    }
-                    using (Process process = new Process())
-                    {
-                        process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
-                        process.Start();
-                    }
-                    if (dic.Name.EndsWith("Daemon"))
-                    {
-                        Thread.Sleep(3000);
-                    }
-                    if (dic.Name.EndsWith("Gateway"))
-                    {
-                        Thread.Sleep(3000);
-                    }
-                }
+                Start(targets);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+        private static void Ready(DirectoryInfo workspace)
+        {
+
+
+            var targetDir = Path.Combine(publishDir, @"tools\");
+            if (!Directory.Exists(targetDir))
+            {
+                using (FileStream fs = File.Create("copytools.bat"))
+                {
+                    var sourceDir = Path.Combine(workspace.FullName, "tools");
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
+                    sb.AppendLine("exit");
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine(sb.ToString());
+                    sw.Flush();
+                }
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), "copytools.bat");
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+
+            //redis
+            var redisProcess = Process.GetProcessesByName("redis-server");
+            if (redisProcess != null && redisProcess.Length > 0)
+            {
+                foreach (var item in redisProcess)
+                {
+                    item.Kill();
+                }
+            }
+            using (FileStream fs = File.Create("redis.bat"))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"cd {Path.Combine(targetDir, "redis")}");
+                sb.AppendLine($"redis-server.exe");
+                StreamWriter sw = new StreamWriter(fs);
+                sw.WriteLine(sb.ToString());
+                sw.Flush();
+            }
+            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "redis.bat"));
+
+            //consul
+            var consulProcess = Process.GetProcessesByName("consul");
+            if (consulProcess != null && consulProcess.Length > 0)
+            {
+                foreach (var item in redisProcess)
+                {
+                    item.Kill();
+                }
+            }
+
+            using (FileStream fs = File.Create("consul.bat"))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"cd {Path.Combine(targetDir, "consul")}");
+                sb.AppendLine($"consul.exe agent -dev");
+                StreamWriter sw = new StreamWriter(fs);
+                sw.WriteLine(sb.ToString());
+                sw.Flush();
+            }
+            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "consul.bat"));
+        }
+
+        private static void Start(List<DirectoryInfo> targets)
+        {
+            foreach (var dic in targets)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"cd {Path.Combine(publishDir,dic.Name)}");
+                sb.AppendLine($"dotnet {dic.Name}.dll");
+                using (FileStream fs = File.Create($"{dic.Name}_run.bat"))
+                {
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine(sb.ToString());
+                    sw.Flush();
+                }
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
+                    process.Start();
+                }
+                if (dic.Name.EndsWith("Daemon"))
+                {
+                    Thread.Sleep(3000);
+                }
+                if (dic.Name.EndsWith("Gateway"))
+                {
+                    Thread.Sleep(3000);
+                }
+            }
+        }
+
+        private static void Build(List<DirectoryInfo> targets)
+        {
+            foreach (var dic in targets)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"cd {dic.FullName}");
+                sb.AppendLine($"dotnet restore");
+                sb.AppendLine($"dotnet build");
+                sb.AppendLine($"dotnet publish -c Release -o {Path.Combine(publishDir, dic.Name)}");
+                sb.AppendLine($"exit");
+                using (FileStream fs = File.Create($"{dic.Name}_build.bat"))
+                {
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine(sb.ToString());
+                    sw.Flush();
+                }
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_build.bat");
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+            Console.WriteLine("build sucess");
         }
 
         private static void KillDotnet()
@@ -164,5 +212,6 @@ namespace LY.AutoStart
                 }
             }
         }
+
     }
 }

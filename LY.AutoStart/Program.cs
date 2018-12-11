@@ -108,15 +108,15 @@ namespace LY.AutoStart
             }
 
             //redis
-            var redisProcess = Process.GetProcessesByName("redis-server");
-            if (redisProcess != null && redisProcess.Length > 0)
-            {
-                foreach (var item in redisProcess)
-                {
-                    item.Kill();
-                }
-            }
-            Process.Start(Path.Combine(targetDir, "redis", "redis-server.exe"));
+            //var redisProcess = Process.GetProcessesByName("redis-server");
+            //if (redisProcess != null && redisProcess.Length > 0)
+            //{
+            //    foreach (var item in redisProcess)
+            //    {
+            //        item.Kill();
+            //    }
+            //}
+            //Process.Start(Path.Combine(targetDir, "redis", "redis-server.exe"));
 
             //consul
             var consulProcess = Process.GetProcessesByName("consul");

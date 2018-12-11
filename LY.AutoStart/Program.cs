@@ -83,8 +83,11 @@ namespace LY.AutoStart
 
                 using (FileStream fs = File.Create("consul.bat"))
                 {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($"cd {Path.Combine(workspace.FullName, "tools", "consul")}");
+                    sb.AppendLine($"consul.exe agent -dev");
                     StreamWriter sw = new StreamWriter(fs);
-                    sw.WriteLine($"{Path.Combine(workspace.FullName, "tools", "consul", "consul.exe")} agent -dev");
+                    sw.WriteLine(sb.ToString());
                     sw.Flush();
                 }
                 Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "consul.bat"));

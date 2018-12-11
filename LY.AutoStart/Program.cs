@@ -118,6 +118,7 @@ namespace LY.AutoStart
             //}
             //Process.Start(Path.Combine(targetDir, "redis", "redis-server.exe"));
 
+
             //consul
             var consulProcess = Process.GetProcessesByName("consul");
             if (consulProcess != null && consulProcess.Length > 0)

@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.SysService", "LY.SysServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.OrderService", "LY.OrderService\LY.OrderService.csproj", "{DC63A13D-647D-42B4-942D-D5A4135E4F87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.DaemonService", "LY.DaemonService\LY.DaemonService.csproj", "{65771963-085C-46DF-BFA6-B3D23E6F2610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.Daemon", "LY.DaemonService\LY.Daemon.csproj", "{65771963-085C-46DF-BFA6-B3D23E6F2610}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5A4379AE-85E3-4BCB-9B24-DAADB0F74371}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.Gateway", "LY.Gateway\LY
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{D4F0DC31-79CA-4350-B18F-681CFFBBB944}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LY.AutoStart", "LY.AutoStart\LY.AutoStart.csproj", "{21A4537C-616E-4EC1-BD65-C8E600DFC141}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LY.AutoStart", "LY.AutoStart\LY.AutoStart.csproj", "{21A4537C-616E-4EC1-BD65-C8E600DFC141}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

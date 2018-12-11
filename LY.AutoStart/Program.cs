@@ -131,7 +131,7 @@ namespace LY.AutoStart
             using (FileStream fs = File.Create("consul.bat"))
             {
                 StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"{workspaceRoot}");
+                sb.AppendLine($"{publishRoot}");
                 sb.AppendLine($"cd {Path.Combine(targetDir, "consul")}");
                 sb.AppendLine($"consul.exe agent -dev");
                 StreamWriter sw = new StreamWriter(fs);

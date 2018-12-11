@@ -12,8 +12,10 @@ namespace LY.AutoStart
 {
     class Program
     {
+        public static string workspaceRoot = string.Empty;
+        public static string workspaceDir = string.Empty;
         public static string publishDir = @"D:\MyFiles\Code\practicePublish";
-
+        public static string publishRoot = new DirectoryInfo(publishDir).Root.Name.TrimEnd('\\','\\');
         static void Main(string[] args)
         {
             Start(ref args);
@@ -48,6 +50,8 @@ namespace LY.AutoStart
                     }
                     workspace = workspace.Parent;
                 }
+                workspaceRoot = (workspace.Root.Name.TrimEnd('\\','\\'));
+                workspaceDir = workspace.FullName;
                 var targets = new List<DirectoryInfo>() { };
                 var daemon = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
                 if (daemon != null)
@@ -81,14 +85,13 @@ namespace LY.AutoStart
 
         private static void Ready(DirectoryInfo workspace)
         {
-
-
+            var xx = new DirectoryInfo(publishDir);
             var targetDir = Path.Combine(publishDir, @"tools\");
             if (!Directory.Exists(targetDir))
             {
                 using (FileStream fs = File.Create("copytools.bat"))
                 {
-                    var sourceDir = Path.Combine(workspace.FullName, "tools");
+                    var sourceDir = Path.Combine(workspaceDir, "tools");
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
                     sb.AppendLine("exit");
@@ -128,6 +131,7 @@ namespace LY.AutoStart
             using (FileStream fs = File.Create("consul.bat"))
             {
                 StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"{publishRoot}");
                 sb.AppendLine($"cd {Path.Combine(targetDir, "consul")}");
                 sb.AppendLine($"consul.exe agent -dev");
                 StreamWriter sw = new StreamWriter(fs);
@@ -142,6 +146,7 @@ namespace LY.AutoStart
             foreach (var dic in targets)
             {
                 StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"{publishRoot}");
                 sb.AppendLine($"cd {Path.Combine(publishDir,dic.Name)}");
                 sb.AppendLine($"dotnet {dic.Name}.dll");
                 using (FileStream fs = File.Create($"{dic.Name}_run.bat"))
@@ -171,6 +176,7 @@ namespace LY.AutoStart
             foreach (var dic in targets)
             {
                 StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"{workspaceRoot}");
                 sb.AppendLine($"cd {dic.FullName}");
                 sb.AppendLine($"dotnet restore");
                 sb.AppendLine($"dotnet build");

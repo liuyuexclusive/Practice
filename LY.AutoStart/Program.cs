@@ -14,8 +14,7 @@ namespace LY.AutoStart
     {
         static void Main(string[] args)
         {
-            Process.Start("D:\\MyFiles\\Code\\practice\\tools\\redis\\redis-server.exe");
-            //Start(ref args);
+            Start(ref args);
         }
 
         private static void Start(ref string[] args)
@@ -48,6 +47,11 @@ namespace LY.AutoStart
                     workspace = workspace.Parent;
                 }
                 var targets = new List<DirectoryInfo>() { };
+                var daemon = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
+                if (daemon != null)
+                {
+                    targets.Add(daemon);
+                }
                 var gateway = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
                 if (gateway != null)
                 {
@@ -56,6 +60,37 @@ namespace LY.AutoStart
                 targets.AddRange(workspace.GetDirectories().Where(x => x.Name.EndsWith("Service")));
                 KillDotnet();
 
+                //redis
+                var redisProcess = Process.GetProcessesByName("redis-server");
+                if (redisProcess != null && redisProcess.Length>0)
+                {
+                    foreach (var item in redisProcess)
+                    {
+                        item.Kill();
+                    }
+                }
+                Process.Start(Path.Combine(workspace.FullName, "tools", "redis", "redis-server.exe"));
+
+                //consul
+                var consulProcess = Process.GetProcessesByName("consul");
+                if (consulProcess != null && consulProcess.Length > 0)
+                {
+                    foreach (var item in redisProcess)
+                    {
+                        item.Kill();
+                    }
+                }
+
+                using (FileStream fs = File.Create("consul.bat"))
+                {
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine($"{Path.Combine(workspace.FullName, "tools", "consul", "consul.exe")} agent -dev");
+                    sw.Flush();
+                }
+                Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "consul.bat"));
+                
+
+                //build
                 foreach (var dic in targets)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -80,6 +115,8 @@ namespace LY.AutoStart
                 Console.WriteLine("build sucess");
                 //kill
                 KillDotnet();
+
+                //start
                 foreach (var dic in targets)
                 {
                     StringBuilder sb = new StringBuilder();

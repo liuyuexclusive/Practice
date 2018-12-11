@@ -122,7 +122,7 @@ namespace LY.AutoStart
             var consulProcess = Process.GetProcessesByName("consul");
             if (consulProcess != null && consulProcess.Length > 0)
             {
-                foreach (var item in redisProcess)
+                foreach (var item in consulProcess)
                 {
                     item.Kill();
                 }

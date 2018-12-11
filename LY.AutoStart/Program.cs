@@ -144,9 +144,13 @@ namespace LY.AutoStart
                             Console.WriteLine($"{dic.Name} start fail");
                         }
                     }
+                    if (dic.Name.EndsWith("Daemon"))
+                    {
+                        Thread.Sleep(3000);
+                    }
                     if (dic.Name.EndsWith("Gateway"))
                     {
-                        Thread.Sleep(5000);
+                        Thread.Sleep(3000);
                     }
                 }
             }

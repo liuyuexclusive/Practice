@@ -116,7 +116,8 @@ namespace LY.AutoStart
                     }
                 }
                 Console.WriteLine("build sucess");
-                //kill
+
+                //kill bulid process
                 KillDotnet();
 
                 //start
@@ -152,10 +153,6 @@ namespace LY.AutoStart
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                KillDotnet();
             }
         }
 

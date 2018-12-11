@@ -113,16 +113,7 @@ namespace LY.AutoStart
                     item.Kill();
                 }
             }
-            using (FileStream fs = File.Create("redis.bat"))
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"cd {Path.Combine(targetDir, "redis")}");
-                sb.AppendLine($"redis-server.exe");
-                StreamWriter sw = new StreamWriter(fs);
-                sw.WriteLine(sb.ToString());
-                sw.Flush();
-            }
-            Process.Start(Path.Combine(Directory.GetCurrentDirectory(), "redis.bat"));
+            Process.Start(Path.Combine(targetDir, "redis", "redis-server.exe"));
 
             //consul
             var consulProcess = Process.GetProcessesByName("consul");

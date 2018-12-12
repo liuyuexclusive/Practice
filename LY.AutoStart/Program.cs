@@ -53,15 +53,15 @@ namespace LY.AutoStart
                 workspaceRoot = (workspace.Root.Name.TrimEnd('\\','\\'));
                 workspaceDir = workspace.FullName;
                 var targets = new List<DirectoryInfo>() { };
-                var daemon = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
-                if (daemon != null)
-                {
-                    targets.Add(daemon);
-                }
                 var gateway = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
                 if (gateway != null)
                 {
                     targets.Add(gateway);
+                }
+                var daemon = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
+                if (daemon != null)
+                {
+                    targets.Add(daemon);
                 }
                 targets.AddRange(workspace.GetDirectories().Where(x => x.Name.EndsWith("Service")));
                 KillDotnet();
@@ -161,11 +161,11 @@ namespace LY.AutoStart
                     process.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), $"{dic.Name}_run.bat");
                     process.Start();
                 }
-                if (dic.Name.EndsWith("Daemon"))
+                if (dic.Name.EndsWith("Gateway"))
                 {
                     Thread.Sleep(3000);
                 }
-                if (dic.Name.EndsWith("Gateway"))
+                if (dic.Name.EndsWith("Daemon"))
                 {
                     Thread.Sleep(3000);
                 }

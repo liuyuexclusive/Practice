@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Message, MessageBox } from "element-ui";
-let base = "https://localhost:9000/";
+let base = "http://localhost:9000/";
 
 export const gatewayHost = base
 

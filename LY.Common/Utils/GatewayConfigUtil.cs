@@ -39,7 +39,7 @@ namespace LY.Common.Utils
                                 }
                             },
                 AppName = ConfigUtil.AppName,
-                DownstreamScheme = "ws" + Const._scheme.TrimStart('h', 't', 't', 'p') 
+                DownstreamScheme = "ws" + Const._scheme.TrimStart("http".ToArray()) 
             });
 
             //swagger
@@ -98,7 +98,7 @@ namespace LY.Common.Utils
             if (config != null)
             {
                 var apps = reRoutes.Select(x => x.AppName).Distinct();
-                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x=> !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
+                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x=> apps.Contains(x.AppName) && !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
                 var needAddList = reRoutes.Except(reRoutes.Where(x => new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme)).Join(config.ReRoutes,
                     x => new { x.AppName, x.DownstreamScheme }, x => new { x.AppName, x.DownstreamScheme }, (x, y) => x));
                 foreach (var item in needAddList)

@@ -25,7 +25,7 @@ namespace LY.SysService.Controllers
         {
             string num = new Random().Next(1000, 9999).ToString();
             //_cache.SetString("aa", num);
-            return "你好,接口已经启动" + ConfigUtil.AppName;
+            return "你好,接口已经启动" + ConfigUtil.ApplicationUrl;
         }
     }
 }

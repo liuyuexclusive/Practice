@@ -39,7 +39,7 @@ namespace LY.Common.Utils
                                 }
                             },
                 AppName = ConfigUtil.AppName,
-                DownstreamScheme = "ws" + Const._scheme.TrimStart("http".ToArray()) 
+                DownstreamScheme = "ws" + Const._scheme.TrimStart("http".ToArray())
             });
 
             //swagger
@@ -56,13 +56,13 @@ namespace LY.Common.Utils
             {
                 foreach (var method in controller.DeclaredMethods)
                 {
-                     var httpMethods = method.CustomAttributes.Where(x => typeof(HttpMethodAttribute).IsAssignableFrom(x.AttributeType));
+                    var httpMethods = method.CustomAttributes.Where(x => typeof(HttpMethodAttribute).IsAssignableFrom(x.AttributeType));
                     if (httpMethods.Count() > 0)
                     {
                         var isUnAuthorize = method.CustomAttributes.Where(x => typeof(UnAuthorizeAttribute).IsAssignableFrom(x.AttributeType)).Count() > 0;
                         var routeAttribute = method.GetCustomAttribute(typeof(RouteAttribute)) as RouteAttribute;
                         string route = routeAttribute != null ? routeAttribute.Template : string.Empty;
-                        string template = $"/{controller.Name.Replace("Controller",string.Empty)}/{route}";
+                        string template = $"/{controller.Name.Replace("Controller", string.Empty)}/{route}";
                         listResult.Add(new GatewayReRoute()
                         {
                             AuthenticationOptions = isUnAuthorize ? null : new GatewayRouteAuthenticationOption(),
@@ -92,21 +92,23 @@ namespace LY.Common.Utils
         /// </summary>
         /// <param name="configPath"></param>
         /// <param name="reRoutes"></param>
-        public static void Update(string configPath,IList<GatewayReRoute> reRoutes)
+        public static void Update(string configPath, IList<GatewayReRoute> reRoutes)
         {
             var config = JsonConvert.DeserializeObject<GatewayConfig>(File.ReadAllText(configPath));
             if (config != null)
             {
                 var apps = reRoutes.Select(x => x.AppName).Distinct();
-                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x=> apps.Contains(x.AppName) && !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
-                var needAddList = reRoutes.Except(reRoutes.Where(x => new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme)).Join(config.ReRoutes,
-                    x => new { x.AppName, x.DownstreamScheme }, x => new { x.AppName, x.DownstreamScheme }, (x, y) => x));
+                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x => apps.Contains(x.AppName) && !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
+                var existUpstreamPathTemplates = config.ReRoutes.Select(x => x.UpstreamPathTemplate);
+                var needAddList = reRoutes
+                    .Except(reRoutes.Where(x => new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme)).Join(config.ReRoutes, x => new { x.AppName, x.DownstreamScheme }, x => new { x.AppName, x.DownstreamScheme }, (x, y) => x))
+                    .Except(reRoutes.Where(x => existUpstreamPathTemplates.Contains(x.UpstreamPathTemplate)));
                 foreach (var item in needAddList)
                 {
                     config.ReRoutes.Add(item);
                 }
             }
-            File.WriteAllText(configPath, JsonConvert.SerializeObject(config,new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
+            File.WriteAllText(configPath, JsonConvert.SerializeObject(config, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }));
         }
     }
 }

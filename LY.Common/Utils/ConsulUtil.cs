@@ -19,11 +19,6 @@ namespace LY.Common.Utils
         {
             using (var client = new ConsulClient())
             {
-                var exist = await client.Agent.Services();
-                foreach (var item in exist.Response.Values)
-                {
-                    var aa = await client.Agent.ServiceDeregister(item.ID);
-                }
                 var registration = new AgentServiceRegistration()
                 {
                     ID = ServiceID,

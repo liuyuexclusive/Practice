@@ -17,11 +17,19 @@ namespace LY.Common
         [JsonProperty(PropertyName = " UpstreamHttpMethod ")]
         public IList<string> UpstreamHttpMethod { get; set; }
         public string DownstreamPathTemplate { get; set; }
-        public IList<GatewayReRouteDownstreamHostAndPort> DownstreamHostAndPorts { get; set; } = new List<GatewayReRouteDownstreamHostAndPort>();
+        public IList<GatewayReRouteDownstreamHostAndPort> DownstreamHostAndPorts { get; set; }
         public string DownstreamScheme { get; set; } = "https";
         public GatewayRouteAuthenticationOption AuthenticationOptions { get; set; }
         public string AppName { get; set; }
+        public string ServiceName { get; set; }
+        public LoadBalancerOptions LoadBalancerOptions { get; set; }
     }
+
+    public class LoadBalancerOptions
+    {
+        public string Type { get; set; } = "LeastConnection";
+    }
+
 
     public class GatewayReRouteDownstreamHostAndPort
     {

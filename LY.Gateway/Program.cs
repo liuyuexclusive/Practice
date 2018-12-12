@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LY.Common;
+using LY.Common.Utils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,8 @@ namespace LY.Gateway
     {
         public static void Main(string[] args)
         {
+            MQUtil.Start();
+            MQUtil.Subscrib<IList<GatewayReRoute>>(x => GatewayConfigUtil.Update("configuration.json", x), "GatewayConfigUtilGen");
             CreateWebHostBuilder(args).Build().Run();
         }
 

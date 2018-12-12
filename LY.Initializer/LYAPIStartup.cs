@@ -25,12 +25,14 @@ namespace LY.Initializer
             //must put in the front
             //app.UseSession();
             //appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());
-            //appLifetime.ApplicationStarted.Register(()=> {
-            //    ConsulUtil.ServiceRegister();
-            //});
-            //appLifetime.ApplicationStopped.Register(() => {
-            //    ConsulUtil.ServiceDeRegister();
-            //});
+            appLifetime.ApplicationStarted.Register(() =>
+            {
+                ConsulUtil.ServiceRegister().Wait();
+            });
+            appLifetime.ApplicationStopping.Register(() =>
+            {
+                ConsulUtil.ServiceDeRegister().Wait();
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

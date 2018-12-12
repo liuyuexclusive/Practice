@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace LY.Common.Utils
@@ -46,13 +47,9 @@ namespace LY.Common.Utils
             {
                 UpstreamPathTemplate = $"/{ConfigUtil.AppName}/swagger.json",
                 DownstreamPathTemplate = "/swagger/v1/swagger.json",
-                DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
-                                new GatewayReRouteDownstreamHostAndPort(){
-                                    Host = ConfigUtil.Host,
-                                    Port = ConfigUtil.Port
-                                }
-                            },
-                AppName = ConfigUtil.AppName               
+                AppName = ConfigUtil.AppName,
+                ServiceName = ConfigUtil.AppName,
+                LoadBalancerOptions = new LoadBalancerOptions()
             });
 
             foreach (var controller in controllers)
@@ -69,16 +66,18 @@ namespace LY.Common.Utils
                         listResult.Add(new GatewayReRoute()
                         {
                             AuthenticationOptions = isUnAuthorize ? null : new GatewayRouteAuthenticationOption(),
-                            DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
-                                new GatewayReRouteDownstreamHostAndPort(){
-                                    Host = ConfigUtil.Host,
-                                    Port = ConfigUtil.Port
-                                }
-                            },
+                            //DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                            //    new GatewayReRouteDownstreamHostAndPort(){
+                            //        Host = ConfigUtil.Host,
+                            //        Port = ConfigUtil.Port
+                            //    }
+                            //},
                             DownstreamPathTemplate = template,
                             UpstreamPathTemplate = template,
                             UpstreamHttpMethod = httpMethods.Select(x => x.AttributeType.Name.GetHttpMethod()).ToList(),
-                            AppName = ConfigUtil.AppName
+                            AppName = ConfigUtil.AppName,
+                            ServiceName = ConfigUtil.AppName,
+                            LoadBalancerOptions = new LoadBalancerOptions()
                         });
                     }
                 }
@@ -99,8 +98,10 @@ namespace LY.Common.Utils
             if (config != null)
             {
                 var apps = reRoutes.Select(x => x.AppName).Distinct();
-                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x => apps.Contains(x.AppName))).ToList();
-                foreach (var item in reRoutes)
+                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x=> !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
+                var needAddList = reRoutes.Except(reRoutes.Where(x => new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme)).Join(config.ReRoutes,
+                    x => new { x.AppName, x.DownstreamScheme }, x => new { x.AppName, x.DownstreamScheme }, (x, y) => x));
+                foreach (var item in needAddList)
                 {
                     config.ReRoutes.Add(item);
                 }

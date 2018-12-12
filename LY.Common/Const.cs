@@ -8,6 +8,7 @@ namespace LY.Common
     {
         public static class Regex
         {
+            public static string _wsRegex = @"^wss?$";
             public static string _httpRegex = @"^https?://(.+):(\d+)/?$";
             public static string _httpMethodRegex = @"^Http(.+)Attribute$";
         }

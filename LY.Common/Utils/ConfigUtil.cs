@@ -89,6 +89,14 @@ namespace LY.Common
                 {
                     throw new Exception("无法获取url,请检查配置文件appsettings.json");
                 }
+                if (!new Regex(Const.Regex._httpRegex).IsMatch(url))
+                {
+                    throw new Exception("url格式错误，请检查配置文件appsettings.json");
+                }
+                if (!url.EndsWith("/"))
+                {
+                    url = url + "/";
+                }
                 return url;
             }
         }
@@ -125,7 +133,7 @@ namespace LY.Common
             get {
                 return ConfigUtil.ConnectionStringSettings.GetConnectionString("DefaultConnection");
             }
-        }
+        } 
 
         /// <summary>
         /// Response地址

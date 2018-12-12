@@ -94,7 +94,7 @@ namespace LY.AutoStart
                     var sourceDir = Path.Combine(workspaceDir, "tools");
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine($"{publishRoot}");
-                    sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
+                    sb.AppendLine($"xcopy /Y /S  \"{sourceDir}\"  \"{targetDir}\"");
                     sb.AppendLine("exit");
                     StreamWriter sw = new StreamWriter(fs);
                     sw.WriteLine(sb.ToString());

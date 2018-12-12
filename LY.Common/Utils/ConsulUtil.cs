@@ -30,13 +30,13 @@ namespace LY.Common.Utils
                     Name = ConfigUtil.AppName,
                     Address = ConfigUtil.Host,
                     Port = ConfigUtil.Port,
-                    //Check = new AgentServiceCheck()
-                    //{
-                    //    HTTP = $"{ConfigUtil.ApplicationUrl}health",
-                    //    Interval = TimeSpan.FromSeconds(5),
-                    //    Timeout = TimeSpan.FromSeconds(1),
-                    //    DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(10)
-                    //}
+                    Check = new AgentServiceCheck()
+                    {
+                        HTTP = $"{ConfigUtil.ApplicationUrl}health",
+                        Interval = TimeSpan.FromSeconds(5),
+                        Timeout = TimeSpan.FromSeconds(1),
+                        DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(10)
+                    }
                 };
                 await client.Agent.ServiceRegister(registration);
             }

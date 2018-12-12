@@ -105,7 +105,7 @@ namespace LY.Service.Sys
                    new Claim(ClaimTypes.Email, user.Email)
             };
             //sign the token using a secret key.This secret will be shared between your API and anything that needs to check that the token is legit.
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Const.JWT.SecurityKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Const.JWT._securityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             //.NET Core’s JwtSecurityToken class takes on the heavy lifting and actually creates the token.
             /**
@@ -119,8 +119,8 @@ namespace LY.Service.Sys
                 除了规定的字段外，可以包含其他任何 JSON 兼容的字段。
              * */
             var token = new JwtSecurityToken(
-                audience: Const.JWT.Audience,
-                issuer: Const.JWT.Issuer,
+                audience: Const.JWT._audience,
+                issuer: Const.JWT._issuer,
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds);

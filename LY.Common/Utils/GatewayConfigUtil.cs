@@ -30,7 +30,7 @@ namespace LY.Common.Utils
             //socket
             listResult.Add(new GatewayReRoute()
             {
-                UpstreamPathTemplate = "/ws/"+ ConfigUtil.AppName +"/{type}/{id}",
+                UpstreamPathTemplate = "/ws/" + ConfigUtil.AppName + "/{type}/{id}",
                 DownstreamPathTemplate = "/ws/{type}/{id}",
                 DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
                                 new GatewayReRouteDownstreamHostAndPort(){
@@ -39,7 +39,7 @@ namespace LY.Common.Utils
                                 }
                             },
                 AppName = ConfigUtil.AppName,
-                DownstreamScheme="wss"
+                DownstreamScheme = "ws" + Const._scheme.TrimStart('h', 't', 't', 'p') 
             });
 
             //swagger

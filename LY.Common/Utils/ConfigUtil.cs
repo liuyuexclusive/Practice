@@ -40,11 +40,11 @@ namespace LY.Common
         {
             get
             {
-               return ReadJsonFile("mqSettings.json");
+                return ReadJsonFile("mqSettings.json");
             }
         }
 
-        private static IConfigurationRoot ReadJsonFile(string path,string basePath = null)
+        private static IConfigurationRoot ReadJsonFile(string path, string basePath = null)
         {
             if (basePath.IsNullOrEmpty())
             {
@@ -84,19 +84,16 @@ namespace LY.Common
         {
             get
             {
-                var url = AppSettings["Url"];
-                if (string.IsNullOrEmpty(url))
+                var address = AppSettings["Address"];
+                if (string.IsNullOrEmpty(address))
                 {
-                    throw new Exception("无法获取url,请检查配置文件appsettings.json");
+                    throw new Exception("无法获取启动地址,请检查配置文件appsettings.json");
                 }
-                if (!new Regex(Const.Regex._httpRegex).IsMatch(url))
+                if (!new Regex(Const.Regex._httpAddressRegex).IsMatch(address))
                 {
-                    throw new Exception("url格式错误，请检查配置文件appsettings.json");
+                    throw new Exception("启动地址格式错误，请检查配置文件appsettings.json");
                 }
-                if (!url.EndsWith("/"))
-                {
-                    url = url + "/";
-                }
+                var url = Const._scheme + "://" + address + "/";
                 return url;
             }
         }
@@ -105,7 +102,7 @@ namespace LY.Common
         {
             get
             {
-                return new Regex(Const.Regex._httpRegex).Match(ApplicationUrl).Groups[1].Value;
+                return new Regex(Const.Regex._httpUrlRegex).Match(ApplicationUrl).Groups[1].Value;
             }
         }
 
@@ -113,7 +110,7 @@ namespace LY.Common
         {
             get
             {
-                if (int.TryParse(new Regex(Const.Regex._httpRegex).Match(ApplicationUrl).Groups[2].Value, out int result))
+                if (int.TryParse(new Regex(Const.Regex._httpUrlRegex).Match(ApplicationUrl).Groups[2].Value, out int result))
                 {
                     return result;
                 }
@@ -130,10 +127,11 @@ namespace LY.Common
         /// </summary>
         public static string ConnStr
         {
-            get {
+            get
+            {
                 return ConfigUtil.ConnectionStringSettings.GetConnectionString("DefaultConnection");
             }
-        } 
+        }
 
         /// <summary>
         /// Response地址

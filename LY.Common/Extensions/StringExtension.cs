@@ -41,7 +41,7 @@ namespace LY.Common.Extensions
 
         public static string GetHttpMethod(this string typeName)
         {
-            return new Regex(Const.Regex._httpMethodRegex).Match(typeName).Groups[1].Value;
+            return new Regex(Const.Regex._httpMethodAttributeRegex).Match(typeName).Groups[1].Value;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using LY.Common;
 using Microsoft.AspNetCore;
@@ -20,7 +21,6 @@ namespace LY.SysService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseUrls(ConfigUtil.ApplicationUrl);
+                .UseStartup<Startup>();
     }
 }

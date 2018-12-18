@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -11,40 +12,7 @@ namespace LY.Common
 {
     public static class ConfigUtil
     {
-        private static IConfigurationRoot AppSettings
-        {
-            get
-            {
-                return ReadJsonFile("appsettings.json", CurrentDirectory);
-            }
-        }
-
-
-        private static IConfigurationRoot ConnectionStringSettings
-        {
-            get
-            {
-                return ReadJsonFile("connectionString.json");
-            }
-        }
-
-        private static IConfigurationRoot RedisSettings
-        {
-            get
-            {
-                return ReadJsonFile("redisSettings.json");
-            }
-        }
-
-        private static IConfigurationRoot MQSettings
-        {
-            get
-            {
-                return ReadJsonFile("mqSettings.json");
-            }
-        }
-
-        private static IConfigurationRoot ReadJsonFile(string path, string basePath = null)
+        public static IConfigurationRoot ReadJsonFile(string path, string basePath = null)
         {
             if (basePath.IsNullOrEmpty())
             {
@@ -80,21 +48,12 @@ namespace LY.Common
             }
         }
 
+
         public static string ApplicationUrl
         {
             get
             {
-                var address = AppSettings["Address"];
-                if (string.IsNullOrEmpty(address))
-                {
-                    throw new Exception("无法获取启动地址,请检查配置文件appsettings.json");
-                }
-                if (!new Regex(Const.Regex._httpAddressRegex).IsMatch(address))
-                {
-                    throw new Exception("启动地址格式错误，请检查配置文件appsettings.json");
-                }
-                var url = Const._scheme + "://" + address + "/";
-                return url;
+                return Const._scheme + "://" + Host + ":" + Port + "/";
             }
         }
 
@@ -102,7 +61,17 @@ namespace LY.Common
         {
             get
             {
-                return new Regex(Const.Regex._httpUrlRegex).Match(ApplicationUrl).Groups[1].Value;
+                ///获取服务端
+                string AddressIP = string.Empty;
+                foreach (IPAddress _IPAddress in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                {
+                    if (_IPAddress.AddressFamily.ToString() == "InterNetwork")
+                    {
+                        AddressIP = _IPAddress.ToString();
+                    }
+                }
+                return AddressIP;
+                //return "172.16.210.140";
             }
         }
 
@@ -110,14 +79,8 @@ namespace LY.Common
         {
             get
             {
-                if (int.TryParse(new Regex(Const.Regex._httpUrlRegex).Match(ApplicationUrl).Groups[2].Value, out int result))
-                {
-                    return result;
-                }
-                else
-                {
-                    throw new BusinessException("获取端口号失败");
-                }
+                return 80;
+                //return int.Parse(ReadJsonFile("appSettings.json",CurrentDirectory)["Port"]);
             }
         }
 
@@ -125,11 +88,11 @@ namespace LY.Common
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
-        public static string ConnStr
+        public static string ConnectionString
         {
             get
             {
-                return ConfigUtil.ConnectionStringSettings.GetConnectionString("DefaultConnection");
+                return ReadJsonFile("connectionString.json").GetConnectionString("DefaultConnection");
             }
         }
 
@@ -140,7 +103,7 @@ namespace LY.Common
         {
             get
             {
-                return ConfigUtil.MQSettings["ResponseAddress"];
+                return ReadJsonFile("mqSettings.json")["ResponseAddress"];
             }
         }
 
@@ -151,13 +114,24 @@ namespace LY.Common
         {
             get
             {
-                return ConfigUtil.MQSettings["PublishAddress"];
+                return ReadJsonFile("mqSettings.json")["PublishAddress"];
             }
         }
 
         public static string RedisAddress
         {
-            get { return ConfigUtil.RedisSettings["Address"]; }
+            get
+            {
+                return ReadJsonFile("redisSettings.json")["Address"];
+            }
+        }
+
+        public static string ConsulUrl
+        {
+            get
+            {
+                return ReadJsonFile("consulSettings.json")["Address"];
+            }
         }
     }
 }

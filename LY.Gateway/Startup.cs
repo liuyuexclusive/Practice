@@ -23,7 +23,6 @@ namespace LY.Gateway
         {
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder();
             builder.SetBasePath(ConfigUtil.CurrentDirectory)
-                   //.AddJsonFile("appsettings.json")
                    //add configuration.json
                    .AddJsonFile("configuration.json", optional: false, reloadOnChange: true)
                    .AddEnvironmentVariables();

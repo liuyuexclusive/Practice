@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="consulSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="mqSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

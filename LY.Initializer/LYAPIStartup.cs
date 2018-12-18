@@ -21,7 +21,7 @@ namespace LY.Initializer
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
-        {
+        {   
             //must put in the front
             //app.UseSession();
             //appLifetime.ApplicationStopped.Register(() => IOCManager.Container.Dispose());

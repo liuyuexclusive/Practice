@@ -35,8 +35,14 @@ namespace LY.Initializer
             var types = assembly.ExportedTypes;
 
             IOCManager.ContainerBuilder
-                .RegisterType(types.FirstOrDefault(t => t.Name.Equals("LYDbContext")))
-                .As<DbContext>()
+                .RegisterType<LYMasterContext>()
+                .AsSelf()
+                .InstancePerLifetimeScope()
+                .PropertiesAutowired();
+
+            IOCManager.ContainerBuilder
+                .RegisterType<LYSlaveContext>()
+                .AsSelf()
                 .InstancePerLifetimeScope()
                 .PropertiesAutowired();
 
@@ -46,8 +52,13 @@ namespace LY.Initializer
                 .PropertiesAutowired();
 
             IOCManager.ContainerBuilder
+                .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("QueryRepository`1")))
+                .As(typeof(IQueryRepository<>))
+                .PropertiesAutowired();
+
+            IOCManager.ContainerBuilder
                 .RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.Equals("UnitOfWork") || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
+                .Where(t => t.Name.Equals("UnitOfWork")  || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
                 .AsImplementedInterfaces()
                 .PropertiesAutowired();
 
@@ -77,9 +88,6 @@ namespace LY.Initializer
 
         private void RegisterCommon(IServiceCollection services)
         {
-            //dbContext
-            services.AddDbContext<LYDbContext>();
-
             //autofac
             RegisterRepository();
             RegisterService();

@@ -29,7 +29,7 @@ namespace LY.DaemonService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddHangfire(x => x.UseStorage(new MySqlStorage(ConfigUtil.ConnectionString)));
+            services.AddHangfire(x => x.UseStorage(new MySqlStorage(ConfigUtil.MasterConnectionString)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

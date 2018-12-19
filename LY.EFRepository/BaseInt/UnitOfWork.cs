@@ -8,7 +8,7 @@ namespace LY.EFRepository
     [DebuggerStepThrough]
     public class UnitOfWork : BaseUnitOfWork<int>, IUnitOfWork
     {
-        public UnitOfWork(LYDbContext dbContext) : base(dbContext)
+        public UnitOfWork(LYMasterContext dbContext) : base(dbContext)
         {
         }
     }

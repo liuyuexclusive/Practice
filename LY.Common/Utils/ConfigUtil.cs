@@ -88,11 +88,22 @@ namespace LY.Common
         /// <summary>
         /// 数据库连接字符串
         /// </summary>
-        public static string ConnectionString
+        public static string MasterConnectionString
         {
             get
             {
-                return ReadJsonFile("connectionString.json").GetConnectionString("DefaultConnection");
+                return ReadJsonFile("connectionString.json").GetConnectionString("MasterConnection");
+            }
+        }
+
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public static string SlaveConnectionString
+        {
+            get
+            {
+                return ReadJsonFile("connectionString.json").GetConnectionString("SlaveConnection");
             }
         }
 

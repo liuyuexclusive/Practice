@@ -20,7 +20,7 @@ namespace LY.SysService.Controllers
     [EnableCors("cors")]
     public class RoleController : ApiControllerBase
     {
-        public IRepository<Sys_Role> RoleRepo { get; set; }
+        public IQueryRepository<Sys_Role> RoleRepo { get; set; }
         public RoleService RoleService { get; set; }
         public RoleController()
         {

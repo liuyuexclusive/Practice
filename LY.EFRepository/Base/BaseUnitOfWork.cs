@@ -7,9 +7,9 @@ namespace LY.EFRepository
 {
     public class BaseUnitOfWork<Tkey> : IBaseUnitOfWork<Tkey>
     {
-        private readonly DbContext _dbContext;
+        private readonly LYMasterContext _dbContext;
 
-        public BaseUnitOfWork(LYDbContext dbContext)
+        public BaseUnitOfWork(LYMasterContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -17,17 +17,15 @@ namespace LY.EFRepository
     {
         private readonly IBaseUnitOfWork<Tkey> _unitOfWork;
 
-        private readonly DbContext _dbContext;
+        private readonly LYMasterContext _dbContext;
 
-        public BaseRepository(IBaseUnitOfWork<Tkey> unitOfWork, DbContext dbContext)
+        public BaseRepository(IBaseUnitOfWork<Tkey> unitOfWork, LYMasterContext dbContext)
         {
             _unitOfWork = unitOfWork;
             _dbContext = dbContext;
         }
 
         protected IBaseUnitOfWork<Tkey> UnitOfWork => _unitOfWork;
-
-        protected DbContext DbContext => _dbContext;
 
         protected DbSet<TEntity> Entities => _dbContext.Set<TEntity>();
 

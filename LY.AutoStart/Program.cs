@@ -12,12 +12,18 @@ using System.Threading;
 using System.Threading.Tasks;
 namespace LY.AutoStart
 {
+    public enum ImageType
+    {
+        Docker,
+        Dotnet,
+        Vue
+    }
+
     class Program
     {
-        public static string workspaceRoot = string.Empty;
-        public static string workspaceDir = string.Empty;
-        public static string publishDir = @"D:\MyFiles\Code\practicePublish";
-        public static string publishRoot = new DirectoryInfo(publishDir).Root.Name.TrimEnd('\\', '\\');
+        static string workspaceRoot = string.Empty;
+        static string workspaceDir = string.Empty;
+        static DirectoryInfo workspace = null;
         static void Main(string[] args)
         {
             Start(ref args);
@@ -38,7 +44,7 @@ namespace LY.AutoStart
                     Console.WriteLine("请输入workspace名称");
                     return;
                 }
-                var workspace = new DirectoryInfo(Directory.GetCurrentDirectory());
+                workspace = new DirectoryInfo(Directory.GetCurrentDirectory());
                 var root = workspace.Root;
                 while (true)
                 {
@@ -55,14 +61,10 @@ namespace LY.AutoStart
                 }
                 workspaceRoot = workspace.Root.Name.TrimEnd('\\', '\\');
                 workspaceDir = workspace.FullName;
-                IEnumerable<DirectoryInfo> targets = GetTargets(workspace);
-                KillDotnet();
 
-                //build
-                Build(targets);
-
-                //start
-                Start(targets);
+                //DeployFirst();
+                DeployServices();
+                DeployVue();
             }
             catch (Exception ex)
             {
@@ -70,11 +72,7 @@ namespace LY.AutoStart
             }
         }
 
-        private static IEnumerable<DirectoryInfo> GetTargets(DirectoryInfo workspace)
-        {
-            return workspace.GetDirectories().Where(x => x.Name.EndsWith("Gateway") || x.Name.EndsWith("Daemon") || x.Name.EndsWith("Service"));
-        }
-        
+        #region common
         private static void ExcuteBat(string name, Func<StringBuilder> func, bool exit = false)
         {
             using (FileStream fs = File.Create($"{name}.bat"))
@@ -99,145 +97,247 @@ namespace LY.AutoStart
             }
         }
 
-        private static void Build(IEnumerable<DirectoryInfo> targets)
+        private static void CreateContainer(string name, string ip = null, string port = null)
         {
-            foreach (var dic in targets)
+            var lowName = name.ToLower();
+            ExcuteBat($"{name}_docker_run", () =>
             {
-
-                ExcuteBat($"{dic.Name}_build", () =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"{workspaceRoot}");
-                    sb.AppendLine($"cd {dic.FullName}");
-                    sb.AppendLine($"dotnet restore");
-                    sb.AppendLine($"dotnet build");
-                    sb.AppendLine($"dotnet publish -c Release -o {Path.Combine(publishDir, dic.Name)}");
-                    sb.AppendLine($"exit");
-                    return sb;
-                }, true);
-            }
-            Console.WriteLine("build sucess");
+                var sb = new StringBuilder();
+                sb.AppendLine($"docker run --network=lynet {ip} -itd --name={lowName}-server {port} -d {lowName}");
+                return sb;
+            }, true);
         }
 
-        private static void Start(IEnumerable<DirectoryInfo> targets)
+        private static void BuildImage(string name, ImageType type)
         {
-            ExcuteBat("Createlynet", () =>
+            var lowName = name.ToLower();
+            ExcuteBat($"{name}_docker_build", () =>
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"docker stop {lowName}-server");
+                sb.AppendLine($"docker rm {lowName}-server");
+                sb.AppendLine($"docker rmi {lowName}");
+                switch (type)
+                {
+                    case ImageType.Dotnet:
+                        sb.AppendLine($"{workspaceRoot}");
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name, "bin", "Release", "netcoreapp2.2", "publish")}");
+                        sb.AppendLine($"docker build -t {lowName} .");
+                        break;
+                    case ImageType.Docker:
+                        sb.AppendLine($"docker pull {lowName}");
+                        break;
+                    case ImageType.Vue:
+                        sb.AppendLine($"{workspaceRoot}");
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name, "dist")}");
+                        sb.AppendLine($"docker build -t {lowName} .");
+                        break;
+                    default:
+                        break;
+                }
+                return sb;
+            }, true);
+        }
+
+        private static void BuildApp(string name, ImageType type)
+        {
+            var lowName = name;
+            switch (type)
+            {
+                case ImageType.Dotnet:
+                    ExcuteBat($"{name}_build", () =>
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"{workspaceRoot}");
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                        sb.AppendLine($"dotnet restore");
+                        sb.AppendLine($"dotnet build");
+                        sb.AppendLine($"dotnet publish -c Release");
+                        return sb;
+                    }, true);
+                    break;
+                case ImageType.Vue:
+                    ExcuteBat($"{name}_install", () =>
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"{workspaceRoot}");
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                        sb.AppendLine($"npm install");
+                        return sb;
+                    }, true);
+                    ExcuteBat($"{name}_build", () =>
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"{workspaceRoot}");
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                        sb.AppendLine($"npm run build");
+                        return sb;
+                    }, true);
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+
+        private static void CreateDockerfile(string name, ImageType type)
+        {
+            switch (type)
+            {
+                case ImageType.Dotnet:
+                    using (FileStream fs = File.Create(Path.Combine(workspaceDir, name, "bin", "Release", "netcoreapp2.2", "publish", "Dockerfile")))
+                    {
+                        StreamWriter sw = new StreamWriter(fs);
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("FROM microsoft/dotnet:2.2-aspnetcore-runtime");
+                        sb.AppendLine("WORKDIR /app");
+                        sb.AppendLine("COPY . .");
+                        sb.AppendLine($"ENTRYPOINT [\"dotnet\", \"{name}.dll\"]");
+                        sw.WriteLine(sb.ToString());
+                        sw.Flush();
+                    }
+                    break;
+                case ImageType.Vue:
+                    using (FileStream fs = File.Create(Path.Combine(workspaceDir, name, "dist", "Dockerfile")))
+                    {
+                        StreamWriter sw = new StreamWriter(fs);
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("FROM nginx");
+                        sb.AppendLine("COPY . /usr/share/nginx/html/");
+                        sw.WriteLine(sb.ToString());
+                        sw.Flush();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
+
+        private static void DeployServices()
+        {
+            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x => x.Name.EndsWith("Gateway") || x.Name.EndsWith("Daemon") || x.Name.EndsWith("Service"));
+
+            //dotnet build
+            foreach (var dic in targets)
+            {
+                BuildApp(dic.Name, ImageType.Dotnet);
+            }
+
+            foreach (var item in targets)
+            {
+                CreateDockerfile(item.Name, ImageType.Dotnet);
+                BuildImage(item.Name, ImageType.Dotnet);
+            }
+
+            //docker run
+
+            var gateway = targets.FirstOrDefault(x => x.Name.EndsWith("Gateway"));
+            if (gateway != null)
+            {
+                CreateContainer(gateway.Name, "-p 9000:80 -p 5555:5555 -p 5556:5556", "--ip=172.18.203.1");
+            }
+
+            var daemon = targets.FirstOrDefault(x => x.Name.EndsWith("Daemon"));
+            if (daemon != null)
+            {
+                CreateContainer(daemon.Name, "-p 9009:80", "--ip=172.18.204.1");
+            }
+
+            var services = targets.Except(new DirectoryInfo[] { gateway, daemon });
+
+            foreach (var service in services)
+            {
+                CreateContainer(service.Name);
+            }
+        }
+
+        private static void DeployVue()
+        {
+            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x => x.Name.StartsWith("ly.vue"));
+
+            foreach (var dic in targets)
+            {
+                BuildApp(dic.Name, ImageType.Vue);
+            }
+
+            foreach (var item in targets)
+            {
+                CreateDockerfile(item.Name, ImageType.Vue);
+                BuildImage(item.Name, ImageType.Vue);
+            }
+
+            var t1 = targets.FirstOrDefault(x => x.Name == "ly.vue.pc");
+            if (t1 != null)
+            {
+                CreateContainer(t1.Name, "-p 8081:80");
+            }
+            var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.wx");
+            if (t2 != null)
+            {
+                CreateContainer(t2.Name, "-p 8082:80");
+            }
+        }
+
+        /// <summary>
+        /// 第一次部署执行
+        /// </summary>
+        private static void DeployFirst()
+        {
+            ExcuteBat("lynet", () =>
             {
                 var sb = new StringBuilder();
                 sb.AppendLine("docker network create --subnet=172.18.0.0/16 lynet");
                 return sb;
             }, true);
-            ExcuteBat("RunMysql", () =>
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("docker pull mysql");
-                //sb.AppendLine("docker stop mysql-server");
-                //sb.AppendLine("docker rm mysql-server");
-                sb.AppendLine("docker run --network=lynet --ip=172.18.0.2 -itd --name=mysql-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
-                sb.AppendLine("docker exec -it mysql-server bash");
-                sb.AppendLine($"docker cp {Path.Combine(workspaceDir, "update.sql")} mysql-server:/");
-                sb.AppendLine("mysql -u root -p123456");
-                sb.AppendLine("source ly.sql");
-                return sb;
-            }, true);
-            ExcuteBat("RunRedis", () =>
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("docker pull redis");
-                sb.AppendLine("docker stop redis-server");
-                sb.AppendLine("docker rm redis-server");
-                sb.AppendLine("docker run --network=lynet --ip=172.18.0.3 -itd --name=redis-server -p 6379:6379 -d redis");
-                return sb;
-            }, true);
-            ExcuteBat("RunConsul", () =>
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("docker pull consul");
-                sb.AppendLine("docker stop consul-server");
-                sb.AppendLine("docker rm consul-server");
-                sb.AppendLine("docker run --network=lynet --ip=172.18.0.4 -itd --name=consul-server -p 8500:8500 -d consul");
-                return sb;
-            }, true);
 
-            void GenDockerfile(string name)
-            {
-                using (FileStream fs = File.Create(Path.Combine(publishDir, name,"Dockerfile")))
-                {
-                    StreamWriter sw = new StreamWriter(fs);
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("FROM microsoft/dotnet:2.2-aspnetcore-runtime");
-                    sb.AppendLine("WORKDIR /app");
-                    sb.AppendLine("COPY . .");
-                    sb.AppendLine($"ENTRYPOINT [\"dotnet\", \"{name}.dll\"]");
-                    sw.WriteLine(sb.ToString());
-                    sw.Flush();
-                }
-            }
+            //修改user的plugin 'caching_sha2_password'-->'mysql_native_password'
+            //docker exec -it  mysql-master /bin/bash
+            //mysql -u root -p123456
+            //alter user 'root'@'%' identified by '123456' password expire never;
+            //alter user 'root'@'%' identified with mysql_native_password by '123456';
+            //flush privileges;
 
-            foreach (var item in targets)
-            {
-                GenDockerfile(item.Name);
-                ExcuteBat($"{item.Name}_docker_build", () =>
-                {
-                    var sb = new StringBuilder();
-                    sb.AppendLine($"docker stop {item.Name.ToLower()}");
-                    sb.AppendLine($"docker rm {item.Name.ToLower()}");
-                    sb.AppendLine($"docker rmi {item.Name.ToLower()}");
-                    sb.AppendLine($"{publishRoot}");
-                    sb.AppendLine($"cd {Path.Combine(publishDir, item.Name)}");
-                    sb.AppendLine($"docker build -t {item.Name.ToLower()} .");
-                    return sb;
-                }, true);
-            }
+            //设置docker的配置文件
+            //log_bin=mysql-bin
+            //server_id = 128 //从:129
+            //docker cp mysql-server:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
+            //docker cp mysql-slave:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
+            //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-server:/etc/mysql/my.cnf
+            //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-slave:/etc/mysql/my.cnf
+            //docker run --network=lynet -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
 
-            var gateway = targets.FirstOrDefault(x => x.Name.EndsWith("Gateway"));
+            //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
+            //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
 
-            if (gateway != null)
-            {
-                ExcuteBat($"{gateway.Name}_docker_run", () =>
-                {
-                    return GetCMDForServieDockerRun(gateway);
-                }, true);
-            }
+            //开启从库的slave
+            //CHANGE MASTER TO
+            //MASTER_HOST = '172.18.200.1',
+            //MASTER_USER = 'slave',
+            //MASTER_PASSWORD = '123456',
+            //MASTER_LOG_FILE = 'mysql-bin.000001',
+            //MASTER_LOG_POS = 1668;//只会从当前position同步
+            //START SLAVE;
+            //SHOW SLAVE STATUS \G
 
-            var services = targets.Except(new DirectoryInfo[] { gateway });
+            //ExcuteBat("RunMysql", () =>
+            //{
+            //    var sb = new StringBuilder();
+            //    sb.AppendLine("docker pull mysql");
+            //    //sb.AppendLine("docker stop mysql-server");
+            //    //sb.AppendLine("docker rm mysql-server");
+            //    sb.AppendLine("docker run --network=lynet --ip=172.18.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
+            //    sb.AppendLine("docker run --network=lynet --ip=172.18.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
+            //    sb.AppendLine($"docker cp {Path.Combine(workspaceDir, "update.sql")} mysql-master:/");
+            //    sb.AppendLine($"docker cp {Path.Combine(workspaceDir, "update.sql")} mysql-slave:/");
+            //    //sb.AppendLine("docker exec -it mysql-server /bin/bash -c 'mysql -u root -p123456 < update.sql'");
+            //    return sb;
+            //}, true);
 
-            foreach (var service in services)
-            {
-                ExcuteBat($"{service.Name}_docker_run", () =>
-                {
-                    return GetCMDForServieDockerRun(service);
-                }, true);
-            }
-        }
-
-        private static StringBuilder GetCMDForServieDockerRun(DirectoryInfo dir)
-        {
-            var sb = new StringBuilder();
-            string port = string.Empty;
-            string ip = string.Empty;
-            var name = dir.Name;
-            if (name.EndsWith("Gateway"))
-            {
-                port = " -p 9000:80 -p 5555:5555 -p 5556:5556";
-                ip = " --ip=172.18.0.5";
-            }
-            sb.AppendLine($"docker stop {dir.Name.ToLower()}-server");
-            sb.AppendLine($"docker rm {dir.Name.ToLower()}-server");
-            sb.AppendLine($"docker run --network=lynet{ip} -itd --name={dir.Name.ToLower()}-server{port} -d {dir.Name.ToLower()}");
-            return sb;
-        }
-
-        private static void KillDotnet()
-        {  
-            //kill
-            foreach (var existProcess in Process.GetProcessesByName("dotnet"))
-            {
-                if (existProcess.Id != Process.GetCurrentProcess().Id)
-                {
-                    existProcess.Kill();
-                }
-            }
+            BuildImage("redis", ImageType.Docker);
+            CreateContainer("redis", "--ip=172.18.201.1", "-p 6379:6379");
+            BuildImage("consul", ImageType.Docker);
+            CreateContainer("consul", "--ip=172.18.202.1", "-p 8500:8500");
         }
 
     }

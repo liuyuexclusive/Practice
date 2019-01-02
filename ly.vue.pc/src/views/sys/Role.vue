@@ -6,7 +6,7 @@
       <el-button @click="remove">删除</el-button>
       <el-button @click="refresh">刷新</el-button>
     </el-row>
-    <pageTable ref="pageTable" :columnData="columnData" getListUrl="Role/GetList" deleteUrl="Role/delete" editFormRouteName="RoleEdit"></pageTable>
+    <pageTable ref="pageTable" :columnData="columnData" getListUrl="Role/GetList" deleteUrl="Role/delete" editRouteName="RoleEdit"></pageTable>
   </div>
 </template>
 <script>

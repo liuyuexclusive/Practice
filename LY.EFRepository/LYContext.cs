@@ -11,7 +11,13 @@ namespace LY.EFRepository
         {
             modelBuilder.Entity<Sys_Role>().ToTable("sys_role");
             modelBuilder.Entity<Sys_User>().ToTable("sys_user");
-            modelBuilder.Entity<Sys_RoleUserMapping>().ToTable("sys_roleusermapping");
+            modelBuilder.Entity<Sys_RoleUserMapping>().ToTable("sys_role_user_mapping");
+            modelBuilder.Entity<Sys_RoleUserMapping>().HasOne(x => x.Role)
+                .WithMany(x => x.RoleUserMappingList)
+                .HasForeignKey(x => x.RoleId);
+            modelBuilder.Entity<Sys_RoleUserMapping>().HasOne(x => x.User)
+                .WithMany(x => x.RoleUserMappingList)
+                .HasForeignKey(x => x.UserId);
         }
     }
     public class LYMasterContext : DbContext

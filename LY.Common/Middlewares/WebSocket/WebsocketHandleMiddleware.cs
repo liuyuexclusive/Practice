@@ -30,7 +30,7 @@ namespace LY.Common.Middlewares
                 await _next(context);
             }
 
-            if (context.WebSockets.IsWebSocketRequest)
+            else if (context.WebSockets.IsWebSocketRequest)
             {
                 WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
                 await new WebSocketHandler().Handle(new LYWebSocket() { ID = id, Type = type, WebSocket = socket });

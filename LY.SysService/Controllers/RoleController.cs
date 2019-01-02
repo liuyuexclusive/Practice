@@ -20,8 +20,8 @@ namespace LY.SysService.Controllers
     [EnableCors("cors")]
     public class RoleController : ApiControllerBase
     {
-        public IQueryRepository<Sys_Role> RoleRepo { get; set; }
         public RoleService RoleService { get; set; }
+        public IEntityCache<Sys_Role> RoleCache { get; set; }
         public RoleController()
         {
         }
@@ -30,9 +30,10 @@ namespace LY.SysService.Controllers
         [Route("GetList")]
         public async Task<OutputList<RoleOutput>> GetList(BaseQueryInput value)
         {
+            var data = RoleCache.List();
             return await OKList(
-                RoleRepo.Queryable.Paging(value).Select(x => new { x.ID, x.Name, x.Description }.Adapt<RoleOutput>()).ToList(),
-                RoleRepo.Queryable.Count()
+                data.Select(x => new { x.ID, x.Name, x.Description }.Adapt<RoleOutput>()).ToList(),
+                data.Count()
             );
         }
 

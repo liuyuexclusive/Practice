@@ -1,11 +1,7 @@
-﻿using LY.Common;
-using LY.Domain;
+﻿using LY.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace LY.EFRepository
 {
@@ -13,27 +9,28 @@ namespace LY.EFRepository
     /// 资源库基类。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public class BaseRepository<Tkey, TEntity> : IBaseRepository<Tkey, TEntity> where TEntity : BaseEntity<Tkey>
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
     {
-        private readonly IBaseUnitOfWork<Tkey> _unitOfWork;
+        IUnitOfWork _unitOfWork;
+        LYMasterContext _context;
 
-        private readonly LYMasterContext _dbContext;
-
-        public BaseRepository(IBaseUnitOfWork<Tkey> unitOfWork, LYMasterContext dbContext)
+        public Repository(IUnitOfWork unitOfWork, LYMasterContext context)
         {
             _unitOfWork = unitOfWork;
-            _dbContext = dbContext;
+            _context = context;
         }
 
-        protected IBaseUnitOfWork<Tkey> UnitOfWork => _unitOfWork;
+        public virtual IQueryable<TEntity> Queryable => _context.Set<TEntity>().AsNoTracking();
 
-        protected DbSet<TEntity> Entities => _dbContext.Set<TEntity>();
 
-        public virtual IQueryable<TEntity> Queryable => Entities.AsQueryable<TEntity>();
-
-        public virtual TEntity Get(Tkey id)
+        public virtual TEntity Get(int id)
         {
             return Queryable.FirstOrDefault(x => x.ID.Equals(id));
+        }
+
+        public virtual IList<TEntity> GetAll()
+        {
+            return Queryable.ToList();
         }
 
         public virtual void Add(TEntity entity)
@@ -46,7 +43,7 @@ namespace LY.EFRepository
             _unitOfWork.RegisterUpdated(entity);
         }
 
-        public virtual void Delete(Tkey id)
+        public virtual void Delete(int id)
         {
             TEntity entity = Get(id);
             if (entity != null)
@@ -59,6 +56,5 @@ namespace LY.EFRepository
         {
             _unitOfWork.RegisterDeleted(entity);
         }
-
     }
 }

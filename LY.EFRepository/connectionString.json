@@ -1,6 +1,6 @@
 ﻿{
   "ConnectionStrings": {
-    "MasterConnection": "server=172.18.200.1;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;",
-    "SlaveConnection": "server=172.18.200.2;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;"
+    "MasterConnection": "server=172.16.210.140;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;",
+    "SlaveConnection": "server=172.16.210.140;port=3307;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;"
   }
 }

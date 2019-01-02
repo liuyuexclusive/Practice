@@ -279,3 +279,4 @@ __pycache__/
 /tools/redis/redis.windows-service.conf
 /tools/redis/redis.windows.conf
 /tools/redis/temp-22652.rdb
+/PublishToProduct

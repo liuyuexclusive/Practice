@@ -1,10 +1,35 @@
  <template>
   <div v-loading="loading">
-    <el-table ref="commonPageTable" @row-dblclick="dblclick" :height="tableHight" :data="tableData" @current-change="currentChange" @selection-change="selectionChange" highlight-current-row>
-      <el-table-column type="selection" width="50"></el-table-column>
-      <el-table-column :key="item.ID" v-for="item in columnData" :prop="item.prop" :label="item.label"></el-table-column>
+    <el-table
+      ref="commonPageTable"
+      @row-dblclick="dblclick"
+      :height="tableHight"
+      :data="tableData"
+      @current-change="currentChange"
+      @selection-change="selectionChange"
+      highlight-current-row
+    >
+      <el-table-column
+        type="selection"
+        width="50"
+      ></el-table-column>
+      <el-table-column
+        :key="item.ID"
+        v-for="item in columnData"
+        :prop="item.prop"
+        :label="item.label"
+      ></el-table-column>
     </el-table>
-    <el-pagination style="margin-top:10px" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageData.CurrentPage" :page-sizes="pageSizes" :page-size="pageData.CurrentPageSize" layout="total, sizes, prev, pager, next, jumper" :total="pageData.Total">
+    <el-pagination
+      style="margin-top:10px"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pageData.CurrentPage"
+      :page-sizes="pageSizes"
+      :page-size="pageData.CurrentPageSize"
+      :layout="pageData.layout"
+      :total="pageData.Total"
+    >
     </el-pagination>
   </div>
 
@@ -17,6 +42,7 @@ export default {
   data() {
     return {
       pageData: {
+        layout:"total, sizes, prev, pager, next, jumper",
         CurrentPage: 1,
         CurrentPageSize: store.state.pageSize,
         Total: 0
@@ -29,7 +55,9 @@ export default {
     };
   },
 
-  props: ["columnData", "getListUrl", "deleteUrl", "editFormRouteName"],
+  props: ["columnData", "getListUrl", "deleteUrl", "editRouteName","isPaging"],
+
+  
   mounted() {
     this.refresh();
     window.onresize = () => {
@@ -62,7 +90,12 @@ export default {
     },
     refresh() {
       this.loading = true;
-      request(this.getListUrl, "post", this.pageData, true).then(data => {
+      if(this.isPaging!=true){
+          this.pageData.layout="total";
+          this.pageData.CurrentPage=1;
+          this.pageData.CurrentPageSize=1000000;
+      }
+      request(this.getListUrl, "post", {CurrentPage:this.pageData.CurrentPage,CurrentPageSize:this.pageData.CurrentPageSize}).then(data => {
         if (data) {
           this.tableData = data.Data;
           this.pageData.Total = data.Total;
@@ -77,8 +110,8 @@ export default {
         this.$confirm("删除数据将无法恢复，确认删除？").then(() => {
           request(this.deleteUrl, "delete", {
             IDs: this.selection.map(x => x.ID)
-          }).then(data=>{
-            if(data){
+          }).then(data => {
+            if (data) {
               this.refresh();
             }
           });
@@ -86,14 +119,14 @@ export default {
       }
     },
     add() {
-      this.$router.push({ name: this.editFormRouteName });
+      this.$router.push({ name: this.editRouteName });
     },
     update() {
       if (!this.currentRow) {
         this.$alert("请选择行");
       } else {
         this.$router.push({
-          name: this.editFormRouteName,
+          name: this.editRouteName,
           params: this.currentRow
         });
       }

@@ -98,10 +98,9 @@ namespace LY.Common.Utils
             if (config != null)
             {
                 var apps = reRoutes.Select(x => x.AppName).Distinct();
-                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x => apps.Contains(x.AppName) && !new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme))).ToList();
+                config.ReRoutes = config.ReRoutes.Except(config.ReRoutes.Where(x => apps.Contains(x.AppName))).ToList();
                 var existUpstreamPathTemplates = config.ReRoutes.Select(x => x.UpstreamPathTemplate);
                 var needAddList = reRoutes
-                    .Except(reRoutes.Where(x => new Regex(Const.Regex._wsRegex).IsMatch(x.DownstreamScheme)).Join(config.ReRoutes, x => new { x.AppName, x.DownstreamScheme }, x => new { x.AppName, x.DownstreamScheme }, (x, y) => x))
                     .Except(reRoutes.Where(x => existUpstreamPathTemplates.Contains(x.UpstreamPathTemplate)));
                 foreach (var item in needAddList)
                 {

@@ -21,6 +21,7 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Collections.Generic;
 using LY.Common.Utils;
+using Microsoft.Extensions.Caching.Redis;
 
 namespace LY.Initializer
 {
@@ -44,6 +45,11 @@ namespace LY.Initializer
                 .RegisterType<LYSlaveContext>()
                 .AsSelf()
                 .InstancePerLifetimeScope()
+                .PropertiesAutowired();
+
+            IOCManager.ContainerBuilder
+                .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EntityCache`1")))
+                .As(typeof(IEntityCache<>))
                 .PropertiesAutowired();
 
             IOCManager.ContainerBuilder

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace LY.Domain.Sys
 {
-    public class Sys_User : Entity
+    public class Sys_User : Entity, IEntityCacheable
     {
         /// <summary>
         /// 邮箱
@@ -40,7 +40,7 @@ namespace LY.Domain.Sys
         /// <summary>
         /// 所属角色
         /// </summary>
-        public IList<Sys_RoleUserMapping> RoleUserMappingList { get; set; }
+        public ICollection<Sys_RoleUserMapping> RoleUserMappingList { get; set; }
 
         /// <summary>
         /// 注册

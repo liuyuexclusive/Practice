@@ -43,6 +43,12 @@ export default {
       };
     }
   },
+  destroyed(){
+    if(socket){
+      socket.close();
+      socket = null;
+    }
+  },
   watch: {},
   methods: {
     close() {

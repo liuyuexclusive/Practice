@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.MySql.Core;
 using LY.Common;
 using Microsoft.AspNetCore.Builder;
@@ -43,11 +44,26 @@ namespace LY.DaemonService
             {
                 app.UseHsts();
             }
-            
-            app.UseHangfireDashboard();
+
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions() {
+                Authorization = new [] { new MyAuthorizationFilter() },
+                IsReadOnlyFunc = x => true
+            });
             app.UseHangfireServer();
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+    }
+
+    public class MyAuthorizationFilter : Hangfire.Dashboard.IDashboardAuthorizationFilter
+    {
+        public bool Authorize(DashboardContext context)
+        {
+            var httpContext = context.GetHttpContext();
+
+            // Allow all authenticated users to see the Dashboard (potentially dangerous).
+            //return httpContext.User.Identity.IsAuthenticated;
+            return true;
         }
     }
 }

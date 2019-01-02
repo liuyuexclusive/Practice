@@ -20,7 +20,7 @@ namespace LY.Common
             }
             var builder = new ConfigurationBuilder()
 .SetBasePath(basePath)
-.AddJsonFile(path, optional: true, reloadOnChange: true);
+.AddJsonFile(path, optional: true, reloadOnChange: false);
             return builder.Build();
         }
 
@@ -92,6 +92,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+#endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("MasterConnection");
             }
         }
@@ -103,6 +106,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "server=127.0.0.1;port=3307;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+#endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("SlaveConnection");
             }
         }
@@ -114,6 +120,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "127.0.0.1:5556";
+#endif
                 return ReadJsonFile("mqSettings.json")["ResponseAddress"];
             }
         }
@@ -125,6 +134,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "127.0.0.1:5555";
+#endif
                 return ReadJsonFile("mqSettings.json")["PublishAddress"];
             }
         }
@@ -133,6 +145,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "127.0.0.1:6379";
+#endif
                 return ReadJsonFile("redisSettings.json")["Address"];
             }
         }
@@ -141,6 +156,9 @@ namespace LY.Common
         {
             get
             {
+#if DEBUG
+                return "http://127.0.0.1:8500";
+#endif
                 return ReadJsonFile("consulSettings.json")["Address"];
             }
         }

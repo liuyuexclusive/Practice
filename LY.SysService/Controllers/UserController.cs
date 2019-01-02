@@ -24,21 +24,21 @@ namespace LY.SysService.Controllers
     {
         public ILogger<UserController> _logger;
         public UserService _userService;
-        public IRepository<Sys_User> _userRepo;
-        public UserController(ILogger<UserController> logger, UserService userService, IRepository<Sys_User> userRepo)
+        public IEntityCache<Sys_User> UserCache { get; set; }
+        public UserController(ILogger<UserController> logger, UserService userService)
         {
             _logger = logger;
             _userService = userService;
-            _userRepo = userRepo;
         }
 
         [HttpPost]
         [Route("GetList")]
         public async Task<OutputList<UserOutput>> GetList(BaseQueryInput value)
         {
+            var data = UserCache.List();
             return await OKList(
-                _userRepo.Queryable.Paging(value).Select(x => new { x.ID, x.Name, x.Email, x.Mobile, x.LastOn }.Adapt<UserOutput>()).ToList(),
-                _userRepo.Queryable.Count()
+                data.Select(x => new { x.ID, x.Name, x.Email, x.Mobile, x.LastOn }.Adapt<UserOutput>()).ToList(),
+                data.Count()
                );
         }
 

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace LY.Domain.Sys
 {
-    public class Sys_Role : Entity
+    public class Sys_Role : Entity, IEntityCacheable
     {
         /// <summary>
         /// 角色名称

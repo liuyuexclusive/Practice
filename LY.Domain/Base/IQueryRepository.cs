@@ -9,8 +9,8 @@ namespace LY.Domain
     ///  代表一个资源库。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public interface IRepository<TEntity> : IBaseRepository<int, TEntity> where TEntity : Entity
+    public interface IQueryRepository<TEntity> where TEntity : Entity
     {
-
+        IQueryable<TEntity> Queryable { get; }
     }
 }

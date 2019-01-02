@@ -6,6 +6,7 @@ using LY.Service.Sys;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Text;
@@ -17,21 +18,34 @@ namespace LY.SysService.Controllers
     [EnableCors("cors")]
     public class TestController : ApiControllerBase
     {
-        IDistributedCache _cache;
-        public IQueryRepository<Sys_Role> RoleRepo { get; set; }
-        public TestController(IDistributedCache cache)
+        public IEntityCache<Sys_User> UserCache { get; set; }
+        public IRepository<Sys_User> UserRepo { get; set; }
+        public IUnitOfWork UW { get; set; }
+        public TestController()
         {
-            _cache = cache;
+
         }
 
         [UnAuthorize]
         [HttpGet]
+        [Route("Test")]
         public string Test()
         {
-            var xx = RoleRepo.Queryable.Where(x => true).ToList();
-            string num = new Random().Next(1000, 9999).ToString();
+            var xx = UserCache.List();
+            return JsonConvert.SerializeObject(xx);
+        }
+
+        [UnAuthorize]
+        [HttpGet]
+        [Route("Test1")]
+        public string Test1()
+        {
+            var user = UserRepo.Queryable.FirstOrDefault(x => x.Name == "admin");
+            user.Mobile = new Random().Next(1310000, 1319999).ToString()+"0000";
+            UserRepo.Update(user);
+            UW.Commit();
+            return "";
             //_cache.SetString("aa", num);
-            return "你好,接口已经启动" + ConfigUtil.ApplicationUrl;
         }
     }
 }

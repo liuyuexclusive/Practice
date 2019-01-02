@@ -12,6 +12,6 @@ node('master') {
             dotnet build
             dotnet publish -c Release
             cd C:\\Program Files (x86)\\Jenkins\\workspace\\test\\LY.AutoStart\\bin\\Release\\netcoreapp2.2\\publish
-            dotnet LY.AutoStart.dll test ${params.options}
+            dotnet LY.AutoStart.dll test services
             '''
 }

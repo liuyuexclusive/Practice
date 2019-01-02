@@ -6,12 +6,12 @@ node('master') {
             
     //构建
     stage 'deploy'
-        bat '''
+        bat $'''
             cd C:\\Program Files (x86)\\Jenkins\\workspace\\test\\LY.AutoStart
             dotnet restore
             dotnet build
             dotnet publish -c Release
             cd C:\\Program Files (x86)\\Jenkins\\workspace\\test\\LY.AutoStart\\bin\\Release\\netcoreapp2.2\\publish
-            dotnet LY.AutoStart.dll test ${params.options}
+            dotnet LY.AutoStart.dll test {params.options}
             '''
 }

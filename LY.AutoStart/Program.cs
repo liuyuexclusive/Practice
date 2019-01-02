@@ -31,7 +31,6 @@ namespace LY.AutoStart
         static void Main(string[] args)
         {
             Start(ref args);
-            Console.Read();
         }
         private static void Start(ref string[] args)
         {

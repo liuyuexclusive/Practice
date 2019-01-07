@@ -20,7 +20,7 @@
                                     <i class="el-icon-arrow-down el-icon--right"></i>
                                 </span>
                                 <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item command="logoff">注销</el-dropdown-item>
+                                    <el-dropdown-item command="logout">注销</el-dropdown-item>
                                     <el-dropdown-item command="setting">设置</el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     userHandler(cmd) {
-      if (cmd === "logoff") {
+      if (cmd === "logout") {
         this.$confirm("确认注销？")
           .then(() => {
             localStorage.removeItem("token");

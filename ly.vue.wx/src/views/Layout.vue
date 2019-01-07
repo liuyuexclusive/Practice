@@ -21,7 +21,7 @@ export default {
       items: [
         {
           title:"首页",
-          link: "/",
+          link: "/Home",
           src: require("vux/src/icons/home.svg"),
           showdot: false,
           badge: "",

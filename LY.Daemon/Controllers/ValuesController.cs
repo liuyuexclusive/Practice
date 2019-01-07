@@ -16,6 +16,7 @@ namespace LY.DaemonService.Controllers
         public ActionResult<string> Get()
         {
             return "Daemon服务启动成功";
+            BackgroundJob.Enqueue(() => Console.WriteLine("Enqueue"));
             //BackgroundJob.Enqueue(() => Console.WriteLine("Enqueue"));
             //BackgroundJob.Schedule(() => Console.WriteLine("Schedule"),TimeSpan.FromSeconds(10));
             //RecurringJob.AddOrUpdate(() => Console.WriteLine("Minutely Job"), Cron.Minutely);

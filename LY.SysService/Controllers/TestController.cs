@@ -3,15 +3,8 @@ using LY.Common;
 using LY.Common.API;
 using LY.Domain;
 using LY.Domain.Sys;
-using LY.Service.Sys;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LY.SysService.Controllers
 {

@@ -11,11 +11,11 @@ namespace LY.Gateway.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class SubscribeController : ControllerBase
     {
         [UnAuthorize]
         [CapSubscribe("GatewayConfigUtilGen")]
-        public Task CheckReceivedMessage(IList<GatewayReRoute> list)
+        public Task GatewayConfigUtilGen(IList<GatewayReRoute> list)
         {
             GatewayConfigUtil.Update("configuration.json", list);
             return Task.CompletedTask;

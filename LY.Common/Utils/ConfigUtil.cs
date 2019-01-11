@@ -113,34 +113,6 @@ namespace LY.Common
             }
         }
 
-        /// <summary>
-        /// Response地址
-        /// </summary>
-        public static string ResponseAddress
-        {
-            get
-            {
-#if DEBUG
-                return "127.0.0.1:5556";
-#endif
-                return ReadJsonFile("mqSettings.json")["ResponseAddress"];
-            }
-        }
-
-        /// <summary>
-        /// Publish地址
-        /// </summary>
-        public static string PublishAddress
-        {
-            get
-            {
-#if DEBUG
-                return "127.0.0.1:5555";
-#endif
-                return ReadJsonFile("mqSettings.json")["PublishAddress"];
-            }
-        }
-
         public static string RedisAddress
         {
             get

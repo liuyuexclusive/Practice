@@ -22,5 +22,18 @@ namespace LY.Common
             public static string _issuer = "ly-user";
             public static string _audience = "ly";
         }
+
+        public static class IP
+        {
+            public static string _network = "172.18.0.0/16";
+            static string _prefix = _network.Substring(0, 6);
+            public static string _mysqlMaster = $"{_prefix}.200.1";
+            public static string _mysqlSlave = $"{_prefix}.200.2";
+            public static string _redis = $"{_prefix}.201.1";
+            public static string _consul = $"{_prefix}.202.1";
+            public static string _rabbitmq = $"{_prefix}.203.1";
+            public static string _gateway = $"{_prefix}.211.1";
+            public static string _daemon = $"{_prefix}.212.1";
+        }
     }
 }

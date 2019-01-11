@@ -36,6 +36,9 @@ namespace LY.AutoStart
         {
             try
             {
+#if DEBUG
+                args = new string[] { "practice", "services,gateway" };
+#endif
                 if (args == null || args.Length == 0)
                 {
                     Console.WriteLine("请输入workspace名称");
@@ -65,15 +68,6 @@ namespace LY.AutoStart
                 workspaceDir = workspace.FullName;
 
                 var options = args[1].Split(",").Distinct();
-
-                if (!options.Intersect(new string[] { "services", "all" }).IsNullOrEmpty())
-                {
-                    DeployServices();
-                }
-                if (!options.Intersect(new string[] { "vue", "all" }).IsNullOrEmpty())
-                {
-                    DeployVue();
-                }
                 if (!options.Intersect(new string[] { "base", "all" }).IsNullOrEmpty())
                 {
                     DeployBase();
@@ -85,6 +79,14 @@ namespace LY.AutoStart
                 if (!options.Intersect(new string[] { "daemon", "all" }).IsNullOrEmpty())
                 {
                     DeployDaemon();
+                }
+                if (!options.Intersect(new string[] { "services", "all" }).IsNullOrEmpty())
+                {
+                    DeployServices();
+                }
+                if (!options.Intersect(new string[] { "vue", "all" }).IsNullOrEmpty())
+                {
+                    DeployVue();
                 }
 
                 if (isPublishToProduct)
@@ -271,7 +273,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9000:80 -p 5555:5555 -p 5556:5556", "--ip=172.18.211.1");
+                CreateContainer(name, "-p 9000:80", $"--ip={Const.IP._gateway}");
             }
         }
 
@@ -284,7 +286,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9009:80", "--ip=172.18.212.1");
+                CreateContainer(name, "-p 9009:80", $"--ip={Const.IP._daemon}");
             }
         }
 
@@ -399,13 +401,13 @@ namespace LY.AutoStart
             //}, true);
 
             BuildImage("redis", ImageType.DockerHubImage);
-            CreateContainer("redis", "--ip=172.18.201.1", "-p 6379:6379");
+            CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");
 
             BuildImage("consul", ImageType.DockerHubImage);
-            CreateContainer("consul", "--ip=172.18.202.1", "-p 8500:8500");
+            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500");
 
             BuildImage("rabbitmq", ImageType.DockerHubImage);
-            CreateContainer("rabbitmq", "--ip=172.18.203.1", "-p 15672:15672 -p 5672:5672");
+            CreateContainer("rabbitmq", $"--ip={Const.IP._rabbitmq}", "-p 15672:15672 -p 5672:5672");
         }
 
     }

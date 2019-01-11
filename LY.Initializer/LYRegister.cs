@@ -103,7 +103,7 @@ namespace LY.Initializer
             {
                 // If you are using EF, you need to add the configuration：
                 x.UseEntityFramework<LYMasterContext>(); //Options, Notice: You don't need to config x.UseSqlServer(""") again! CAP can autodiscovery.
-                x.UseRabbitMQ("localhost");
+                x.UseRabbitMQ("172.18.203.1");
                 x.UseDashboard();
             });
 

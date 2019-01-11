@@ -21,6 +21,8 @@ namespace LY.Common.Utils
 
     public static class MQUtil
     {
+        static string _responseAddress = "127.0.0.1:5556";//消息中心地址
+        static string _publishAddress = "127.0.0.1:5555";//发布地址
 
         public static object _lockPublish = new object();
 
@@ -47,11 +49,11 @@ namespace LY.Common.Utils
                 {
                     if (_publisher == null)
                     {
-                        _publisher = new PublisherSocket(ConfigUtil.PublishAddress);
+                        _publisher = new PublisherSocket(_publishAddress);
                     }
                     using (ResponseSocket socket = new ResponseSocket())
                     {
-                        socket.Bind(ConfigUtil.ResponseAddress);
+                        socket.Bind(_responseAddress);
                         while (true)
                         {
                             MQResponseResult result = new MQResponseResult();
@@ -86,7 +88,7 @@ namespace LY.Common.Utils
                 {
                     using (RequestSocket socket = new RequestSocket())
                     {
-                        socket.Connect(ConfigUtil.ResponseAddress);
+                        socket.Connect(_responseAddress);
                         var transfer = new MQTransfer()
                         {
                             Topic = topic
@@ -131,7 +133,7 @@ namespace LY.Common.Utils
                 {
                     using (SubscriberSocket subscriber = new SubscriberSocket())
                     {
-                        subscriber.Connect(ConfigUtil.PublishAddress);
+                        subscriber.Connect(_publishAddress);
                         subscriber.Subscribe(topic);
                         while (true)
                         {

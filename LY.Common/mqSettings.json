@@ -1,4 +1,4 @@
 ﻿{
-  "PublishAddress": "tcp://172.18.203.1:5555",
-  "ResponseAddress": "tcp://172.18.203.1:5556"
+  "PublishAddress": "tcp://172.18.211.1:5555",
+  "ResponseAddress": "tcp://172.18.211.1:5556"
 }

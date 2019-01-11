@@ -22,13 +22,15 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using System.Collections.Generic;
 using LY.Common.Utils;
 using Microsoft.Extensions.Caching.Redis;
+using DotNetCore.CAP;
 
 namespace LY.Initializer
 {
     public class LYRegister
     {
+        public static IList<TypeInfo> ControllerTypes{ get; set; }
+
         #region private
-             
 
         private void RegisterRepository()
         {
@@ -80,23 +82,37 @@ namespace LY.Initializer
                 .PropertiesAutowired();
         }
 
-        private void RegisterController(IServiceCollection services)
+        private void RegisterController()
         {
             var manager = new ApplicationPartManager();
             manager.ApplicationParts.Add(new AssemblyPart(Assembly.GetEntryAssembly()));
             manager.FeatureProviders.Add(new ControllerFeatureProvider());
             var feature = new ControllerFeature();
             manager.PopulateFeature(feature);
-            var controllers = feature.Controllers;
-            GatewayConfigUtil.Gen(controllers.ToArray());
-            IOCManager.ContainerBuilder.RegisterTypes(controllers.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
-        }
+            ControllerTypes = feature.Controllers;
 
-        private void RegisterCommon(IServiceCollection services)
+            IOCManager.ContainerBuilder.RegisterTypes(ControllerTypes.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
+        }
+        #endregion
+
+
+        public IServiceProvider Register(IServiceCollection services)
         {
-            //autofac
-            RegisterRepository();
-            RegisterService();
+            //registCAP
+            services.AddCap(x =>
+            {
+                // If you are using EF, you need to add the configuration：
+                x.UseEntityFramework<LYMasterContext>(); //Options, Notice: You don't need to config x.UseSqlServer(""") again! CAP can autodiscovery.
+                x.UseRabbitMQ("localhost");
+                x.UseDashboard();
+            });
+
+            //swagger ui
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = ConfigUtil.AppName, Version = "v1" });
+                c.IncludeXmlComments(Path.Combine(ConfigUtil.CurrentDirectory, $"{ConfigUtil.AppName}.xml"));
+            });
 
             //cache
             services.AddDistributedMemoryCache();//
@@ -117,24 +133,11 @@ namespace LY.Initializer
             //cors
             services.AddCors(options =>
               options.AddPolicy("cors",
-                    p=>p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+                    p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
                    .SetPreflightMaxAge(TimeSpan.FromSeconds(3600))
                    .AllowAnyMethod().AllowAnyHeader()
               )
             );
-            IOCManager.ContainerBuilder.Populate(services);
-        }
-        #endregion
-
-
-        public IServiceProvider ConfigureServicesWebAPI(IServiceCollection services)
-        {
-            //swagger ui
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = ConfigUtil.AppName, Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(ConfigUtil.CurrentDirectory, $"{ConfigUtil.AppName}.xml"));
-            });
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>()); // for PropertiesAutowired
             services.AddMvc(options =>
@@ -144,9 +147,14 @@ namespace LY.Initializer
             })
 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-            RegisterController(services); // for PropertiesAutowired
+            //autofac
+            RegisterRepository();
 
-            RegisterCommon(services);
+            RegisterService();
+
+            RegisterController(); // for PropertiesAutowired
+
+            IOCManager.ContainerBuilder.Populate(services);
 
             return new AutofacServiceProvider(IOCManager.Container);
         }

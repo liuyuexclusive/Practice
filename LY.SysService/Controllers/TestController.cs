@@ -1,4 +1,5 @@
-﻿using LY.Common;
+﻿using DotNetCore.CAP;
+using LY.Common;
 using LY.Common.API;
 using LY.Domain;
 using LY.Domain.Sys;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LY.SysService.Controllers
 {
@@ -21,6 +23,7 @@ namespace LY.SysService.Controllers
         public IEntityCache<Sys_User> UserCache { get; set; }
         public IRepository<Sys_User> UserRepo { get; set; }
         public IUnitOfWork UW { get; set; }
+        public ICapPublisher Publisher { get; set; }
         public TestController()
         {
 
@@ -28,24 +31,9 @@ namespace LY.SysService.Controllers
 
         [UnAuthorize]
         [HttpGet]
-        [Route("Test")]
         public string Test()
         {
-            var xx = UserCache.List();
-            return JsonConvert.SerializeObject(xx);
-        }
-
-        [UnAuthorize]
-        [HttpGet]
-        [Route("Test1")]
-        public string Test1()
-        {
-            var user = UserRepo.Queryable.FirstOrDefault(x => x.Name == "admin");
-            user.Mobile = new Random().Next(1310000, 1319999).ToString()+"0000";
-            UserRepo.Update(user);
-            UW.Commit();
-            return "";
-            //_cache.SetString("aa", num);
+            return "OK";
         }
     }
 }

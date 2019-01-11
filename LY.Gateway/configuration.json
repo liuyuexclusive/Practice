@@ -1,3 +1,127 @@
-﻿{
-
+{
+  "ReRoutes": [
+    {
+      "UpstreamPathTemplate": "/ws/LY.SysService/{type}/{id}",
+      "DownstreamPathTemplate": "/ws/{type}/{id}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "172.21.177.97",
+          "Port": 80
+        }
+      ],
+      "DownstreamScheme": "ws",
+      "AppName": "LY.SysService"
+    },
+    {
+      "UpstreamPathTemplate": "/LY.SysService/swagger.json",
+      "DownstreamPathTemplate": "/swagger/v1/swagger.json",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/Health/",
+      " UpstreamHttpMethod ": [ "Get" ],
+      "DownstreamPathTemplate": "/Health/",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/Role/GetList",
+      " UpstreamHttpMethod ": [ "Post" ],
+      "DownstreamPathTemplate": "/Role/GetList",
+      "DownstreamScheme": "http",
+      "AuthenticationOptions": { "AuthenticationProviderKey": "TestKey" },
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/Role/AddOrUpdate",
+      " UpstreamHttpMethod ": [ "Post" ],
+      "DownstreamPathTemplate": "/Role/AddOrUpdate",
+      "DownstreamScheme": "http",
+      "AuthenticationOptions": { "AuthenticationProviderKey": "TestKey" },
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/Role/Delete",
+      " UpstreamHttpMethod ": [ "Delete" ],
+      "DownstreamPathTemplate": "/Role/Delete",
+      "DownstreamScheme": "http",
+      "AuthenticationOptions": { "AuthenticationProviderKey": "TestKey" },
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/Test/",
+      " UpstreamHttpMethod ": [ "Get" ],
+      "DownstreamPathTemplate": "/Test/",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/User/GetList",
+      " UpstreamHttpMethod ": [ "Post" ],
+      "DownstreamPathTemplate": "/User/GetList",
+      "DownstreamScheme": "http",
+      "AuthenticationOptions": { "AuthenticationProviderKey": "TestKey" },
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/User/Register",
+      " UpstreamHttpMethod ": [ "Post" ],
+      "DownstreamPathTemplate": "/User/Register",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/User/Login",
+      " UpstreamHttpMethod ": [ "Put" ],
+      "DownstreamPathTemplate": "/User/Login",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/User/GetValidateCode",
+      " UpstreamHttpMethod ": [ "Get" ],
+      "DownstreamPathTemplate": "/User/GetValidateCode",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    },
+    {
+      "UpstreamPathTemplate": "/User/Delete",
+      " UpstreamHttpMethod ": [ "Delete" ],
+      "DownstreamPathTemplate": "/User/Delete",
+      "DownstreamScheme": "http",
+      "AppName": "LY.SysService",
+      "ServiceName": "LY.SysService",
+      "LoadBalancerOptions": { "Type": "LeastConnection" }
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration",
+    "ServiceDiscoveryProvider": {
+      "Host": "172.18.202.1",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
 }

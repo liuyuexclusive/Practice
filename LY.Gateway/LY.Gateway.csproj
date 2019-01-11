@@ -16,14 +16,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Ocelot" Version="12.0.1" />
-    <PackageReference Include="Ocelot.Provider.Consul" Version="0.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LY.Application\LY.Application.csproj" />
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
     <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
+    <ProjectReference Include="..\LY.Initializer\LY.Initializer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

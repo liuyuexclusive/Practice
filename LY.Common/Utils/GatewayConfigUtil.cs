@@ -1,4 +1,5 @@
-﻿using LY.Common.Extensions;
+﻿using DotNetCore.CAP;
+using LY.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Newtonsoft.Json;
@@ -19,11 +20,11 @@ namespace LY.Common.Utils
         /// </summary>
         /// <param name="serviceName"></param>
         /// <param name="controllers"></param>
-        public static async Task Gen(params TypeInfo[] controllers)
+        public static IList<GatewayReRoute> Gen(params TypeInfo[] controllers)
         {
             if (controllers.IsNullOrEmpty())
             {
-                return;
+                return new List<GatewayReRoute>();
             }
             IList<GatewayReRoute> listResult = new List<GatewayReRoute>();
 
@@ -82,8 +83,7 @@ namespace LY.Common.Utils
                     }
                 }
             }
-
-            await MQUtil.Publish(listResult, "GatewayConfigUtilGen");
+            return listResult;
         }
 
 

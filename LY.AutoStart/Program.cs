@@ -271,7 +271,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9000:80 -p 5555:5555 -p 5556:5556", "--ip=172.18.203.1");
+                CreateContainer(name, "-p 9000:80 -p 5555:5555 -p 5556:5556", "--ip=172.18.211.1");
             }
         }
 
@@ -284,7 +284,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9009:80", "--ip=172.18.204.1");
+                CreateContainer(name, "-p 9009:80", "--ip=172.18.212.1");
             }
         }
 
@@ -403,6 +403,9 @@ namespace LY.AutoStart
 
             BuildImage("consul", ImageType.DockerHubImage);
             CreateContainer("consul", "--ip=172.18.202.1", "-p 8500:8500");
+
+            BuildImage("rabbitmq", ImageType.DockerHubImage);
+            CreateContainer("rabbitmq", "--ip=172.18.203.1", "-p 15672:15672 -p 5672:5672");
         }
 
     }

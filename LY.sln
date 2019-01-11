@@ -33,48 +33,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{917F6AE9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service.Test", "Service.Test\Service.Test.csproj", "{6D17D97D-F15F-410A-96E7-B77A85502E50}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ly.vue.pc", "ly.vue.pc\", "{80D5580E-D3EC-4282-B7ED-8D649763E6D8}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_59970"
-		Debug.AspNetCompiler.PhysicalPath = "ly.vue.pc\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_59970\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_59970"
-		Release.AspNetCompiler.PhysicalPath = "ly.vue.pc\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_59970\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "59970"
-		SlnRelativePath = "ly.vue.pc\"
-	EndProjectSection
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ly.vue.wx", "ly.vue.wx\", "{E01C96A7-9BA9-4371-AC75-304A4C4D9CD2}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_60008"
-		Debug.AspNetCompiler.PhysicalPath = "ly.vue.wx\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60008\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_60008"
-		Release.AspNetCompiler.PhysicalPath = "ly.vue.wx\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60008\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "60008"
-		SlnRelativePath = "ly.vue.wx\"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,14 +87,6 @@ Global
 		{6D17D97D-F15F-410A-96E7-B77A85502E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D17D97D-F15F-410A-96E7-B77A85502E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D17D97D-F15F-410A-96E7-B77A85502E50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80D5580E-D3EC-4282-B7ED-8D649763E6D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80D5580E-D3EC-4282-B7ED-8D649763E6D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80D5580E-D3EC-4282-B7ED-8D649763E6D8}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{80D5580E-D3EC-4282-B7ED-8D649763E6D8}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{E01C96A7-9BA9-4371-AC75-304A4C4D9CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E01C96A7-9BA9-4371-AC75-304A4C4D9CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E01C96A7-9BA9-4371-AC75-304A4C4D9CD2}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{E01C96A7-9BA9-4371-AC75-304A4C4D9CD2}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

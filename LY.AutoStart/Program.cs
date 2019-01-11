@@ -336,7 +336,7 @@ namespace LY.AutoStart
             {
                 CreateContainer(t1.Name, "-p 8081:80");
             }
-            var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.wx");
+            var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.mobile");
             if (t2 != null)
             {
                 CreateContainer(t2.Name, "-p 8082:80");

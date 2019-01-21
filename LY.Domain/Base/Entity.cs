@@ -5,13 +5,8 @@
     /// </summary>
     public abstract class Entity
     {
-        private int _id;
 
-        public int ID
-        {
-            get { return _id; }
-            set { _id = value; }
-        }
+        public int ID { get; set; }
 
         public override bool Equals(object entity)
         {

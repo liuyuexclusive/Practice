@@ -11,7 +11,6 @@
 </template>
 <script>
 import PageTable from "@/components/PageTable";
-import { store } from "@/vuex";
 export default {
   data() {
     return {

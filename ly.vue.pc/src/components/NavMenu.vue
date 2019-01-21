@@ -9,7 +9,8 @@
                 <el-menu-item index="/Welcome">Welcome</el-menu-item>
                 <el-menu-item index="/Role">Role</el-menu-item>
                 <el-menu-item index="/User">User</el-menu-item>
-                <el-menu-item index="/Test">Test</el-menu-item>
+                <el-menu-item index="/User">User</el-menu-item>
+                <el-menu-item index="/WorkflowType">WorkflowType</el-menu-item>
                 <el-submenu index="1-4">
                     <template slot="title">选项4</template>
                     <el-menu-item index="1-4-1">选项4-1</el-menu-item>

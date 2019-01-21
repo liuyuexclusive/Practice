@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="formModel" :rules="rules" ref="formModel" label-width="100px">
+  <el-form :model="formModel" :rules="rules" ref="formModel" label-width="100px" v-loading="loading">
     <el-form-item label="名称" prop="Name">
       <el-input v-model="formModel.Name"></el-input>
     </el-form-item>
@@ -14,17 +14,15 @@
   </el-form>
 </template>
 <script>
+
 import { request } from "@/api";
 
 export default {
   data() {
     return {
+      loading:false,
       isShowSubmitWithoutClose: false,
-      formModel: {
-        ID: null,
-        Name: "",
-        Description: ""
-      },
+      formModel: {},
       rules: {
         Name: [{ required: true, message: "请输入名称", trigger: "blur" }]
       }
@@ -46,6 +44,7 @@ export default {
     submit(formName, isClosed = true) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.loading = true;
           request("Role/AddOrUpdate", "post", this.formModel).then(data => {
             if (data) {
               if (isClosed) {
@@ -53,6 +52,7 @@ export default {
               }
               this.$refs[formName].resetFields();
             }
+            this.loading=false;
           });
         } else {
           return false;

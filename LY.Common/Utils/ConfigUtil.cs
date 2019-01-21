@@ -113,6 +113,34 @@ namespace LY.Common
             }
         }
 
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public static string HangfireConnectionString
+        {
+            get
+            {
+#if DEBUG
+                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly_hangfire;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+#endif
+                return ReadJsonFile("connectionString.json").GetConnectionString("HangfireConnection");
+            }
+        }
+
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        public static string CAPConnectionString
+        {
+            get
+            {
+#if DEBUG
+                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly_cap;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+#endif
+                return ReadJsonFile("connectionString.json").GetConnectionString("CAPConnection");
+            }
+        }
+
         public static string RedisAddress
         {
             get

@@ -26,7 +26,7 @@ namespace LY.AutoStart
         static string netcoreappVersion = "netcoreapp2.2";
         static int serviceNum = 2;
         static bool isPublishToProduct = false;
-        static StringBuilder sbSH = new StringBuilder();        
+        static StringBuilder sbSH = new StringBuilder();
 
         static void Main(string[] args)
         {
@@ -37,7 +37,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "services,gateway" };
+                args = new string[] { "prictice","services" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -97,7 +97,7 @@ namespace LY.AutoStart
                         sw.WriteLine(sbSH.ToString());
                         sw.Flush();
                     }
-                }
+                }               
             }
             catch (Exception ex)
             {
@@ -191,9 +191,10 @@ namespace LY.AutoStart
             }
         }
 
-        private static void BuildImage(string name, ImageType type)
+        private static void BuildImage(string name, ImageType type, string version = null)
         {
             var lowName = name.ToLower();
+            var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
             ExcuteBat(() =>
             {
                 var sb = new StringBuilder();
@@ -212,18 +213,18 @@ namespace LY.AutoStart
                     sb.AppendLine($"docker rm {lowName}-server");
                 }
 
-                sb.AppendLine($"docker rmi {lowName}");
+                sb.AppendLine($"docker rmi {lowName}{imageVersion}");
                 string sourceDir = null;
                 if (type == ImageType.DockerHubImage)
                 {
-                    sb.AppendLine($"docker pull {lowName}");
+                    sb.AppendLine($"docker pull {lowName}{imageVersion}");
                 }
                 else
                 {
                     switch (type)
                     {
                         case ImageType.Dotnet:
-                            sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish"); 
+                            sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish");
                             break;
                         case ImageType.Vue:
                             sourceDir = Path.Combine(workspaceDir, name, "dist");
@@ -237,7 +238,7 @@ namespace LY.AutoStart
                 if (isPublishToProduct)
                 {
                     var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
-                    sbSH.AppendLine(sb.ToString().Replace(sourceDir, "/root/PublishToProduct/"+name));
+                    sbSH.AppendLine(sb.ToString().Replace(sourceDir, "/root/PublishToProduct/" + name));
                     if (!sourceDir.IsNullOrEmpty())
                     {
                         sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
@@ -247,14 +248,15 @@ namespace LY.AutoStart
             });
         }
 
-        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null)
+        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null, string version=null)
         {
             var lowName = name.ToLower();
+            var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
             ExcuteBat(() =>
             {
                 var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
                 var sb = new StringBuilder();
-                sb.AppendLine($"docker run --network=lynet {ip} -itd --name={lowName}-server{strIndex} {port} -d {lowName}");
+                sb.AppendLine($"docker run --network=lynet {ip} -itd --name={lowName}-server{strIndex} {port} -d {lowName}{imageVersion}");
                 if (isPublishToProduct)
                 {
                     sbSH.AppendLine(sb.ToString());
@@ -266,7 +268,7 @@ namespace LY.AutoStart
 
         private static void DeployGateway()
         {
-            DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x =>x.Name.EndsWith("Gateway"));
+            DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
             if (target != null)
             {
                 var name = target.Name;
@@ -293,7 +295,7 @@ namespace LY.AutoStart
 
         private static void DeployServices()
         {
-            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x => 
+            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x =>
             x.Name.EndsWith("Service")
             );
 
@@ -357,6 +359,12 @@ namespace LY.AutoStart
                 return sb;
             });
 
+            //docker run --network=lynet --ip=172.18.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+            //docker run --network=lynet --ip=172.18.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+
+            //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
+            //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
+
             //修改user的plugin 'caching_sha2_password'-->'mysql_native_password'
             //docker exec -it  mysql-master /bin/bash
             //mysql -u root -p123456
@@ -364,41 +372,29 @@ namespace LY.AutoStart
             //alter user 'root'@'%' identified with mysql_native_password by '123456';
             //flush privileges;
 
+            //alter user 'slave'@'%' identified by '123456' password expire never;
+            //alter user 'slave'@'%' identified with mysql_native_password by '123456';
+            //flush privileges;
+
             //设置docker的配置文件
             //log_bin=mysql-bin
             //server_id = 128 //从:129
-            //docker cp mysql-server:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
-            //docker cp mysql-slave:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
-            //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-server:/etc/mysql/my.cnf
+            //docker cp mysql-master:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
+            //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-master:/etc/mysql/my.cnf
             //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-slave:/etc/mysql/my.cnf
-            //docker run --network=lynet -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
-
-            //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
-            //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
 
             //开启从库的slave
-            //CHANGE MASTER TO
-            //MASTER_HOST = '172.18.200.1',
-            //MASTER_USER = 'slave',
-            //MASTER_PASSWORD = '123456',
-            //MASTER_LOG_FILE = 'mysql-bin.000001',
-            //MASTER_LOG_POS = 1668;//只会从当前position同步
+            //mysql -u root -p123456
+            /*
+            CHANGE MASTER TO
+            MASTER_HOST = '172.18.200.1',
+            MASTER_USER = 'slave',
+            MASTER_PASSWORD = '123456',
+            MASTER_LOG_FILE = 'mysql-bin.000001',
+            MASTER_LOG_POS = 20898;
+            */
             //START SLAVE;
-            //SHOW SLAVE STATUS \G
-
-            //ExcuteBat("RunMysql", () =>
-            //{
-            //    var sb = new StringBuilder();
-            //    sb.AppendLine("docker pull mysql");
-            //    //sb.AppendLine("docker stop mysql-server");
-            //    //sb.AppendLine("docker rm mysql-server");
-            //    sb.AppendLine("docker run --network=lynet --ip=172.18.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
-            //    sb.AppendLine("docker run --network=lynet --ip=172.18.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
-            //    sb.AppendLine($"docker cp {Path.Combine(workspaceDir, "update.sql")} mysql-master:/");
-            //    sb.AppendLine($"docker cp {Path.Combine(workspaceDir, "update.sql")} mysql-slave:/");
-            //    //sb.AppendLine("docker exec -it mysql-server /bin/bash -c 'mysql -u root -p123456 < update.sql'");
-            //    return sb;
-            //}, true);
+            //SHOW SLAVE STATUS \G           
 
             BuildImage("redis", ImageType.DockerHubImage);
             CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");
@@ -408,6 +404,9 @@ namespace LY.AutoStart
 
             BuildImage("rabbitmq", ImageType.DockerHubImage);
             CreateContainer("rabbitmq", $"--ip={Const.IP._rabbitmq}", "-p 15672:15672 -p 5672:5672");
+
+            //BuildImage("elasticsearch", ImageType.DockerHubImage, "6.5.4");
+            //CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300 -e \"discovery.type=single-node\"",index:null,version: "6.5.4");
         }
 
     }

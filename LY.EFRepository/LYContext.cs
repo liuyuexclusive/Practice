@@ -18,8 +18,18 @@ namespace LY.EFRepository
             modelBuilder.Entity<Sys_RoleUserMapping>().HasOne(x => x.User)
                 .WithMany(x => x.RoleUserMappingList)
                 .HasForeignKey(x => x.UserId);
+
+            modelBuilder.Entity<Sys_WorkflowType>().ToTable("sys_workflowtype");
+            modelBuilder.Entity<Sys_WorkflowTypeNode>().ToTable("sys_workflowtype_node");
+            modelBuilder.Entity<Sys_WorkflowTypeNodeAuditor>().ToTable("sys_workflowtype_node_auditor");
+            modelBuilder.Entity<Sys_WorkflowTypeNodeRelation>().ToTable("sys_workflowtype_node_relation");
+            modelBuilder.Entity<Sys_WorkflowTypeNode>().HasOne(x => x.Type).WithMany().HasForeignKey(x => x.TypeID);
+            modelBuilder.Entity<Sys_WorkflowTypeNodeAuditor>().HasOne(x => x.Node).WithMany().HasForeignKey(x => x.NodeID);
+            modelBuilder.Entity<Sys_WorkflowTypeNodeRelation>().HasOne(x => x.Node).WithMany().HasForeignKey(x => x.NodeID);
+            modelBuilder.Entity<Sys_WorkflowTypeNodeRelation>().HasOne(x => x.PreNode).WithMany().HasForeignKey(x => x.PreNodeID);
         }
     }
+
     public class LYMasterContext : DbContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

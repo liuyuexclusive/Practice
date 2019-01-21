@@ -1,4 +1,5 @@
 using LY.Common;
+using LY.Common.Utils;
 using LY.Domain;
 using LY.Domain.Sys;
 using LY.EFRepository;
@@ -19,42 +20,13 @@ namespace Service.Test
         [Fact]
         public void Test1()
         {
-            //using (var lymc = new LYMasterContext())
-            //{
-            //    var uw = new UnitOfWork(lymc);
-            //    IRepository<Sys_User> userRepo = new Repository<Sys_User>(uw,lymc);
-            //    IRepository<Sys_Role> roleRepo = new Repository<Sys_Role>(uw,lymc);
-            //    var user = userRepo.Queryable
-            //        .Include(x=>x.RoleUserMappingList)
-            //        .ThenInclude(x=>x.Role)
-            //        .First(x => x.Name== "admin");
-            //    var list = user.RoleUserMappingList;
-            //    list.FirstOrDefault().Role.Description = "hehehaha";
-
-            //    user.Mobile = "13100000001";
-            //    userRepo.Update(user);
-            //    roleRepo.Update(list.FirstOrDefault().Role);
-            //    uw.Commit();               
-            //}
+            ElasticUtil.Indexing();
         }
 
         [Fact]
-        public void TestRedis()
+        public void Test2()
         {
-            ExportByClassName(typeof(string).Name);
-        }
-
-        public void Export<T1>(T1 xx)
-        {
-            Console.WriteLine(xx);
-        }
-
-
-        public void ExportByClassName(string typename1)
-        {
-            Type t1 = Type.GetType(typename1);
-            MethodInfo mi = this.GetType().GetMethod("Export").MakeGenericMethod(new Type[] { t1 });
-            mi.Invoke(this, new object[] { "test111" });
+            var xx = ElasticUtil.Get();
         }
     }
 }

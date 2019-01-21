@@ -29,7 +29,7 @@ namespace LY.Initializer
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddHangfire(x => x.UseStorage(new Hangfire.MySql.Core.MySqlStorage(ConfigUtil.MasterConnectionString)));
+            services.AddHangfire(x => x.UseStorage(new Hangfire.MySql.Core.MySqlStorage(ConfigUtil.HangfireConnectionString)));
             return new LYRegister().Register(services);
         }
 

@@ -3,6 +3,7 @@ using LY.Domain;
 using LY.Domain.Sys;
 using LY.DTO.Input;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace LY.Service.Sys
             }
             else
             {
-                var role = RoleRepo.Get(value.ID.Value);
+                var role = RoleRepo.Queryable.FirstOrDefault(x=>x.ID==value.ID.Value);
                 if (role == null)
                 {
                     throw new BusinessException("当前数据不存在");

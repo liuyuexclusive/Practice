@@ -1,7 +1,9 @@
 ﻿using LY.Domain;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace LY.EFRepository
 {
@@ -20,7 +22,7 @@ namespace LY.EFRepository
             _context = context;
         }
 
-        public virtual IQueryable<TEntity> Queryable => _context.Set<TEntity>().AsNoTracking();
+        public virtual IQueryable<TEntity> Queryable => _context.Set<TEntity>();
 
 
         public virtual TEntity Get(int id)
@@ -55,6 +57,15 @@ namespace LY.EFRepository
         public virtual void Delete(TEntity entity)
         {
             _unitOfWork.RegisterDeleted(entity);
+        }
+
+        public virtual void Delete(Expression<Func<TEntity, bool>> expression)
+        {
+            var list = Queryable.Where(expression);
+            foreach (var item in list)
+            {
+                _unitOfWork.RegisterDeleted(item);
+            }
         }
     }
 }

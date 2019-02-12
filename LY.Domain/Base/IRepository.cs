@@ -48,5 +48,10 @@ namespace LY.Domain
         /// <param name="entity">实体对象。</param>
         void Delete(TEntity entity);
 
+        /// <summary>
+        /// 删除实体。
+        /// </summary>
+        /// <param name="expression">条件表达式</param>
+        void Delete(Expression<Func<TEntity, bool>> expression);
     }
 }

@@ -36,5 +36,13 @@ namespace LY.Common
             public static string _gateway = $"{_prefix}.211.1";
             public static string _daemon = $"{_prefix}.212.1";
         }
+
+        public static class Port
+        {
+            public static string _rabbitmq = "5672";
+            public static string _consul = "8500";
+            public static string _redis = "6379";
+            public static string _elasticsearch = "9200";
+        }
     }
 }

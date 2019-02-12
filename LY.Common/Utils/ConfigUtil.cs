@@ -140,15 +140,26 @@ namespace LY.Common
                 return ReadJsonFile("connectionString.json").GetConnectionString("CAPConnection");
             }
         }
-
+        
         public static string RedisAddress
         {
             get
             {
 #if DEBUG
-                return "127.0.0.1:6379";
+                return $"127.0.0.1:{Const.Port._redis}";
 #endif
-                return ReadJsonFile("redisSettings.json")["Address"];
+                return $"{Const.IP._redis}:{Const.Port._redis}";
+            }
+        }
+
+        public static string RabbitMQAddress
+        {
+            get
+            {
+#if DEBUG
+                return $"127.0.0.1";
+#endif
+                return $"{Const.IP._rabbitmq}";
             }
         }
 
@@ -157,9 +168,9 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return "http://127.0.0.1:8500";
+                return $"http://127.0.0.1:{Const.Port._consul}";
 #endif
-                return ReadJsonFile("consulSettings.json")["Address"];
+                return $"{Const.IP._consul}:{Const.Port._consul}";
             }
         }
     }

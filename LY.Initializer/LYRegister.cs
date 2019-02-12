@@ -104,7 +104,7 @@ namespace LY.Initializer
                 // If you are using EF, you need to add the configuration：
                 //x.UseEntityFramework<CAPContext>(); //Options, Notice: You don't need to config x.UseSqlServer(""") again! CAP can autodiscovery.
                 x.UseMySql(ConfigUtil.CAPConnectionString);
-                x.UseRabbitMQ("172.18.203.1");
+                x.UseRabbitMQ(ConfigUtil.RabbitMQAddress);
                 x.UseDashboard();
             });
 

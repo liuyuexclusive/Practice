@@ -58,7 +58,7 @@ namespace LY.EFRepository
                         continue;
                     }
                     var type = typeof(Repository<>).MakeGenericType(grnericType);
-                    var value = type.GetMethod("GetAll").Invoke(Activator.CreateInstance(type, this, Context),null);
+                    var value = type.GetMethod("GetAll").Invoke(Activator.CreateInstance(type, this, Context), null);
 
                     Cache.SetStringAsync(typeName, JsonConvert.SerializeObject(value)).Wait();
                 }

@@ -37,7 +37,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "prictice","services" };
+                 args = new string[] { "practice", "vue" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -65,7 +65,7 @@ namespace LY.AutoStart
                     }
                     workspace = workspace.Parent;
                 }
-                workspaceDir = workspace.FullName;
+                workspaceDir = workspace.FullName; 
 
                 var options = args[1].Split(",").Distinct();
                 if (!options.Intersect(new string[] { "base", "all" }).IsNullOrEmpty())
@@ -394,7 +394,19 @@ namespace LY.AutoStart
             MASTER_LOG_POS = 20898;
             */
             //START SLAVE;
-            //SHOW SLAVE STATUS \G           
+            //SHOW SLAVE STATUS \G  
+
+
+            //Slave_SQL_Running: No
+            //1.程序可能在slave上进行了写操作
+
+            //2.也可能是slave机器重起后，事务回滚造成的.
+
+            //一般是事务回滚造成的：
+            //解决办法：
+            //mysql > stop slave;
+            //mysql > set GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+            //mysql > start slave;
 
             BuildImage("redis", ImageType.DockerHubImage);
             CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");

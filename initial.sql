@@ -56,18 +56,11 @@ DROP TABLE IF EXISTS sys_workflowtype_node;
 CREATE TABLE sys_workflowtype_node (
   id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   typeid INT(11) NOT NULL COMMENT '工作流类型ID',
+  prenodeid INT(11) NULL COMMENT '上一个节点',
   NAME VARCHAR(16) DEFAULT NULL COMMENT '名称',
   sortindex INT(11) NOT NULL COMMENT '排序号',
   PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='工作流类型节点';
-
-DROP TABLE IF EXISTS sys_workflowtype_node_relation;
-CREATE TABLE sys_workflowtype_node_relation (
-  id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  nodeid INT(11) NOT NULL COMMENT '当前节点ID', 
-  prenodeid INT(11) NOT NULL COMMENT '前一个结点',
-  PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='工作流类型节点关系';
 
 
 DROP TABLE IF EXISTS sys_workflowtype_node_auditor;
@@ -93,21 +86,13 @@ CREATE TABLE sys_workflow (
 DROP TABLE IF EXISTS sys_workflow_node;
 CREATE TABLE sys_workflow_node (
   id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  prenodeid INT(11) NULL COMMENT '上一个节点',
   workflowid INT(11) NOT NULL COMMENT '工作流ID',
   STATUS INT(11) NOT NULL COMMENT '状态',
   NAME VARCHAR(16) DEFAULT NULL COMMENT '节点名称',
   sortindex INT(11) NOT NULL COMMENT '排序号',
   PRIMARY KEY (id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='工作流节点表';
-
-DROP TABLE IF EXISTS sys_workflow_node_relation;
-CREATE TABLE sys_workflow_node_relation (
-  id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-　nodeid INT(11) NOT NULL COMMENT '当前节点', 
-  prenodeid INT(11) NOT NULL COMMENT '前一个结点',
-  PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT='节点关系表';
-
 
 DROP TABLE IF EXISTS sys_workflow_node_auditor;
 CREATE TABLE sys_workflow_node_auditor (

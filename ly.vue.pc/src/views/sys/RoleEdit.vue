@@ -1,26 +1,47 @@
 <template>
-  <el-form :model="formModel" :rules="rules" ref="formModel" label-width="100px" v-loading="loading">
-    <el-form-item label="名称" prop="Name">
+  <el-form
+    :model="formModel"
+    :rules="rules"
+    ref="formModel"
+    label-width="100px"
+    v-loading="loading"
+  >
+    <el-form-item
+      label="名称"
+      prop="Name"
+    >
       <el-input v-model="formModel.Name"></el-input>
     </el-form-item>
-    <el-form-item label="描述" prop="Description">
-      <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 6}" v-model="formModel.Description"></el-input>
+    <el-form-item
+      label="描述"
+      prop="Description"
+    >
+      <el-input
+        type="textarea"
+        :autosize="{ minRows: 4, maxRows: 6}"
+        v-model="formModel.Description"
+      ></el-input>
     </el-form-item>
     <el-form-item>
       <el-button @click="cancel('formModel')">取消</el-button>
-      <el-button v-if="isShowSubmitWithoutClose" @click="submitWithoutClose('formModel')">继续</el-button>
-      <el-button type="primary" @click="submit('formModel')">确定</el-button>
+      <el-button
+        v-if="isShowSubmitWithoutClose"
+        @click="submitWithoutClose('formModel')"
+      >继续</el-button>
+      <el-button
+        type="primary"
+        @click="submit('formModel')"
+      >确定</el-button>
     </el-form-item>
   </el-form>
 </template>
 <script>
-
 import { request } from "@/api";
 
 export default {
   data() {
     return {
-      loading:false,
+      loading: false,
       isShowSubmitWithoutClose: false,
       formModel: {},
       rules: {
@@ -52,7 +73,7 @@ export default {
               }
               this.$refs[formName].resetFields();
             }
-            this.loading=false;
+            this.loading = false;
           });
         } else {
           return false;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace LY.Domain.Sys
 
         public int UserID { get; set; }
 
+        [JsonIgnore]
         public Sys_WorkflowTypeNode Node { get; set; }
     }
 }

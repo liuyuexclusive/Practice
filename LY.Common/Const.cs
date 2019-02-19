@@ -30,9 +30,11 @@ namespace LY.Common
             public static string _mysqlMaster = $"{_prefix}.200.1";
             public static string _mysqlSlave = $"{_prefix}.200.2";
             public static string _redis = $"{_prefix}.201.1";
-            public static string _consul = $"{_prefix}.202.1";
+            public static string _consul = $"{_prefix}.202.4";//client
             public static string _rabbitmq = $"{_prefix}.203.1";
             public static string _elasticsearch= $"{_prefix}.204.1";
+            public static string _kibana = $"{_prefix}.205.1";
+            public static string _logstash = $"{_prefix}.206.1";
             public static string _gateway = $"{_prefix}.211.1";
             public static string _daemon = $"{_prefix}.212.1";
         }

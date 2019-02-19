@@ -22,14 +22,17 @@ namespace LY.SysService.Controllers
     {
         public RoleService RoleService { get; set; }
         public IEntityCache<Sys_Role> RoleCache { get; set; }
+        public ILogger<RoleController> Logger { get; set; }
         public RoleController()
         {
         }
 
         [HttpPost]
         [Route("GetList")]
-        public async Task<OutputList<RoleOutput>> GetList(BaseQueryInput value)
+        public async Task<OutputList<RoleOutput>> GetList(BasePageQueryInput value)
         {
+            Logger.LogInformation("测试日志hahaha");
+
             var data = RoleCache.List();
             return await OKList(
                 data.Select(x => new { x.ID, x.Name, x.Description }.Adapt<RoleOutput>()).ToList(),

@@ -17,7 +17,7 @@ namespace LY.Common.Utils
         }
         public async static Task ServiceRegister()
         {
-            using (var client = new ConsulClient(x=>x.Address = new Uri(ConfigUtil.ConsulUrl)))
+            using (var client = new ConsulClient(x => x.Address = new Uri(ConfigUtil.ConsulUrl)))
             {
                 var registration = new AgentServiceRegistration()
                 {

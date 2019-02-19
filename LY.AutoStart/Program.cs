@@ -25,19 +25,24 @@ namespace LY.AutoStart
         static DirectoryInfo workspace = null;
         static string netcoreappVersion = "netcoreapp2.2";
         static int serviceNum = 2;
+        static int consulAgentNum = 4;
         static bool isPublishToProduct = false;
         static StringBuilder sbSH = new StringBuilder();
 
         static void Main(string[] args)
         {
             Start(ref args);
+            Console.Read();
         }
+
         private static void Start(ref string[] args)
         {
             try
             {
 #if DEBUG
-                 args = new string[] { "practice", "vue" };
+                //args = new string[] { "practice", "vue" };
+                args = new string[] { "practice", "services,gateway,daemon" };
+                //args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -45,9 +50,9 @@ namespace LY.AutoStart
                     return;
                 }
 
-                if (args == null || args.Length == 1 || string.IsNullOrEmpty(args[1]))
+                if (args.Length == 1 || string.IsNullOrEmpty(args[1]))
                 {
-                    Console.WriteLine("请输入发布选项services/vue/gateway/daemon/base，多选用逗号隔开，全选使用all");
+                    Console.WriteLine("请输入发布选项【services,vue,gateway,daemon,base】，多选用逗号隔开，全选使用all");
                     return;
                 }
                 workspace = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -65,10 +70,10 @@ namespace LY.AutoStart
                     }
                     workspace = workspace.Parent;
                 }
-                workspaceDir = workspace.FullName; 
+                workspaceDir = workspace.FullName;
 
                 var options = args[1].Split(",").Distinct();
-                if (!options.Intersect(new string[] { "base", "all" }).IsNullOrEmpty())
+                if (!options.Intersect(new string[] { "base"}).IsNullOrEmpty())//默认不发布基础设施
                 {
                     DeployBase();
                 }
@@ -97,7 +102,7 @@ namespace LY.AutoStart
                         sw.WriteLine(sbSH.ToString());
                         sw.Flush();
                     }
-                }               
+                }
             }
             catch (Exception ex)
             {
@@ -194,6 +199,7 @@ namespace LY.AutoStart
         private static void BuildImage(string name, ImageType type, string version = null)
         {
             var lowName = name.ToLower();
+            
             var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
             ExcuteBat(() =>
             {
@@ -201,6 +207,15 @@ namespace LY.AutoStart
                 if (type == ImageType.Dotnet && !name.EndsWith("Gateway") && !name.EndsWith("Daemon"))
                 {
                     for (int i = 0; i < serviceNum; i++)
+                    {
+                        var index = (i == 0 ? string.Empty : i.ToString());
+                        sb.AppendLine($"docker stop {lowName}-server{index}");
+                        sb.AppendLine($"docker rm {lowName}-server{index}");
+                    }
+                }
+                else if (lowName == "consul")
+                {
+                    for (int i = 0; i < consulAgentNum; i++)
                     {
                         var index = (i == 0 ? string.Empty : i.ToString());
                         sb.AppendLine($"docker stop {lowName}-server{index}");
@@ -247,8 +262,8 @@ namespace LY.AutoStart
                 return sb;
             });
         }
-
-        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null, string version=null)
+        
+        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null, string version = null, string postfix = null)
         {
             var lowName = name.ToLower();
             var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
@@ -256,7 +271,7 @@ namespace LY.AutoStart
             {
                 var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
                 var sb = new StringBuilder();
-                sb.AppendLine($"docker run --network=lynet {ip} -itd --name={lowName}-server{strIndex} {port} -d {lowName}{imageVersion}");
+                sb.AppendLine($"docker run -d {port} --network=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
                 if (isPublishToProduct)
                 {
                     sbSH.AppendLine(sb.ToString());
@@ -275,7 +290,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9000:80", $"--ip={Const.IP._gateway}");
+                CreateContainer(name, $"--ip={Const.IP._gateway}", "-p 9000:80");
             }
         }
 
@@ -288,7 +303,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, "-p 9009:80", $"--ip={Const.IP._daemon}");
+                CreateContainer(name, $"--ip={Const.IP._daemon}", "-p 9009:80");
             }
         }
 
@@ -315,7 +330,7 @@ namespace LY.AutoStart
             {
                 for (int i = 0; i < serviceNum; i++)
                 {
-                    CreateContainer($"{service.Name}", null, null, i);
+                    CreateContainer(service.Name, null, null, i);
                 }
             }
         }
@@ -338,12 +353,12 @@ namespace LY.AutoStart
             var t1 = targets.FirstOrDefault(x => x.Name == "ly.vue.pc");
             if (t1 != null)
             {
-                CreateContainer(t1.Name, "-p 8081:80");
+                CreateContainer(t1.Name, null,"-p 8081:80");
             }
             var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.mobile");
             if (t2 != null)
             {
-                CreateContainer(t2.Name, "-p 8082:80");
+                CreateContainer(t2.Name, null, "-p 8082:80");
             }
         }
 
@@ -388,10 +403,10 @@ namespace LY.AutoStart
             /*
             CHANGE MASTER TO
             MASTER_HOST = '172.18.200.1',
-            MASTER_USER = 'slave',
+            MASTER_USER = 'root',
             MASTER_PASSWORD = '123456',
-            MASTER_LOG_FILE = 'mysql-bin.000001',
-            MASTER_LOG_POS = 20898;
+            MASTER_LOG_FILE = 'mysql-bin.000019',
+            MASTER_LOG_POS = 155;
             */
             //START SLAVE;
             //SHOW SLAVE STATUS \G  
@@ -412,13 +427,22 @@ namespace LY.AutoStart
             CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");
 
             BuildImage("consul", ImageType.DockerHubImage);
-            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500");
+            //consul cluster
+            CreateContainer("consul", $"--ip=172.18.202.1", null, null, null, "agent -server -bootstrap-expect=2");
+            CreateContainer("consul", $"--ip=172.18.202.2", null, 1, null, "agent -server -join 172.18.202.1");
+            CreateContainer("consul", $"--ip=172.18.202.3", null, 2, null, "agent -server -join 172.18.202.1");
+            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500", 3, null, "agent -join 172.18.202.1 -client=\"0.0.0.0\" -ui");
 
             BuildImage("rabbitmq", ImageType.DockerHubImage);
             CreateContainer("rabbitmq", $"--ip={Const.IP._rabbitmq}", "-p 15672:15672 -p 5672:5672");
 
-            //BuildImage("elasticsearch", ImageType.DockerHubImage, "6.5.4");
-            //CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300 -e \"discovery.type=single-node\"",index:null,version: "6.5.4");
+            BuildImage("elasticsearch", ImageType.DockerHubImage, "6.6.0");
+            CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300", null, "6.6.0", "-e \"discovery.type=single-node\"");            
+
+            BuildImage("kibana", ImageType.DockerHubImage, "6.6.0");
+            //docker cp kibana-server:/usr/share/kibana/config/kibana.yml C:\Users\liuyu\Desktop\mysql
+            //docker cp C:\Users\liuyu\Desktop\mysql\kibana.yml kibana-server:/usr/share/kibana/config/kibana.yml
+            CreateContainer("kibana", $"--ip={Const.IP._kibana}", $"-p 5601:5601", null, "6.6.0", " -e \"elasticsearch.url=http://{Const.IP._elasticsearch}:9200\"");
         }
 
     }

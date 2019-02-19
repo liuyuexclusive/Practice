@@ -9,6 +9,7 @@ namespace LY.Domain.Sys
     {
         public string Name { get; set; }
         
+        [JsonIgnore]
         public IList<Sys_WorkflowTypeNode> NodeList { get; set; }
     }
 }

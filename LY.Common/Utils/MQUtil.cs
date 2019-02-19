@@ -68,14 +68,14 @@ namespace LY.Common.Utils
                             {
                                 result.IsSuccessed = false;
                                 socket.SendFrame(JsonConvert.SerializeObject(result));
-                                LogUtil.Logger("MQ Receive Request").LogError(ex.ToString());
+                                //LogUtil.Logger("MQ Receive Request").LogError(ex.ToString());
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogUtil.Logger("MQ Start").LogError(ex.ToString());
+                    //LogUtil.Logger("MQ Start").LogError(ex.ToString());
                 }
             });
         }
@@ -113,7 +113,7 @@ namespace LY.Common.Utils
                 }
                 catch (Exception ex)
                 {
-                    LogUtil.Logger("MQ Publish").LogError(ex.ToString());
+                    //LogUtil.Logger("MQ Publish").LogError(ex.ToString());
                     throw ex;
                 }
             });
@@ -157,14 +157,14 @@ namespace LY.Common.Utils
                             }
                             catch (Exception ex)
                             {
-                                LogUtil.Logger("MQ Receive Subscrib").LogError(ex.ToString());
+                                //LogUtil.Logger("MQ Receive Subscrib").LogError(ex.ToString());
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogUtil.Logger("MQ Subscrib").LogError(ex.ToString());
+                    //LogUtil.Logger("MQ Subscrib").LogError(ex.ToString());
                 }
             });
         }

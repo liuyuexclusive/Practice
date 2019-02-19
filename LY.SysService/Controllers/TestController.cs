@@ -5,6 +5,8 @@ using LY.Domain;
 using LY.Domain.Sys;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace LY.SysService.Controllers
 {
@@ -17,6 +19,7 @@ namespace LY.SysService.Controllers
         public IRepository<Sys_User> UserRepo { get; set; }
         public IUnitOfWork UW { get; set; }
         public ICapPublisher Publisher { get; set; }
+        public ILogger<TestController> Logger { get; set; }
         public TestController()
         {
 
@@ -26,6 +29,8 @@ namespace LY.SysService.Controllers
         [HttpGet]
         public string Test()
         {
+            throw new Exception("测试异常");
+            Logger.LogInformation("测试日志");
             return "OK";
         }
     }

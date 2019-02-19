@@ -51,8 +51,8 @@ namespace LY.Common
 
     public class ServiceDiscoveryProvider
     {
-        public string Host { get; set; } = "172.18.202.1";
-        public int Port { get; set; } = 8500;
+        public string Host { get; set; } = $"{Const.IP._consul}";
+        public int Port { get; set; } = int.Parse(Const.Port._consul);
         public string Type { get; set; } = "Consul";
     }
 

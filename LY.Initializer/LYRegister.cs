@@ -145,7 +145,8 @@ namespace LY.Initializer
             {
                 //options.UseCentralRoutePrefix(new RouteAttribute("api"));
                 options.Filters.Add(typeof(ExceptionFilterAttribute));
-            })
+                options.Filters.Add(typeof(LogFilterAttribute));
+            }) 
 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             //autofac

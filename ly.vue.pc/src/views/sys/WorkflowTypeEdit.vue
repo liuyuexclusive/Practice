@@ -112,8 +112,7 @@ export default {
     return {
       selectedID: 1,
       loading: false,
-      nodes: [
-      ],
+      nodes: [],
       auditors: [
         { UserID: 1, UserName: "张三" },
         { UserID: 2, UserName: "李四" },
@@ -122,7 +121,7 @@ export default {
       ],
       workflowForm: {
         Name: "",
-        ID:null
+        ID: null
       },
       workflowRules: {
         Name: [{ required: true, message: "请输入节点名称", trigger: "blur" }]
@@ -133,12 +132,17 @@ export default {
     var param = this.$route.params;
     this.workflowForm.ID = param.ID;
     this.workflowForm.Name = param.Name;
-    this.nodes = param.Nodes;
-    if(!this.nodes){
-      this.nodes = [];
-    }
+    request("WorkflowType/GetNodes", "post", { ID: param.ID }).then(data => {
+      if (data) {
+        this.nodes = data.Data;
+        if (!this.nodes) {
+          this.nodes = [];
+        }
+      }
+    });
   },
   computed: {
+    //for validate
     nodeForm() {
       let result = {};
       let nodes = this.nodes;
@@ -148,6 +152,7 @@ export default {
       }
       return result;
     },
+    //for validate
     nodeRules() {
       let result = {};
       let nodes = this.nodes;

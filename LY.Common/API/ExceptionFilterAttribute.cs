@@ -10,13 +10,15 @@ namespace LY.Common.API
 {
     public class ExceptionFilterAttribute : Attribute, IExceptionFilter
     {
-        public ExceptionFilterAttribute()
+        private readonly ILogger<ExceptionFilterAttribute> _logger;
+        public ExceptionFilterAttribute(ILogger<ExceptionFilterAttribute> logger)
         {
+            _logger = logger;
         }
 
         public void OnException(ExceptionContext context)
         {
-            LogUtil.Logger<ExceptionFilterAttribute>().LogError(context.Exception.ToString());
+            _logger.LogError(context.Exception.ToString());
             context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(new Output()
             {
                 Success = false,

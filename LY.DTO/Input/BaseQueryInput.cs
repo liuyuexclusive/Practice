@@ -1,13 +1,11 @@
-﻿using LY.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LY.DTO.Input
 {
-    public class BaseQueryInput: IPageInput
+    public class BaseQueryInput
     {
-        public int CurrentPage { get; set; }
-        public int CurrentPageSize { get; set; }
+        public int ID { get; set; }
     }
 }

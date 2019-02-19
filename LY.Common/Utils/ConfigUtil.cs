@@ -170,7 +170,7 @@ namespace LY.Common
 #if DEBUG
                 return $"http://127.0.0.1:{Const.Port._consul}";
 #endif
-                return $"{Const.IP._consul}:{Const.Port._consul}";
+                return $"http://{Const.IP._consul}:{Const.Port._consul}";
             }
         }
     }

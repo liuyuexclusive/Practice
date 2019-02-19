@@ -8,7 +8,6 @@ namespace LY.DTO.Output
     {
         public int ID { get; set; }
         public string Name { get; set; }
-        public IEnumerable<WorkflowTypeNodeOutput> Nodes { get; set; }
     }
 
     public class WorkflowTypeNodeOutput

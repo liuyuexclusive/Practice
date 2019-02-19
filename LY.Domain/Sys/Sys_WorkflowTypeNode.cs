@@ -15,7 +15,7 @@ namespace LY.Domain.Sys
 
         public int? PreNodeID { get; set; }
 
-        
+        [JsonIgnore]
         public Sys_WorkflowTypeNode PreNode { get; set; }
 
         [JsonIgnore]
@@ -24,7 +24,7 @@ namespace LY.Domain.Sys
         [JsonIgnore]
         public Sys_WorkflowType Type { get; set; }
 
-        
+        [JsonIgnore]
         public IList<Sys_WorkflowTypeNodeAuditor> AuditorList { get; set; }
     }
 }

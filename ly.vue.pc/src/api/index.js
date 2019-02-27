@@ -1,21 +1,26 @@
 import axios from "axios";
 import { Message, MessageBox } from "element-ui";
-let base = "http://localhost:9001/";
 
-export const gatewayHost = base
+export const gatewayHost = "http://localhost:9000/"
+
+axios.defaults.baseURL = gatewayHost;
+axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.token;
+axios.defaults.headers['Content-Type'] = 'application/json';
+
 
 export const request = (url, method, params) => {
     var config = {
-        url: `${gatewayHost}` + url,
-        method: method,
-        headers: { Authorization: "Bearer " + localStorage.token }
+        url: url,
+        method: method
     }
-
+    
     if (method === "get") {
         config.params = params
     } else {
         config.data = params
     }
+
+    config.data = JSON.stringify(params)
 
     return axios(config)
         .then(data => {

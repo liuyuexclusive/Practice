@@ -1,5 +1,6 @@
 ﻿using LY.Common;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,7 +32,11 @@ namespace LY.AutoStart
 
         static void Main(string[] args)
         {
+            Stopwatch sp = new Stopwatch();
+            sp.Start();
             Start(ref args);
+            sp.Stop();
+            Console.WriteLine(sp.Elapsed.TotalSeconds);
             Console.Read();
         }
 
@@ -40,9 +45,9 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                //args = new string[] { "practice", "vue" };
-                args = new string[] { "practice", "services,gateway,daemon" };
-                //args = new string[] { "practice", "base" };
+                //args = new string[] { "practice", "services,gateway,daemon,vue,base" };
+                //args = new string[] { "practice", "services" };
+                args = new string[] { "practice", "vue" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -142,13 +147,13 @@ namespace LY.AutoStart
                     });
                     break;
                 case ImageType.Vue:
-                    ExcuteBat(() =>
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
-                        sb.AppendLine($"npm install");
-                        return sb;
-                    });
+                    //ExcuteBat(() =>
+                    //{
+                    //    StringBuilder sb = new StringBuilder();
+                    //    sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                    //    sb.AppendLine($"npm install");
+                    //    return sb;
+                    //});
                     ExcuteBat(() =>
                     {
                         StringBuilder sb = new StringBuilder();
@@ -174,6 +179,7 @@ namespace LY.AutoStart
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("FROM microsoft/dotnet:2.2-aspnetcore-runtime");
                         sb.AppendLine("WORKDIR /app");
+                        //sb.AppendLine($"ENV ASPNETCORE_URLS http://+:{port}");
                         sb.AppendLine("COPY . .");
                         sb.AppendLine($"ENTRYPOINT [\"dotnet\", \"{name}.dll\"]");
                         sw.WriteLine(sb.ToString());
@@ -290,7 +296,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._gateway}", "-p 9000:80");
+                CreateContainer(name, $"--ip={Const.IP._gateway}", "-p 9000:9000");
             }
         }
 
@@ -303,10 +309,9 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._daemon}", "-p 9009:80");
+                CreateContainer(name, $"--ip={Const.IP._daemon}", "-p 9009:9009");
             }
         }
-
 
         private static void DeployServices()
         {
@@ -374,6 +379,8 @@ namespace LY.AutoStart
                 return sb;
             });
 
+            #region mysql master and slave
+
             //docker run --network=lynet --ip=172.18.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
             //docker run --network=lynet --ip=172.18.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
 
@@ -401,12 +408,14 @@ namespace LY.AutoStart
             //开启从库的slave
             //mysql -u root -p123456
             /*
+            STOP SLAVE;
             CHANGE MASTER TO
             MASTER_HOST = '172.18.200.1',
             MASTER_USER = 'root',
             MASTER_PASSWORD = '123456',
-            MASTER_LOG_FILE = 'mysql-bin.000019',
+            MASTER_LOG_FILE = 'mysql-bin.000024',
             MASTER_LOG_POS = 155;
+            START SLAVE;
             */
             //START SLAVE;
             //SHOW SLAVE STATUS \G  
@@ -419,9 +428,13 @@ namespace LY.AutoStart
 
             //一般是事务回滚造成的：
             //解决办法：
-            //mysql > stop slave;
-            //mysql > set GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
-            //mysql > start slave;
+            /*
+            stop slave;
+            set GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+            start slave; 
+             */
+
+            #endregion
 
             BuildImage("redis", ImageType.DockerHubImage);
             CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");

@@ -4,10 +4,5 @@
         <name>LY.Gateway</name>
     </assembly>
     <members>
-        <member name="T:LY.Gateway.Startup">
-            <summary>
-            
-            </summary>
-        </member>
     </members>
 </doc>

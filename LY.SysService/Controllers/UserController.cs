@@ -31,9 +31,9 @@ namespace LY.SysService.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetList")]
-        public async Task<OutputList<UserOutput>> GetList(BasePageQueryInput value)
+        public async Task<OutputList<UserOutput>> GetList([FromQuery]BasePageQueryInput value)
         {
             var data = UserCache.List();
             return await OKList(

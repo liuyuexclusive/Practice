@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LY.Domain
+namespace LY.Common
 {
     /// <summary>
     /// 代表一个工作单元。

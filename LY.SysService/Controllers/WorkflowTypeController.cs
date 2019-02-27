@@ -39,7 +39,7 @@ namespace LY.SysService.Controllers
             return await OK("操作成功");
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetList")]
         public async Task<OutputList<WorkflowTypeOutput>> GetList()
         {
@@ -54,9 +54,9 @@ namespace LY.SysService.Controllers
             }), list.Count);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("GetNodes")]
-        public async Task<OutputList<WorkflowTypeNodeOutput>> GetNodes(BaseQueryInput input)
+        public async Task<OutputList<WorkflowTypeNodeOutput>> GetNodes([FromQuery]BaseQueryInput input)
         {
             var list = WorkflowTypeRepo.Queryable.Include(x=>x.NodeList).ThenInclude(x=>x.AuditorList).FirstOrDefault(x=>x.ID==input.ID)?.NodeList;
             return await OKList<WorkflowTypeNodeOutput>(list?.Select(x =>

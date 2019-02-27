@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LY.Domain
+namespace LY.Common
 {
     public interface IEntityCacheable
     {

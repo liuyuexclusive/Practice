@@ -26,10 +26,10 @@ namespace LY.SysService.Controllers
         public RoleController()
         {
         }
-
-        [HttpPost]
+    
+        [HttpGet]
         [Route("GetList")]
-        public async Task<OutputList<RoleOutput>> GetList(BasePageQueryInput value)
+        public async Task<OutputList<RoleOutput>> GetList([FromQuery]BasePageQueryInput value)
         {
             Logger.LogInformation("测试日志hahaha");
 

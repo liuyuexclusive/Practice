@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LY.Domain
+namespace LY.Common
 {
     /// <summary>
     /// 实体基类。

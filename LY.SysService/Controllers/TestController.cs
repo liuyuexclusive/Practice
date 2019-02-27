@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace LY.SysService.Controllers
 {
@@ -27,11 +28,9 @@ namespace LY.SysService.Controllers
 
         [UnAuthorize]
         [HttpGet]
-        public string Test()
+        public object Test()
         {
-            throw new Exception("测试异常");
-            Logger.LogInformation("测试日志");
-            return "OK";
+            return UserRepo.Queryable.ToList();
         }
     }
 }

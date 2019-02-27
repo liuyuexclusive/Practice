@@ -7,12 +7,13 @@ using Hangfire;
 using LY.Common;
 using LY.Common.Utils;
 using LY.DTO;
+using LY.Initializer;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace LY.DaemonService
+namespace LY.Daemon
 {
     public class Program
     {
@@ -23,6 +24,7 @@ namespace LY.DaemonService
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseUrls(ConfigUtil.StartUrl);
     }
 }

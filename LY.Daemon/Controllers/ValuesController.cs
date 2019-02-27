@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LY.DaemonService.Controllers
+namespace LY.Daemon.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,4 +1,4 @@
-﻿using LY.Domain;
+﻿using LY.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

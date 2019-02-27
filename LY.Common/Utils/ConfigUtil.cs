@@ -12,15 +12,17 @@ namespace LY.Common
 {
     public static class ConfigUtil
     {
-        public static IConfigurationRoot ReadJsonFile(string path, string basePath = null)
+        public static IConfiguration Configuration { get; set; }
+
+        public static IConfigurationRoot ReadJsonFile(string path, string basePath = null, bool reloadOnChange = false)
         {
             if (basePath.IsNullOrEmpty())
             {
                 basePath = ApplicationBasePath;
             }
             var builder = new ConfigurationBuilder()
-.SetBasePath(basePath)
-.AddJsonFile(path, optional: true, reloadOnChange: false);
+            .SetBasePath(basePath)
+            .AddJsonFile(path, optional: true, reloadOnChange: reloadOnChange);
             return builder.Build();
         }
 
@@ -57,6 +59,14 @@ namespace LY.Common
             }
         }
 
+        public static string StartUrl
+        {
+            get
+            {
+                return Const._scheme + "://*:" + Port ;
+            }
+        }
+
         public static string Host
         {
             get
@@ -71,7 +81,6 @@ namespace LY.Common
                     }
                 }
                 return AddressIP;
-                //return "172.16.210.140";
             }
         }
 
@@ -79,8 +88,7 @@ namespace LY.Common
         {
             get
             {
-                return 80;
-                //return int.Parse(ReadJsonFile("appSettings.json",CurrentDirectory)["Port"]);
+                return int.Parse(ConfigUtil.ReadJsonFile("appsettings.json", ConfigUtil.CurrentDirectory)["Port"]);
             }
         }
 
@@ -93,7 +101,7 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
 #endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("MasterConnection");
             }
@@ -107,7 +115,7 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return "server=127.0.0.1;port=3307;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+                return $"server={Const.IP._host};port=3307;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
 #endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("SlaveConnection");
             }
@@ -121,7 +129,7 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly_hangfire;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly_hangfire;charset=utf8;max pool size=1000;AllowUserVariables=True;";
 #endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("HangfireConnection");
             }
@@ -135,18 +143,18 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return "server=127.0.0.1;port=3306;uid=root;pwd=123456;DataBase=ly_cap;charset=utf8;max pool size=1000;AllowUserVariables=True;";
+                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly_cap;charset=utf8;max pool size=1000;AllowUserVariables=True;";
 #endif
                 return ReadJsonFile("connectionString.json").GetConnectionString("CAPConnection");
             }
         }
-        
+
         public static string RedisAddress
         {
             get
             {
 #if DEBUG
-                return $"127.0.0.1:{Const.Port._redis}";
+                return $"{Const.IP._host}:{Const.Port._redis}";
 #endif
                 return $"{Const.IP._redis}:{Const.Port._redis}";
             }
@@ -157,7 +165,7 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return $"127.0.0.1";
+                return $"{Const.IP._host}";
 #endif
                 return $"{Const.IP._rabbitmq}";
             }
@@ -168,7 +176,7 @@ namespace LY.Common
             get
             {
 #if DEBUG
-                return $"http://127.0.0.1:{Const.Port._consul}";
+                return $"http://{Const.IP._host}:{Const.Port._consul}";
 #endif
                 return $"http://{Const.IP._consul}:{Const.Port._consul}";
             }

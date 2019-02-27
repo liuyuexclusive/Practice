@@ -21,20 +21,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac" Version="4.9.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="DotNetCore.CAP" Version="2.4.2" />
-    <PackageReference Include="Mapster" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.0" />
+    <PackageReference Include="Mapster" Version="3.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="NEST" Version="6.4.1" />
+    <PackageReference Include="NEST" Version="6.5.0" />
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
-    <PackageReference Include="NLog.Targets.ElasticSearch" Version="6.0.0" />
+    <PackageReference Include="NLog.Targets.ElasticSearch" Version="6.1.0" />
     <PackageReference Include="Zero.Logging.Elasticsearch" Version="2.2.1" />
   </ItemGroup>
 

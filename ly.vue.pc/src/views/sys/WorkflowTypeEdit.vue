@@ -132,7 +132,7 @@ export default {
     var param = this.$route.params;
     this.workflowForm.ID = param.ID;
     this.workflowForm.Name = param.Name;
-    request("WorkflowType/GetNodes", "post", { ID: param.ID }).then(data => {
+    request("WorkflowType/GetNodes", "get", { ID: param.ID }).then(data => {
       if (data) {
         this.nodes = data.Data;
         if (!this.nodes) {

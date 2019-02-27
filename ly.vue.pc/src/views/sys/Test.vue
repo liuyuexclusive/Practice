@@ -58,6 +58,8 @@ export default {
       socket.close(1000, "Closing from client");
     },
     send() {
+      console.log(socket);
+      console.log(this.content);
       socket.send(this.content);
     }
   }

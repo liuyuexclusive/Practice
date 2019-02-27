@@ -1,38 +1,29 @@
 ﻿using Hangfire;
 using Hangfire.Dashboard;
 using LY.Common;
-using LY.Common.Middlewares;
-using LY.Common.Utils;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
-using Microsoft.IdentityModel.Tokens;
 using NLog.Extensions.Logging;
-using Ocelot.DependencyInjection;
-using Ocelot.Middleware;
-using Ocelot.Provider.Consul;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LY.Initializer
 {
-    public class LYDaemonStartup
+    public class LYDaemonStartup : LYStartup
     {
-        public LYDaemonStartup()
+        public LYDaemonStartup(IConfiguration configuration) : base(configuration)
         {
 
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public override IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddHangfire(x => x.UseStorage(new Hangfire.MySql.Core.MySqlStorage(ConfigUtil.HangfireConnectionString)));
-            return new LYRegister().Register(services);
+            return base.ConfigureServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,7 +45,7 @@ namespace LY.Initializer
                 IsReadOnlyFunc = x => true
             });
             app.UseHangfireServer();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
         }
 

@@ -2,7 +2,6 @@
 using Autofac.Extensions.DependencyInjection;
 using LY.Common;
 using LY.Common.API;
-using LY.Domain;
 using LY.EFRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -23,6 +22,7 @@ using System.Collections.Generic;
 using LY.Common.Utils;
 using Microsoft.Extensions.Caching.Redis;
 using DotNetCore.CAP;
+using Microsoft.Extensions.Configuration;
 
 namespace LY.Initializer
 {
@@ -75,6 +75,13 @@ namespace LY.Initializer
         private void RegisterService()
         {
             var assembly = Assembly.Load(new AssemblyName("LY.Application"));
+
+            IOCManager.ContainerBuilder
+    .RegisterAssemblyTypes(assembly)
+    .Where(t => t.Name == "EntityToTable")
+    .AsImplementedInterfaces()
+    .PropertiesAutowired();
+
             IOCManager.ContainerBuilder
                 .RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.EndsWith("Service"))
@@ -84,8 +91,9 @@ namespace LY.Initializer
 
         private void RegisterController()
         {
+            var assembly = Assembly.GetEntryAssembly();
             var manager = new ApplicationPartManager();
-            manager.ApplicationParts.Add(new AssemblyPart(Assembly.GetEntryAssembly()));
+            manager.ApplicationParts.Add(new AssemblyPart(assembly));
             manager.FeatureProviders.Add(new ControllerFeatureProvider());
             var feature = new ControllerFeature();
             manager.PopulateFeature(feature);

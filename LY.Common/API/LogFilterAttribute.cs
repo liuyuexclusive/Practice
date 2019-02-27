@@ -33,7 +33,12 @@ namespace LY.Common.API
         public override void OnActionExecuted(ActionExecutedContext context)
         {
             base.OnActionExecuted(context);
-            _stopwatch.Stop();
+            var metadata = context.ActionDescriptor.EndpointMetadata;
+            //skip Get or UnAuthorize
+            if (metadata.Any(x => x is HttpGetAttribute || x is UnAuthorizeAttribute))
+            {
+                return;
+            }
             var log = new VisitLog();
             var request = context.HttpContext.Request;
             log.Url = $"{ConfigUtil.ApplicationUrl}{request.Path.ToString()}";

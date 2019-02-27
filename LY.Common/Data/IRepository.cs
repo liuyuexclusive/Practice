@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace LY.Domain
+namespace LY.Common
 {
     /// <summary>
     ///  代表一个资源库。

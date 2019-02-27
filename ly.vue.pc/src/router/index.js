@@ -10,6 +10,7 @@ import Register from '@/views/Register.vue'
 import Test from '@/views/sys/Test.vue'
 import WorkflowType from '@/views/sys/WorkflowType.vue'
 import WorkflowTypeEdit from '@/views/sys/WorkflowTypeEdit.vue'
+import Schedule from '@/views/sys/Schedule.vue'
 
 Vue.use(Router)
 
@@ -46,6 +47,7 @@ export default new Router({
         { path: '/WorkflowType', name: 'WorkflowType', component: WorkflowType, meta: { requireAuth: true } },
         { path: '/WorkflowTypeEdit', name: 'WorkflowTypeEdit', component: WorkflowTypeEdit, meta: { requireAuth: true } },
         { path: '/Test', name: 'Test', component: Test, meta: { requireAuth: true } },
+        { path: '/Schedule', name: 'Schedule', component: Schedule, meta: { requireAuth: true } },
       ]
     }
   ]

@@ -14,8 +14,8 @@
         width="50"
       ></el-table-column>
       <el-table-column
-        :key="item.ID"
         v-for="item in columnData"
+        :key="item.ID"
         :prop="item.prop"
         :label="item.label"
       ></el-table-column>
@@ -95,7 +95,7 @@ export default {
           this.pageData.CurrentPage=1;
           this.pageData.CurrentPageSize=1000000;
       }
-      request(this.getListUrl, "post", {CurrentPage:this.pageData.CurrentPage,CurrentPageSize:this.pageData.CurrentPageSize}).then(data => {
+      request(this.getListUrl, "get", {CurrentPage:this.pageData.CurrentPage,CurrentPageSize:this.pageData.CurrentPageSize}).then(data => {
         if (data) {
           this.tableData = data.Data;
           this.pageData.Total = data.Total;

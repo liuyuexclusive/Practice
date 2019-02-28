@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
     <ProjectReference Include="..\LY.Domain\LY.Domain.csproj" />
     <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
     <ProjectReference Include="..\LY.EFRepository\LY.EFRepository.csproj" />

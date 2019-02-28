@@ -46,8 +46,8 @@ namespace LY.AutoStart
             {
 #if DEBUG
                 //args = new string[] { "practice", "services,gateway,daemon,vue,base" };
-                //args = new string[] { "practice", "services" };
-                args = new string[] { "practice", "vue" };
+                args = new string[] { "practice", "services,gateway,daemon,vue" };
+                //args = new string[] { "practice", "vue" };
 #endif
                 if (args == null || args.Length == 0)
                 {

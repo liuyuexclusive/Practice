@@ -100,10 +100,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
-#endif
-                return ReadJsonFile("connectionString.json").GetConnectionString("MasterConnection");
+                return Configuration.GetConnectionString("Master"); 
             }
         }
 
@@ -114,10 +111,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"server={Const.IP._host};port=3307;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;";
-#endif
-                return ReadJsonFile("connectionString.json").GetConnectionString("SlaveConnection");
+                return Configuration.GetConnectionString("Slave");
             }
         }
 
@@ -128,10 +122,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly_hangfire;charset=utf8;max pool size=1000;AllowUserVariables=True;";
-#endif
-                return ReadJsonFile("connectionString.json").GetConnectionString("HangfireConnection");
+                return Configuration.GetConnectionString("Hangfire");
             }
         }
 
@@ -142,10 +133,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"server={Const.IP._host};port=3306;uid=root;pwd=123456;DataBase=ly_cap;charset=utf8;max pool size=1000;AllowUserVariables=True;";
-#endif
-                return ReadJsonFile("connectionString.json").GetConnectionString("CAPConnection");
+                return Configuration.GetConnectionString("CAP");
             }
         }
 
@@ -153,10 +141,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"{Const.IP._host}:{Const.Port._redis}";
-#endif
-                return $"{Const.IP._redis}:{Const.Port._redis}";
+                return Configuration.GetConnectionString("Redis");
             }
         }
 
@@ -164,10 +149,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"{Const.IP._host}";
-#endif
-                return $"{Const.IP._rabbitmq}";
+                return Configuration.GetConnectionString("RabbitMQ");
             }
         }
 
@@ -175,10 +157,7 @@ namespace LY.Common
         {
             get
             {
-#if DEBUG
-                return $"http://{Const.IP._host}:{Const.Port._consul}";
-#endif
-                return $"http://{Const.IP._consul}:{Const.Port._consul}";
+                return Configuration.GetConnectionString("Consul");
             }
         }
     }

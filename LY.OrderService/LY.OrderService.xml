@@ -4,16 +4,5 @@
         <name>LY.OrderService</name>
     </assembly>
     <members>
-        <member name="T:LY.OrderService.EntityToTable">
-            <summary>
-            映射关系
-            </summary>
-        </member>
-        <member name="M:LY.OrderService.EntityToTable.Excute(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <summary>
-            Excute
-            </summary>
-            <param name="modelBuilder"></param>
-        </member>
     </members>
 </doc>

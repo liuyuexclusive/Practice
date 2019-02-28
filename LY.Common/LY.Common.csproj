@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.9.1" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
     <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="DotNetCore.CAP" Version="2.4.2" />
     <PackageReference Include="Mapster" Version="3.3.1" />

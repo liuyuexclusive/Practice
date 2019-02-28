@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LY.NugetGen
 {
@@ -10,14 +11,14 @@ namespace LY.NugetGen
         static string workspaceDir = string.Empty;
         static DirectoryInfo workspace = null;
         static string key = "oy2agnj5aerbhx5nlbzq5zblubagmvuejkgqcbrchm7v6q";
-        static string version = "1.0.4";
+        static string version = "1.0.5";
 
         static void Main(string[] args)
         {
 #if DEBUG
             //args = new string[] { "practice", "services,gateway,daemon,vue,base" };
             //args = new string[] { "practice", "services" };
-            args = new string[] { "practice"};
+            args = new string[] { "practice" };
 #endif
             if (args == null || args.Length == 0)
             {
@@ -44,8 +45,8 @@ namespace LY.NugetGen
 
             var names = new string[] {
                 "LY.Common",
-                "LY.EFRepository",
-                "LY.Initializer"
+                //"LY.EFRepository",
+                //"LY.Initializer"
             };
 
             foreach (var name in names)

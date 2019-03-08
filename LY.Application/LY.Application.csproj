@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="WebApiClient.JIT" Version="0.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LY.Domain\LY.Domain.csproj" />
     <ProjectReference Include="..\LY.DTO\LY.DTO.csproj" />
     <ProjectReference Include="..\LY.EFRepository\LY.EFRepository.csproj" />

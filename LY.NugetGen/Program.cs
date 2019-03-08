@@ -25,7 +25,6 @@ namespace LY.NugetGen
                 Console.WriteLine("请输入workspace名称");
                 return;
             }
-
             workspace = new DirectoryInfo(Directory.GetCurrentDirectory());
             var root = workspace.Root;
             while (true)

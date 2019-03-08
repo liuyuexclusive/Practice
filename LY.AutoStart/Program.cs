@@ -22,16 +22,20 @@ namespace LY.AutoStart
 
     class Program
     {
-        static string workspaceDir = string.Empty;
         static DirectoryInfo workspace = null;
-        static string netcoreappVersion = "netcoreapp2.2";
-        static int serviceNum = 2;
-        static int consulAgentNum = 4;
-        static bool isPublishToProduct = false;
-        static StringBuilder sbSH = new StringBuilder();
+        static string workspaceDir = string.Empty;
+        static StringBuilder sbDockerCmd = new StringBuilder();
+
+        const string netcoreappVersion = "netcoreapp2.2";
+        const int serviceNum = 2; //服务数量
+        const int consulAgentNum = 4; //consul集群数量
+        const bool isPublishToLinux = false;
 
         static void Main(string[] args)
         {
+            //Console.WriteLine((DateTime.Parse("2019-03-04") == DateTime.Today));
+            //Console.Read();
+            //return;
             Stopwatch sp = new Stopwatch();
             sp.Start();
             Start(ref args);
@@ -45,9 +49,9 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                //args = new string[] { "practice", "services,gateway,daemon,vue,base" };
-                args = new string[] { "practice", "services,gateway,daemon,vue" };
-                //args = new string[] { "practice", "vue" };
+                //args = new string[] { "practice", "base" };
+                //args = new string[] { "practice", "services,gateway,daemon,vue" };
+                args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -78,7 +82,7 @@ namespace LY.AutoStart
                 workspaceDir = workspace.FullName;
 
                 var options = args[1].Split(",").Distinct();
-                if (!options.Intersect(new string[] { "base"}).IsNullOrEmpty())//默认不发布基础设施
+                if (!options.Intersect(new string[] { "base" }).IsNullOrEmpty())//默认不发布基础设施
                 {
                     DeployBase();
                 }
@@ -99,14 +103,16 @@ namespace LY.AutoStart
                     DeployVue();
                 }
 
-                if (isPublishToProduct)
+                string fileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
+                using (FileStream fs = File.Create(Path.Combine(workspaceDir, "PublishToProduct", fileName)))
                 {
-                    using (FileStream fs = File.Create(Path.Combine(workspaceDir, "PublishToProduct", "deploy.sh")))
-                    {
-                        StreamWriter sw = new StreamWriter(fs);
-                        sw.WriteLine(sbSH.ToString());
-                        sw.Flush();
-                    }
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine(sbDockerCmd.ToString());
+                    sw.Flush();
+                }
+                if (!isPublishToLinux)
+                {
+                    ExcuteBat(() => { return sbDockerCmd; });
                 }
             }
             catch (Exception ex)
@@ -147,13 +153,13 @@ namespace LY.AutoStart
                     });
                     break;
                 case ImageType.Vue:
-                    //ExcuteBat(() =>
-                    //{
-                    //    StringBuilder sb = new StringBuilder();
-                    //    sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
-                    //    sb.AppendLine($"npm install");
-                    //    return sb;
-                    //});
+                    ExcuteBat(() =>
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                        sb.AppendLine($"npm install");
+                        return sb;
+                    });
                     ExcuteBat(() =>
                     {
                         StringBuilder sb = new StringBuilder();
@@ -205,85 +211,81 @@ namespace LY.AutoStart
         private static void BuildImage(string name, ImageType type, string version = null)
         {
             var lowName = name.ToLower();
-            
-            var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
-            ExcuteBat(() =>
-            {
-                var sb = new StringBuilder();
-                if (type == ImageType.Dotnet && !name.EndsWith("Gateway") && !name.EndsWith("Daemon"))
-                {
-                    for (int i = 0; i < serviceNum; i++)
-                    {
-                        var index = (i == 0 ? string.Empty : i.ToString());
-                        sb.AppendLine($"docker stop {lowName}-server{index}");
-                        sb.AppendLine($"docker rm {lowName}-server{index}");
-                    }
-                }
-                else if (lowName == "consul")
-                {
-                    for (int i = 0; i < consulAgentNum; i++)
-                    {
-                        var index = (i == 0 ? string.Empty : i.ToString());
-                        sb.AppendLine($"docker stop {lowName}-server{index}");
-                        sb.AppendLine($"docker rm {lowName}-server{index}");
-                    }
-                }
-                else
-                {
-                    sb.AppendLine($"docker stop {lowName}-server");
-                    sb.AppendLine($"docker rm {lowName}-server");
-                }
 
-                sb.AppendLine($"docker rmi {lowName}{imageVersion}");
-                string sourceDir = null;
-                if (type == ImageType.DockerHubImage)
+            var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
+
+            var sb = new StringBuilder();
+            if (type == ImageType.Dotnet && !name.EndsWith("Gateway") && !name.EndsWith("Daemon"))
+            {
+                for (int i = 0; i < serviceNum; i++)
                 {
-                    sb.AppendLine($"docker pull {lowName}{imageVersion}");
+                    var index = (i == 0 ? string.Empty : i.ToString());
+                    sb.AppendLine($"docker stop {lowName}-server{index}");
+                    sb.AppendLine($"docker rm {lowName}-server{index}");
                 }
-                else
+            }
+            else if (lowName == "consul")
+            {
+                for (int i = 0; i < consulAgentNum; i++)
                 {
-                    switch (type)
-                    {
-                        case ImageType.Dotnet:
-                            sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish");
-                            break;
-                        case ImageType.Vue:
-                            sourceDir = Path.Combine(workspaceDir, name, "dist");
-                            break;
-                        default:
-                            break;
-                    }
-                    sb.AppendLine($"cd {sourceDir}");
-                    sb.AppendLine($"docker build -t {lowName} .");
+                    var index = (i == 0 ? string.Empty : i.ToString());
+                    sb.AppendLine($"docker stop {lowName}-server{index}");
+                    sb.AppendLine($"docker rm {lowName}-server{index}");
                 }
-                if (isPublishToProduct)
+            }
+            else
+            {
+                sb.AppendLine($"docker stop {lowName}-server");
+                sb.AppendLine($"docker rm {lowName}-server");
+            }
+
+            sb.AppendLine($"docker rmi {lowName}{imageVersion}");
+            string sourceDir = null;
+            var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
+            if (type == ImageType.DockerHubImage)
+            {
+                sb.AppendLine($"docker pull {lowName}{imageVersion}");
+            }
+            else
+            {
+                switch (type)
                 {
-                    var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
-                    sbSH.AppendLine(sb.ToString().Replace(sourceDir, "/root/PublishToProduct/" + name));
-                    if (!sourceDir.IsNullOrEmpty())
-                    {
-                        sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
-                    }
+                    case ImageType.Dotnet:
+                        sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish");
+                        break;
+                    case ImageType.Vue:
+                        sourceDir = Path.Combine(workspaceDir, name, "dist");
+                        break;
+                    default:
+                        break;
                 }
-                return sb;
-            });
+            }
+
+            
+            if (!sourceDir.IsNullOrEmpty())
+            {
+                sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
+                sb.AppendLine($"cd {targetDir}");
+                sb.AppendLine($"docker build -t {lowName} .");
+            }
+
+            string result = sb.ToString();
+            if (isPublishToLinux)
+            {
+                result = result.Replace(sourceDir, "/root/PublishToProduct/" + name);
+            }
+            sbDockerCmd.AppendLine(result);
         }
-        
+
         private static void CreateContainer(string name, string ip = null, string port = null, int? index = null, string version = null, string postfix = null)
         {
             var lowName = name.ToLower();
             var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
-            ExcuteBat(() =>
-            {
-                var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
-                var sb = new StringBuilder();
-                sb.AppendLine($"docker run -d {port} --network=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
-                if (isPublishToProduct)
-                {
-                    sbSH.AppendLine(sb.ToString());
-                }
-                return sb;
-            });
+
+            var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
+            var sb = new StringBuilder();
+            sb.AppendLine($"docker run -d {port} --network=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
+            sbDockerCmd.AppendLine(sb.ToString());
         }
         #endregion
 
@@ -358,7 +360,7 @@ namespace LY.AutoStart
             var t1 = targets.FirstOrDefault(x => x.Name == "ly.vue.pc");
             if (t1 != null)
             {
-                CreateContainer(t1.Name, null,"-p 8081:80");
+                CreateContainer(t1.Name, null, "-p 8081:80");
             }
             var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.mobile");
             if (t2 != null)
@@ -372,17 +374,12 @@ namespace LY.AutoStart
         /// </summary>
         private static void DeployBase()
         {
-            ExcuteBat(() =>
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine("docker network create --subnet=172.18.0.0/16 lynet");
-                return sb;
-            });
+            sbDockerCmd.AppendLine($"docker network create --subnet=172.19.0.0/16 lynet");
 
             #region mysql master and slave
 
-            //docker run --network=lynet --ip=172.18.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
-            //docker run --network=lynet --ip=172.18.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+            //docker run --network=lynet --ip=172.19.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+            //docker run --network=lynet --ip=172.19.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
 
             //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
             //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
@@ -410,10 +407,10 @@ namespace LY.AutoStart
             /*
             STOP SLAVE;
             CHANGE MASTER TO
-            MASTER_HOST = '172.18.200.1',
+            MASTER_HOST = '172.19.200.1',
             MASTER_USER = 'root',
             MASTER_PASSWORD = '123456',
-            MASTER_LOG_FILE = 'mysql-bin.000024',
+            MASTER_LOG_FILE = 'mysql-bin.000001',
             MASTER_LOG_POS = 155;
             START SLAVE;
             */
@@ -435,28 +432,41 @@ namespace LY.AutoStart
              */
 
             #endregion
+            /*
 
             BuildImage("redis", ImageType.DockerHubImage);
             CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");
 
             BuildImage("consul", ImageType.DockerHubImage);
             //consul cluster
-            CreateContainer("consul", $"--ip=172.18.202.1", null, null, null, "agent -server -bootstrap-expect=2");
-            CreateContainer("consul", $"--ip=172.18.202.2", null, 1, null, "agent -server -join 172.18.202.1");
-            CreateContainer("consul", $"--ip=172.18.202.3", null, 2, null, "agent -server -join 172.18.202.1");
-            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500", 3, null, "agent -join 172.18.202.1 -client=\"0.0.0.0\" -ui");
+            CreateContainer("consul", $"--ip=172.19.202.1", null, null, null, "agent -server -bootstrap-expect=2");
+            CreateContainer("consul", $"--ip=172.19.202.2", null, 1, null, "agent -server -join 172.19.202.1");
+            CreateContainer("consul", $"--ip=172.19.202.3", null, 2, null, "agent -server -join 172.19.202.1");
+            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500", 3, null, "agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
 
             BuildImage("rabbitmq", ImageType.DockerHubImage);
             CreateContainer("rabbitmq", $"--ip={Const.IP._rabbitmq}", "-p 15672:15672 -p 5672:5672");
 
-            BuildImage("elasticsearch", ImageType.DockerHubImage, "6.6.0");
-            CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300", null, "6.6.0", "-e \"discovery.type=single-node\"");            
+            BuildImage("elasticsearch", ImageType.DockerHubImage, "6.6.1");
+            CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300 -e \"discovery.type = single - node\"", null, "6.6.1");
 
-            BuildImage("kibana", ImageType.DockerHubImage, "6.6.0");
+            BuildImage("kibana", ImageType.DockerHubImage, "6.6.1");
             //docker cp kibana-server:/usr/share/kibana/config/kibana.yml C:\Users\liuyu\Desktop\mysql
             //docker cp C:\Users\liuyu\Desktop\mysql\kibana.yml kibana-server:/usr/share/kibana/config/kibana.yml
-            CreateContainer("kibana", $"--ip={Const.IP._kibana}", $"-p 5601:5601", null, "6.6.0", " -e \"elasticsearch.url=http://{Const.IP._elasticsearch}:9200\"");
-        }
+            CreateContainer("kibana", $"--ip={Const.IP._kibana}", $"-p 5601:5601 -e \"elasticsearch.hosts = http://{Const.IP._elasticsearch}:9200\"", null, "6.6.1");
 
+            */
+
+            sbDockerCmd.AppendLine("docker start mysql-master");
+            sbDockerCmd.AppendLine("docker start mysql-slave");
+            sbDockerCmd.AppendLine("docker start redis-server");
+            sbDockerCmd.AppendLine("docker start elasticsearch-server");
+            sbDockerCmd.AppendLine("docker start kibana-server");
+            sbDockerCmd.AppendLine("docker start rabbitmq-server");
+            sbDockerCmd.AppendLine("docker start consul-server");
+            sbDockerCmd.AppendLine("docker start consul-server1");
+            sbDockerCmd.AppendLine("docker start consul-server2");
+            sbDockerCmd.AppendLine("docker start consul-server3");
+        }
     }
 }

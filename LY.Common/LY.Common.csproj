@@ -35,7 +35,6 @@
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
     <PackageReference Include="NLog.Targets.ElasticSearch" Version="6.1.0" />
-    <PackageReference Include="Zero.Logging.Elasticsearch" Version="2.2.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using DotNetCore.CAP;
+using LY.Application.Api;
 using LY.Common;
 using LY.Common.API;
 using LY.Domain;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using WebApiClient;
 
 namespace LY.SysService.Controllers
 {
@@ -28,9 +31,9 @@ namespace LY.SysService.Controllers
 
         [UnAuthorize]
         [HttpGet]
-        public object Test()
+        public async Task<object> Test()
         {
-            return UserRepo.Queryable.ToList();
+            return await Task.Run(() => "ok");
         }
     }
 }

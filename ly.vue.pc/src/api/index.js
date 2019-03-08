@@ -4,11 +4,12 @@ import { Message, MessageBox } from "element-ui";
 export const gatewayHost = "http://localhost:9000/"
 
 axios.defaults.baseURL = gatewayHost;
-axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.token;
 axios.defaults.headers['Content-Type'] = 'application/json';
 
 
 export const request = (url, method, params) => {
+    axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.token;
+    
     var config = {
         url: url,
         method: method

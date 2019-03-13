@@ -16,9 +16,9 @@ namespace LY.NugetGen
         static void Main(string[] args)
         {
 #if DEBUG
-            //args = new string[] { "practice", "services,gateway,daemon,vue,base" };
+            args = new string[] { "practice", "services,gateway,daemon" };
             //args = new string[] { "practice", "services" };
-            args = new string[] { "practice" };
+            //args = new string[] { "practice" };
 #endif
             if (args == null || args.Length == 0)
             {

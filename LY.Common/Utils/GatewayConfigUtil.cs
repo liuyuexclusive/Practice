@@ -18,9 +18,10 @@ namespace LY.Common.Utils
         /// <summary>
         /// 生成配置
         /// </summary>
-        /// <param name="serviceName"></param>
-        /// <param name="controllers"></param>
-        public static IList<GatewayReRoute> Gen(params TypeInfo[] controllers)
+        /// <param name="controllers">控制器信息</param>
+        /// <param name="doNotUseConsul">是否不使用consul</param>
+        /// <returns></returns>
+        public static IList<GatewayReRoute> Gen(TypeInfo[] controllers, bool doNotUseConsul = false)
         {
             if (controllers.IsNullOrEmpty())
             {
@@ -31,6 +32,7 @@ namespace LY.Common.Utils
             //socket
             listResult.Add(new GatewayReRoute()
             {
+                AppName = ConfigUtil.AppName,
                 UpstreamPathTemplate = "/ws/" + ConfigUtil.AppName + "/{type}/{id}",
                 DownstreamPathTemplate = "/ws/{type}/{id}",
                 DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
@@ -39,19 +41,34 @@ namespace LY.Common.Utils
                                     Port = ConfigUtil.Port
                                 }
                             },
-                AppName = ConfigUtil.AppName,
                 DownstreamScheme = "ws" + Const._scheme.TrimStart("http".ToArray())
             });
 
             //swagger
-            listResult.Add(new GatewayReRoute()
+
+            var swaggerGatewayReRoute = new GatewayReRoute()
             {
+                AppName = ConfigUtil.AppName,
                 UpstreamPathTemplate = $"/{ConfigUtil.AppName}/swagger.json",
                 DownstreamPathTemplate = "/swagger/v1/swagger.json",
-                AppName = ConfigUtil.AppName,
-                ServiceName = ConfigUtil.AppName,
-                LoadBalancerOptions = new LoadBalancerOptions()
-            });
+            };
+
+            if (!doNotUseConsul)
+            {
+                swaggerGatewayReRoute.ServiceName = ConfigUtil.AppName;
+                swaggerGatewayReRoute.LoadBalancerOptions = new LoadBalancerOptions();
+            }
+            else
+            {
+                swaggerGatewayReRoute.DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                                new GatewayReRouteDownstreamHostAndPort(){
+                                    Host = ConfigUtil.Host,
+                                    Port = ConfigUtil.Port
+                                }
+                            };
+            }
+
+            listResult.Add(swaggerGatewayReRoute);
 
             foreach (var controller in controllers)
             {
@@ -64,22 +81,32 @@ namespace LY.Common.Utils
                         var routeAttribute = method.GetCustomAttribute(typeof(RouteAttribute)) as RouteAttribute;
                         string route = routeAttribute != null ? routeAttribute.Template : string.Empty;
                         string template = $"/{controller.Name.Replace("Controller", string.Empty)}/{route}";
-                        listResult.Add(new GatewayReRoute()
+
+                        var actionGatewayReRoute = new GatewayReRoute()
                         {
+                            AppName = ConfigUtil.AppName,
                             AuthenticationOptions = isUnAuthorize ? null : new GatewayRouteAuthenticationOption(),
-                            //DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
-                            //    new GatewayReRouteDownstreamHostAndPort(){
-                            //        Host = ConfigUtil.Host,
-                            //        Port = ConfigUtil.Port
-                            //    }
-                            //},
+                            UpstreamHttpMethod = httpMethods.Select(x => x.AttributeType.Name.GetHttpMethod()).ToList(),
                             DownstreamPathTemplate = template,
                             UpstreamPathTemplate = template,
-                            UpstreamHttpMethod = httpMethods.Select(x => x.AttributeType.Name.GetHttpMethod()).ToList(),
-                            AppName = ConfigUtil.AppName,
-                            ServiceName = ConfigUtil.AppName,
-                            LoadBalancerOptions = new LoadBalancerOptions()
-                        });
+                        };
+
+                        if (!doNotUseConsul)
+                        {
+                            actionGatewayReRoute.ServiceName = ConfigUtil.AppName;
+                            actionGatewayReRoute.LoadBalancerOptions = new LoadBalancerOptions();
+                        }
+                        else
+                        {
+                            swaggerGatewayReRoute.DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                                new GatewayReRouteDownstreamHostAndPort(){
+                                    Host = ConfigUtil.Host,
+                                    Port = ConfigUtil.Port
+                                }
+                            };
+                        }
+
+                        listResult.Add(actionGatewayReRoute);
                     }
                 }
             }

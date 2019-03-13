@@ -32,12 +32,21 @@ namespace LY.Initializer
             factory.AddNLog();
             appLifetime.ApplicationStarted.Register(() =>
             {
+#if DEBUG
                 publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
                 ConsulUtil.ServiceRegister().Wait();
+#else
+                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
+                ConsulUtil.ServiceRegister().Wait();
+#endif
             });
             appLifetime.ApplicationStopping.Register(() =>
             {
+#if DEBUG
+                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
+#else
                 ConsulUtil.ServiceDeRegister().Wait();
+#endif
             });
             if (env.IsDevelopment())
             {

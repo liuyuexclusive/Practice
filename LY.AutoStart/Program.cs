@@ -29,7 +29,8 @@ namespace LY.AutoStart
         const string netcoreappVersion = "netcoreapp2.2";
         const int serviceNum = 2; //服务数量
         const int consulAgentNum = 4; //consul集群数量
-        const bool isPublishToLinux = false;
+        const bool isPublishToLinux = true;
+        const string docker = isPublishToLinux ? "docker" : "docker";
 
         static void Main(string[] args)
         {
@@ -50,8 +51,8 @@ namespace LY.AutoStart
             {
 #if DEBUG
                 //args = new string[] { "practice", "base" };
-                //args = new string[] { "practice", "services,gateway,daemon,vue" };
-                args = new string[] { "practice", "base" };
+                args = new string[] { "practice", "services,gateway,daemon" };
+                //args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -81,6 +82,11 @@ namespace LY.AutoStart
                 }
                 workspaceDir = workspace.FullName;
 
+                string fileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
+                var publish = Path.Combine(workspaceDir, "PublishToProduct");
+                Directory.Delete(publish,true);
+                Directory.CreateDirectory(publish);
+
                 var options = args[1].Split(",").Distinct();
                 if (!options.Intersect(new string[] { "base" }).IsNullOrEmpty())//默认不发布基础设施
                 {
@@ -103,16 +109,21 @@ namespace LY.AutoStart
                     DeployVue();
                 }
 
-                string fileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
-                using (FileStream fs = File.Create(Path.Combine(workspaceDir, "PublishToProduct", fileName)))
-                {
-                    StreamWriter sw = new StreamWriter(fs);
-                    sw.WriteLine(sbDockerCmd.ToString());
-                    sw.Flush();
-                }
+                string result = sbDockerCmd.ToString();
+
                 if (!isPublishToLinux)
                 {
                     ExcuteBat(() => { return sbDockerCmd; });
+                }
+                else
+                {
+                    result = result.Replace("\r\n", "\n");
+                }
+                using (FileStream fs = File.Create(Path.Combine(publish, fileName)))
+                {
+                    StreamWriter sw = new StreamWriter(fs);
+                    sw.WriteLine(result);
+                    sw.Flush();
                 }
             }
             catch (Exception ex)
@@ -220,8 +231,8 @@ namespace LY.AutoStart
                 for (int i = 0; i < serviceNum; i++)
                 {
                     var index = (i == 0 ? string.Empty : i.ToString());
-                    sb.AppendLine($"docker stop {lowName}-server{index}");
-                    sb.AppendLine($"docker rm {lowName}-server{index}");
+                    sb.AppendLine($"{docker} stop {lowName}-server{index}");
+                    sb.AppendLine($"{docker} rm {lowName}-server{index}");
                 }
             }
             else if (lowName == "consul")
@@ -229,22 +240,22 @@ namespace LY.AutoStart
                 for (int i = 0; i < consulAgentNum; i++)
                 {
                     var index = (i == 0 ? string.Empty : i.ToString());
-                    sb.AppendLine($"docker stop {lowName}-server{index}");
-                    sb.AppendLine($"docker rm {lowName}-server{index}");
+                    sb.AppendLine($"{docker} stop {lowName}-server{index}");
+                    sb.AppendLine($"{docker} rm {lowName}-server{index}");
                 }
             }
             else
             {
-                sb.AppendLine($"docker stop {lowName}-server");
-                sb.AppendLine($"docker rm {lowName}-server");
+                sb.AppendLine($"{docker} stop {lowName}-server");
+                sb.AppendLine($"{docker} rm {lowName}-server");
             }
 
-            sb.AppendLine($"docker rmi {lowName}{imageVersion}");
+            sb.AppendLine($"{docker} rmi {lowName}{imageVersion}");
             string sourceDir = null;
             var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
             if (type == ImageType.DockerHubImage)
             {
-                sb.AppendLine($"docker pull {lowName}{imageVersion}");
+                sb.AppendLine($"{docker} pull {lowName}{imageVersion}");
             }
             else
             {
@@ -264,16 +275,19 @@ namespace LY.AutoStart
             
             if (!sourceDir.IsNullOrEmpty())
             {
-                sb.AppendLine($"xcopy /Y /S  {sourceDir}  {targetDir}");
-                sb.AppendLine($"cd {targetDir}");
-                sb.AppendLine($"docker build -t {lowName} .");
-            }
+                ExcuteBat(() => new StringBuilder($"xcopy /Y /S  {sourceDir}  {targetDir} \n" ));
+                if (isPublishToLinux)
+                {
+                    sb.AppendLine($"{docker} build -t {lowName} /var/jenkins_home/workspace/test/{name}/");
+                }
+                else
+                {
+                    sb.AppendLine($"cd {targetDir}");
+                    sb.AppendLine($"{docker} build -t {lowName} .");
+                }
+            } 
 
-            string result = sb.ToString();
-            if (isPublishToLinux)
-            {
-                result = result.Replace(sourceDir, "/root/PublishToProduct/" + name);
-            }
+            string result = sb.ToString().Trim();
             sbDockerCmd.AppendLine(result);
         }
 
@@ -283,9 +297,7 @@ namespace LY.AutoStart
             var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
 
             var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
-            var sb = new StringBuilder();
-            sb.AppendLine($"docker run -d {port} --network=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
-            sbDockerCmd.AppendLine(sb.ToString());
+            sbDockerCmd.AppendLine($"{docker} run -d {port} --net=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
         }
         #endregion
 
@@ -374,7 +386,11 @@ namespace LY.AutoStart
         /// </summary>
         private static void DeployBase()
         {
-            sbDockerCmd.AppendLine($"docker network create --subnet=172.19.0.0/16 lynet");
+            sbDockerCmd.AppendLine($"{docker} network create --subnet=172.19.0.0/16 lynet");
+
+            #region jenkins(dood)
+            //sudo docker run -itd  --name=jenkins-server --network=lynet -p 10000:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/your/jenkins/home:/var/jenkins_home pitkley/jenkins-dood
+            #endregion
 
             #region mysql master and slave
 
@@ -399,10 +415,10 @@ namespace LY.AutoStart
             //log_bin=mysql-bin
             //server_id = 128 //从:129
             //docker cp mysql-master:/etc/mysql/my.cnf C:\Users\liuyu\Desktop\mysql
-            //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-master:/etc/mysql/my.cnf
+            //docker cp  C:\Users\liudocker yu\Desktop\mysql\my.cnf mysql-master:/etc/mysql/my.cnf
             //docker cp  C:\Users\liuyu\Desktop\mysql\my.cnf mysql-slave:/etc/mysql/my.cnf
 
-            //开启从库的slave
+            //开启从库的slavelog
             //mysql -u root -p123456
             /*
             STOP SLAVE;
@@ -457,16 +473,16 @@ namespace LY.AutoStart
 
             */
 
-            sbDockerCmd.AppendLine("docker start mysql-master");
-            sbDockerCmd.AppendLine("docker start mysql-slave");
-            sbDockerCmd.AppendLine("docker start redis-server");
-            sbDockerCmd.AppendLine("docker start elasticsearch-server");
-            sbDockerCmd.AppendLine("docker start kibana-server");
-            sbDockerCmd.AppendLine("docker start rabbitmq-server");
-            sbDockerCmd.AppendLine("docker start consul-server");
-            sbDockerCmd.AppendLine("docker start consul-server1");
-            sbDockerCmd.AppendLine("docker start consul-server2");
-            sbDockerCmd.AppendLine("docker start consul-server3");
+            sbDockerCmd.AppendLine($"{docker} start mysql-master");
+            sbDockerCmd.AppendLine($"{docker} start mysql-slave");
+            sbDockerCmd.AppendLine($"{docker} start redis-server");
+            sbDockerCmd.AppendLine($"{docker} start elasticsearch-server");
+            sbDockerCmd.AppendLine($"{docker} start kibana-server");
+            sbDockerCmd.AppendLine($"{docker} start rabbitmq-server");
+            sbDockerCmd.AppendLine($"{docker} start consul-server");
+            sbDockerCmd.AppendLine($"{docker} start consul-server1");
+            sbDockerCmd.AppendLine($"{docker} start consul-server2");
+            sbDockerCmd.AppendLine($"{docker} start consul-server3");
         }
     }
 }

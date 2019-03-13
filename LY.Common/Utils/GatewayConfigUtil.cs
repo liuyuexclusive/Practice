@@ -98,7 +98,7 @@ namespace LY.Common.Utils
                         }
                         else
                         {
-                            swaggerGatewayReRoute.DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
+                            actionGatewayReRoute.DownstreamHostAndPorts = new List<GatewayReRouteDownstreamHostAndPort>() {
                                 new GatewayReRouteDownstreamHostAndPort(){
                                     Host = ConfigUtil.Host,
                                     Port = ConfigUtil.Port

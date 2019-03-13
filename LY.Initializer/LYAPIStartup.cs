@@ -32,9 +32,8 @@ namespace LY.Initializer
             factory.AddNLog();
             appLifetime.ApplicationStarted.Register(() =>
             {
-#if DEBUG
-                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
-                ConsulUtil.ServiceRegister().Wait();
+#if DEBUG //debug调试时不注册consul,网关指向本服务
+                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray(),true));
 #else
                 publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
                 ConsulUtil.ServiceRegister().Wait();
@@ -42,7 +41,7 @@ namespace LY.Initializer
             });
             appLifetime.ApplicationStopping.Register(() =>
             {
-#if DEBUG
+#if DEBUG //服务停止时网关重新指向consul
                 publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
 #else
                 ConsulUtil.ServiceDeRegister().Wait();

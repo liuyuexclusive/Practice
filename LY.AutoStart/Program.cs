@@ -28,7 +28,6 @@ namespace LY.AutoStart
 
         const string netcoreappVersion = "netcoreapp2.2";
         const int serviceNum = 2; //服务数量
-        const int consulAgentNum = 4; //consul集群数量
         const bool isPublishToLinux = true;
         const string docker = isPublishToLinux ? "docker" : "docker";
 
@@ -50,9 +49,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                //args = new string[] { "practice", "base" };
-                args = new string[] { "practice", "services,gateway,daemon" };
-                //args = new string[] { "practice", "base" };
+                args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -164,13 +161,13 @@ namespace LY.AutoStart
                     });
                     break;
                 case ImageType.Vue:
-                    ExcuteBat(() =>
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
-                        sb.AppendLine($"npm install");
-                        return sb;
-                    });
+                    //ExcuteBat(() =>
+                    //{
+                    //    StringBuilder sb = new StringBuilder();
+                    //    sb.AppendLine($"cd {Path.Combine(workspaceDir, name)}");
+                    //    sb.AppendLine($"npm install");
+                    //    return sb;
+                    //});
                     ExcuteBat(() =>
                     {
                         StringBuilder sb = new StringBuilder();
@@ -235,15 +232,6 @@ namespace LY.AutoStart
                     sb.AppendLine($"{docker} rm {lowName}-server{index}");
                 }
             }
-            else if (lowName == "consul")
-            {
-                for (int i = 0; i < consulAgentNum; i++)
-                {
-                    var index = (i == 0 ? string.Empty : i.ToString());
-                    sb.AppendLine($"{docker} stop {lowName}-server{index}");
-                    sb.AppendLine($"{docker} rm {lowName}-server{index}");
-                }
-            }
             else
             {
                 sb.AppendLine($"{docker} stop {lowName}-server");
@@ -291,13 +279,12 @@ namespace LY.AutoStart
             sbDockerCmd.AppendLine(result);
         }
 
-        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null, string version = null, string postfix = null)
+        private static void CreateContainer(string name, string ip = null, string port = null, int? index = null)
         {
             var lowName = name.ToLower();
-            var imageVersion = string.IsNullOrEmpty(version) ? string.Empty : ":" + version;
 
             var strIndex = ((index.HasValue && index > 0) ? index.ToString() : string.Empty);
-            sbDockerCmd.AppendLine($"{docker} run -d {port} --net=lynet {ip} --name={lowName}-server{strIndex} {lowName}{imageVersion} {postfix}");
+            sbDockerCmd.AppendLine($"{docker} run -d --net=lynet {ip} {port} --name={lowName}-server{strIndex} {lowName}");
         }
         #endregion
 
@@ -310,7 +297,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._gateway}", "-p 9000:9000");
+                CreateContainer(name, $"--ip={Const.IP._gateway}", $"-p {Const.Port._gateway}:{Const.Port._gateway}");
             }
         }
 
@@ -323,7 +310,7 @@ namespace LY.AutoStart
                 BuildApp(name, ImageType.Dotnet);
                 CreateDockerfile(name, ImageType.Dotnet);
                 BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._daemon}", "-p 9009:9009");
+                CreateContainer(name, $"--ip={Const.IP._daemon}", $"-p {Const.Port._daemon}:{Const.Port._daemon}");
             }
         }
 
@@ -386,16 +373,17 @@ namespace LY.AutoStart
         /// </summary>
         private static void DeployBase()
         {
-            sbDockerCmd.AppendLine($"{docker} network create --subnet=172.19.0.0/16 lynet");
+            sbDockerCmd.AppendLine($"{docker} network create --subnet={Const.IP._network} lynet");
 
             #region jenkins(dood)
-            //sudo docker run -itd  --name=jenkins-server --network=lynet -p 10000:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/your/jenkins/home:/var/jenkins_home pitkley/jenkins-dood
+            sbDockerCmd.AppendLine($"{docker} pull pitkley/jenkins-dood");
+            sbDockerCmd.AppendLine($"{docker} docker run -d --name=jenkins-server --network=lynet -p 10000:{Const.Port._jenkins} -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/your/jenkins/home:/var/jenkins_home pitkley/jenkins-dood");
             #endregion
 
             #region mysql master and slave
-
-            //docker run --network=lynet --ip=172.19.200.1 -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
-            //docker run --network=lynet --ip=172.19.200.2 -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+            sbDockerCmd.AppendLine($"{docker} pull mysql");
+            sbDockerCmd.AppendLine($"{docker} run --network=lynet --ip={Const.IP._mysqlMaster} -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
+            sbDockerCmd.AppendLine($"{docker} run --network=lynet --ip={Const.IP._mysqlSlave} -itd --name=mysql-master -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
 
             //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
             //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
@@ -448,41 +436,110 @@ namespace LY.AutoStart
              */
 
             #endregion
+
+            #region redis
+            sbDockerCmd.AppendLine($"{docker} pull redis");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._redis} -p {Const.Port._redis}:{Const.Port._redis} --name=redis-server redis ");
+            //mkdir redis-cluster
+            //cd redis-cluster
+            //touch redis-cluster.tmpl
+
             /*
+port ${PORT}
+protected-mode no
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-ip 172.20.11.90
+cluster-announce-port ${PORT}
+cluster-announce-bus-port 1${PORT}
+appendonly yes
+             */
 
-            BuildImage("redis", ImageType.DockerHubImage);
-            CreateContainer("redis", $"--ip={Const.IP._redis}", "-p 6379:6379");
-
-            BuildImage("consul", ImageType.DockerHubImage);
-            //consul cluster
-            CreateContainer("consul", $"--ip=172.19.202.1", null, null, null, "agent -server -bootstrap-expect=2");
-            CreateContainer("consul", $"--ip=172.19.202.2", null, 1, null, "agent -server -join 172.19.202.1");
-            CreateContainer("consul", $"--ip=172.19.202.3", null, 2, null, "agent -server -join 172.19.202.1");
-            CreateContainer("consul", $"--ip={Const.IP._consul}", "-p 8500:8500", 3, null, "agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
-
-            BuildImage("rabbitmq", ImageType.DockerHubImage);
-            CreateContainer("rabbitmq", $"--ip={Const.IP._rabbitmq}", "-p 15672:15672 -p 5672:5672");
-
-            BuildImage("elasticsearch", ImageType.DockerHubImage, "6.6.1");
-            CreateContainer("elasticsearch", $"--ip={Const.IP._elasticsearch}", "-p 9200:9200 -p 9300:9300 -e \"discovery.type = single - node\"", null, "6.6.1");
-
-            BuildImage("kibana", ImageType.DockerHubImage, "6.6.1");
-            //docker cp kibana-server:/usr/share/kibana/config/kibana.yml C:\Users\liuyu\Desktop\mysql
-            //docker cp C:\Users\liuyu\Desktop\mysql\kibana.yml kibana-server:/usr/share/kibana/config/kibana.yml
-            CreateContainer("kibana", $"--ip={Const.IP._kibana}", $"-p 5601:5601 -e \"elasticsearch.hosts = http://{Const.IP._elasticsearch}:9200\"", null, "6.6.1");
-
+            /*
+for port in `seq 7000 7005`; do \
+  mkdir -p ./${port}/conf \
+  && PORT=${port} envsubst < ./redis-cluster.tmpl > ./${port}/conf/redis.conf \
+  && mkdir -p ./${port}/data; \
+done
             */
 
-            sbDockerCmd.AppendLine($"{docker} start mysql-master");
-            sbDockerCmd.AppendLine($"{docker} start mysql-slave");
-            sbDockerCmd.AppendLine($"{docker} start redis-server");
-            sbDockerCmd.AppendLine($"{docker} start elasticsearch-server");
-            sbDockerCmd.AppendLine($"{docker} start kibana-server");
-            sbDockerCmd.AppendLine($"{docker} start rabbitmq-server");
-            sbDockerCmd.AppendLine($"{docker} start consul-server");
-            sbDockerCmd.AppendLine($"{docker} start consul-server1");
-            sbDockerCmd.AppendLine($"{docker} start consul-server2");
-            sbDockerCmd.AppendLine($"{docker} start consul-server3");
+            /*
+for port in `seq 7000 7005`; do \
+  sudo docker run -d -ti -p ${port}:${port} -p 1${port}:1${port} \
+  -v /home/liuyu/redis-cluster/${port}/conf/redis.conf:/usr/local/etc/redis/redis.conf \
+  -v /home/liuyu/redis-cluster/${port}/data:/data \
+  --restart always --name redis-${port} --net lynet \
+  --sysctl net.core.somaxconn=1024 redis redis-server /usr/local/etc/redis/redis.conf; \
+done
+            */
+
+            //sodu docker exec -it redis-7000 bash
+            //redis-cli -p 7001 -h 172.20.11.90
+
+            /*
+redis-cli --cluster create 172.20.11.90:7000 172.20.11.90:7001 \
+172.20.11.90:7002 172.20.11.90:7003 172.20.11.90:7004 172.20.11.90:7005 \
+--cluster-replicas 1
+             */
+
+            #endregion
+
+            #region consul
+            sbDockerCmd.AppendLine($"{docker} pull consul");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.1 --name=consul-server consul agent -server -bootstrap-expect=2");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.2 --name=consul-server1 consul agent -server -join 172.19.202.1");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.3 --name=consul-server2 consul agent -server -join 172.19.202.1");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._consul} -p {Const.Port._consul}:{Const.Port._consul}  --name=consul-server3 consul agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
+            #endregion
+
+            #region rabbitmq
+            sbDockerCmd.AppendLine($"{docker} pull rabbitmq");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._rabbitmq}:{Const.Port._rabbitmq} -p 15672:15672 --net=lynet --ip={Const.IP._rabbitmq} --name=rabbitmq-server rabbitmq ");
+            //docker run -d -p 5672:5672 -p 15672:15672 --net=lynet --ip=172.19.203.1 --name=rabbitmq-server1 --hostname=rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
+            //docker run -d --net=lynet --ip=172.19.203.2 --name=rabbitmq-server2 --hostname=rabbit2 --link rabbitmq-server1:rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
+            //docker run -d --net=lynet --ip=172.19.203.3 --name=rabbitmq-server3 --hostname=rabbit3 --link rabbitmq-server1:rabbit1 --link rabbitmq-server2:rabbit2 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
+
+            //docker exec -it rabbitmq-server1 bash
+            //rabbitmqctl stop_app
+            //rabbitmqctl reset
+            //rabbitmqctl start_app
+            //exit
+
+            //docker exec -it rabbitmq-server2 bash
+            //rabbitmqctl stop_app
+            //rabbitmqctl reset
+            //rabbitmqctl join_cluster --ram rabbit@rabbit1
+            //rabbitmqctl start_app
+            //exit
+
+            //docker exec -it rabbitmq-server3 bash
+            //rabbitmqctl stop_app
+            //rabbitmqctl reset
+            //rabbitmqctl join_cluster --ram rabbit@rabbit1
+            //rabbitmqctl start_app
+            //exit 
+            #endregion
+
+
+            sbDockerCmd.AppendLine($"{docker} pull elasticsearch:6.6.1");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1");
+
+            sbDockerCmd.AppendLine($"{docker} pull kibana:6.6.1");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._kibana}:{Const.Port._kibana} -e \"elasticsearch.hosts=http://{Const.IP._elasticsearch}:{Const.Port._elasticsearch}\" --net=lynet --ip={Const.IP._kibana}--name=kibana-server kibana:6.6.1");
+            //docker cp kibana-server:/usr/share/kibana/config/kibana.yml C:\Users\liuyu\Desktop\mysql
+            //docker cp C:\Users\liuyu\Desktop\mysql\kibana.yml kibana-server:/usr/share/kibana/config/kibana.yml
+
+            //sbDockerCmd.AppendLine($"{docker} start mysql-master");
+            //sbDockerCmd.AppendLine($"{docker} start mysql-slave");
+            //sbDockerCmd.AppendLine($"{docker} start redis-server");
+            //sbDockerCmd.AppendLine($"{docker} start elasticsearch-server");
+            //sbDockerCmd.AppendLine($"{docker} start kibana-server");
+            //sbDockerCmd.AppendLine($"{docker} start rabbitmq-server");
+            //sbDockerCmd.AppendLine($"{docker} start consul-server");
+            //sbDockerCmd.AppendLine($"{docker} start consul-server1");
+            //sbDockerCmd.AppendLine($"{docker} start consul-server2");
+            //sbDockerCmd.AppendLine($"{docker} start consul-server3");
         }
     }
 }

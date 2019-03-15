@@ -29,7 +29,7 @@ namespace LY.Initializer
         // This method gets called by the runtime. Use this method to add services to the container.
         public override IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            //swagger ui
+            //Authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer("TestKey", options =>
                 {

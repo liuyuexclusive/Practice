@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Message, MessageBox } from "element-ui";
 
-export const gatewayHost = "http://172.20.11.90:9000/"
+export const gatewayHost = "http://192.168.123.6:9000/"
 
 axios.defaults.baseURL = gatewayHost;
 axios.defaults.headers['Content-Type'] = 'application/json';

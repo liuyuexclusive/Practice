@@ -42,6 +42,7 @@ namespace LY.AutoStart
             sp.Stop();
             Console.WriteLine(sp.Elapsed.TotalSeconds);
             Console.Read();
+            Console.Read();
         }
 
         private static void Start(ref string[] args)
@@ -49,7 +50,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "base" };
+                args = new string[] { "practice", "vue" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -450,7 +451,7 @@ protected-mode no
 cluster-enabled yes
 cluster-config-file nodes.conf
 cluster-node-timeout 5000
-cluster-announce-ip 172.20.11.90
+cluster-announce-ip 192.168.123.6
 cluster-announce-port ${PORT}
 cluster-announce-bus-port 1${PORT}
 appendonly yes
@@ -475,11 +476,11 @@ done
             */
 
             //sodu docker exec -it redis-7000 bash
-            //redis-cli -p 7001 -h 172.20.11.90
+            //redis-cli -p 7001 -h 192.168.123.6
 
             /*
-redis-cli --cluster create 172.20.11.90:7000 172.20.11.90:7001 \
-172.20.11.90:7002 172.20.11.90:7003 172.20.11.90:7004 172.20.11.90:7005 \
+redis-cli --cluster create 192.168.123.6:7000 192.168.123.6:7001 \
+192.168.123.6:7002 192.168.123.6:7003 192.168.123.6:7004 192.168.123.6:7005 \
 --cluster-replicas 1
              */
 

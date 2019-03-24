@@ -39,7 +39,7 @@ namespace LY.Common
 
     public class GatewayRouteAuthenticationOption
     {
-        public string AuthenticationProviderKey { get; set; } = "TestKey";
+        public string AuthenticationProviderKey { get; set; } = Const.JWT._providerKey;
     }
 
     public class GatewayGlobalConfiguration

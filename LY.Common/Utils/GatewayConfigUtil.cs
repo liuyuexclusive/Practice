@@ -88,7 +88,7 @@ namespace LY.Common.Utils
                             AuthenticationOptions = isUnAuthorize ? null : new GatewayRouteAuthenticationOption(),
                             UpstreamHttpMethod = httpMethods.Select(x => x.AttributeType.Name.GetHttpMethod()).ToList(),
                             DownstreamPathTemplate = template,
-                            UpstreamPathTemplate = template,
+                            UpstreamPathTemplate = template
                         };
 
                         if (!doNotUseConsul)

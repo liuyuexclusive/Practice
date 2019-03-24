@@ -1,4 +1,5 @@
-﻿using LY.Common;
+﻿using LY.Application.ApiClient;
+using LY.Common;
 using LY.Common.API;
 using LY.Domain;
 using LY.Domain.Sys;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApiClient;
 
 namespace LY.SysService.Controllers
 {

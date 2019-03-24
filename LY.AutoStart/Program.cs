@@ -30,6 +30,8 @@ namespace LY.AutoStart
         const int serviceNum = 2; //服务数量
         const bool isPublishToLinux = true;
         const string docker = isPublishToLinux ? "docker" : "docker";
+        const string deployFolder = @"D:\\MyFiles\\Code\\practice-release\\";
+        const string deployScriptFileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
 
         static void Main(string[] args)
         {
@@ -50,7 +52,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "vue" };
+                args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -80,10 +82,10 @@ namespace LY.AutoStart
                 }
                 workspaceDir = workspace.FullName;
 
-                string fileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
-                var publish = Path.Combine(workspaceDir, "PublishToProduct");
-                Directory.Delete(publish,true);
-                Directory.CreateDirectory(publish);
+                
+                //var publish = Path.Combine(workspaceDir, "PublishToProduct");
+                //Directory.Delete(publish,true);
+                //Directory.CreateDirectory(publish);
 
                 var options = args[1].Split(",").Distinct();
                 if (!options.Intersect(new string[] { "base" }).IsNullOrEmpty())//默认不发布基础设施
@@ -117,7 +119,7 @@ namespace LY.AutoStart
                 {
                     result = result.Replace("\r\n", "\n");
                 }
-                using (FileStream fs = File.Create(Path.Combine(publish, fileName)))
+                using (FileStream fs = File.Create(Path.Combine(deployFolder, deployScriptFileName)))
                 {
                     StreamWriter sw = new StreamWriter(fs);
                     sw.WriteLine(result);
@@ -241,7 +243,8 @@ namespace LY.AutoStart
 
             sb.AppendLine($"{docker} rmi {lowName}{imageVersion}");
             string sourceDir = null;
-            var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
+            //var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
+            var targetDir = Path.Combine(deployFolder, name + "\\");
             if (type == ImageType.DockerHubImage)
             {
                 sb.AppendLine($"{docker} pull {lowName}{imageVersion}");
@@ -522,9 +525,84 @@ redis-cli --cluster create 192.168.123.6:7000 192.168.123.6:7001 \
             //exit 
             #endregion
 
+            #region elasticsearch
+            //sysctl -w vm.max_map_count=262144
+            //docker run -d -p 9200:9200 -p 9300:9300 --net=lynet --ip=172.19.204.1 --name=elasticsearch-server elasticsearch:6.6.1
+            //集群部署：
+            //https://www.elastic.co/guide/en/elasticsearch/reference/6.6/docker.html#docker-prod-cluster-composefile
+            /*
+version: '2.2'
+services:
+  elasticsearch-server:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticsearch-server
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+        lynet:
+          ipv4_address: 172.19.204.1
+  elasticsearch-server2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticsearch-server2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch-server"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+        lynet:
+          ipv4_address: 172.19.204.2
 
+  elasticsearch-server3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.1
+    container_name: elasticsearch-server3
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch-server"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+    networks:
+        lynet:
+          ipv4_address: 172.19.204.3
+
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+  esdata3:
+    driver: local
+
+networks:
+  lynet:
+    external:
+      name: lynet
+             */
             sbDockerCmd.AppendLine($"{docker} pull elasticsearch:6.6.1");
-            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1"); 
+            #endregion
 
             sbDockerCmd.AppendLine($"{docker} pull kibana:6.6.1");
             sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._kibana}:{Const.Port._kibana} -e \"elasticsearch.hosts=http://{Const.IP._elasticsearch}:{Const.Port._elasticsearch}\" --net=lynet --ip={Const.IP._kibana}--name=kibana-server kibana:6.6.1");

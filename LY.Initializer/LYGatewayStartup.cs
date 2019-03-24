@@ -1,4 +1,5 @@
 ﻿using LY.Common;
+using LY.Common.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,19 +32,8 @@ namespace LY.Initializer
         {
             //Authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer("TestKey", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,//是否验证Issuer
-                        ValidateAudience = true,//是否验证Audience
-                        ValidateLifetime = true,//是否验证失效时间
-                        ValidateIssuerSigningKey = true,//是否验证SecurityKey
-                        ValidAudience = Const.JWT._audience,//Audience
-                        ValidIssuer = Const.JWT._issuer,//Issuer，这两项和前面签发jwt的设置一致
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Const.JWT._securityKey)),//拿到SecurityKey
-                    };
-                });
+                .AddJwtBearer(Const.JWT._providerKey, option => option.TokenValidationParameters = JwtUtil.BuildTokenValidationParameters()
+            );
             services.AddOcelot(OcelotConfiguration).AddConsul();
             return base.ConfigureServices(services);
         }

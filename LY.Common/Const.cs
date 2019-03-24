@@ -21,6 +21,7 @@ namespace LY.Common
             public static string _securityKey = "dd%65*377f6d&f£$$£$FdddFF33fssDG^!3";
             public static string _issuer = "ly-user";
             public static string _audience = "ly";
+            public static string _providerKey = "TestKey";
         }
 
         public static class IP

@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LY.Common.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace LY.Common.API
 {
@@ -28,6 +28,13 @@ namespace LY.Common.API
             base.OnActionExecuting(context);
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
+
+            string token = context.HttpContext.Request.Headers["Authorization"];
+            if (!string.IsNullOrEmpty(token) && string.IsNullOrEmpty(context.HttpContext.User.Identity.Name))
+            {
+                token = token.TrimStart(JwtBearerDefaults.AuthenticationScheme.ToArray()).Trim();
+                context.HttpContext.User = JwtUtil.GetClaimsPrincipal(token);
+            }
         }
 
         public override void OnActionExecuted(ActionExecutedContext context)

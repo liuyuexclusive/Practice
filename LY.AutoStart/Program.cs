@@ -30,7 +30,7 @@ namespace LY.AutoStart
         const int serviceNum = 2; //服务数量
         const bool isPublishToLinux = true;
         const string docker = isPublishToLinux ? "docker" : "docker";
-        const string deployFolder = @"D:\\MyFiles\\Code\\practice-release\\";
+        const string deployFolder = @"/users/liuyu/code/practice-release";
         const string deployScriptFileName = isPublishToLinux ? "deploy.sh" : "deploy.bat";
 
         static void Main(string[] args)
@@ -52,7 +52,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "base" };
+                args = new string[] { "practice", "all" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -82,32 +82,13 @@ namespace LY.AutoStart
                 }
                 workspaceDir = workspace.FullName;
 
-                
+
                 //var publish = Path.Combine(workspaceDir, "PublishToProduct");
                 //Directory.Delete(publish,true);
                 //Directory.CreateDirectory(publish);
 
                 var options = args[1].Split(",").Distinct();
-                if (!options.Intersect(new string[] { "base" }).IsNullOrEmpty())//默认不发布基础设施
-                {
-                    DeployBase();
-                }
-                if (!options.Intersect(new string[] { "gateway", "all" }).IsNullOrEmpty())
-                {
-                    DeployGateway();
-                }
-                if (!options.Intersect(new string[] { "daemon", "all" }).IsNullOrEmpty())
-                {
-                    DeployDaemon();
-                }
-                if (!options.Intersect(new string[] { "services", "all" }).IsNullOrEmpty())
-                {
-                    DeployServices();
-                }
-                if (!options.Intersect(new string[] { "vue", "all" }).IsNullOrEmpty())
-                {
-                    DeployVue();
-                }
+                Deploy(options).Wait();
 
                 string result = sbDockerCmd.ToString();
 
@@ -132,13 +113,37 @@ namespace LY.AutoStart
             }
         }
 
+        private static async Task Deploy(IEnumerable<string> options)
+        {
+            if (!options.Intersect(new string[] { "base" }).IsNullOrEmpty())//默认不发布基础设施
+            {
+                DeployBase();
+            }
+            if (!options.Intersect(new string[] { "gateway", "all" }).IsNullOrEmpty())
+            {
+                await DeployGateway();
+            }
+            if (!options.Intersect(new string[] { "daemon", "all" }).IsNullOrEmpty())
+            {
+                await DeployDaemon();
+            }
+            if (!options.Intersect(new string[] { "services", "all" }).IsNullOrEmpty())
+            {
+                await DeployServices();
+            }
+            if (!options.Intersect(new string[] { "vue", "all" }).IsNullOrEmpty())
+            {
+                await DeployVue();
+            }
+        }
+
         #region common
         private static void ExcuteBat(Func<StringBuilder> func)
         {
             var sb = func();
             using (Process process = new Process())
             {
-                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.FileName = isPublishToLinux?"/bin/bash":"cmd.exe";
                 process.StartInfo.RedirectStandardInput = true;
                 process.Start();
                 sb.AppendLine("exit");
@@ -244,7 +249,11 @@ namespace LY.AutoStart
             sb.AppendLine($"{docker} rmi {lowName}{imageVersion}");
             string sourceDir = null;
             //var targetDir = Path.Combine(workspaceDir, "PublishToProduct", name + "\\");
-            var targetDir = Path.Combine(deployFolder, name + "\\");
+            var targetDir = Path.Combine(deployFolder, name.ToLower());
+            if(!Directory.Exists(targetDir))
+            {
+                Directory.CreateDirectory(targetDir);//这里在mac里面如果用cp来创建文件夹，会出现系统cd无法识别的情况
+            }
             if (type == ImageType.DockerHubImage)
             {
                 sb.AppendLine($"{docker} pull {lowName}{imageVersion}");
@@ -254,10 +263,10 @@ namespace LY.AutoStart
                 switch (type)
                 {
                     case ImageType.Dotnet:
-                        sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish");
+                        sourceDir = Path.Combine(workspaceDir, name, "bin", "Release", netcoreappVersion, "publish/");
                         break;
                     case ImageType.Vue:
-                        sourceDir = Path.Combine(workspaceDir, name, "dist");
+                        sourceDir = Path.Combine(workspaceDir, name, "dist/");
                         break;
                     default:
                         break;
@@ -267,10 +276,12 @@ namespace LY.AutoStart
             
             if (!sourceDir.IsNullOrEmpty())
             {
-                ExcuteBat(() => new StringBuilder($"xcopy /Y /S  {sourceDir}  {targetDir} \n" ));
+                string copyStr = isPublishToLinux?$"cp -r -f {sourceDir}  {targetDir} \n":$"xcopy /Y /S  {sourceDir}  {targetDir} \n";
+
+                ExcuteBat(() => new StringBuilder(copyStr));
                 if (isPublishToLinux)
                 {
-                    sb.AppendLine($"{docker} build -t {lowName} /var/jenkins_home/workspace/test/{name}/");
+                    sb.AppendLine($"{docker} build -t {lowName} /var/jenkins_home/workspace/test/{name.ToLower()}/");
                 }
                 else
                 {
@@ -292,84 +303,96 @@ namespace LY.AutoStart
         }
         #endregion
 
-        private static void DeployGateway()
+        private async static Task DeployGateway()
         {
-            DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
-            if (target != null)
-            {
-                var name = target.Name;
-                BuildApp(name, ImageType.Dotnet);
-                CreateDockerfile(name, ImageType.Dotnet);
-                BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._gateway}", $"-p {Const.Port._gateway}:{Const.Port._gateway}");
-            }
-        }
-
-        private static void DeployDaemon()
-        {
-            DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
-            if (target != null)
-            {
-                var name = target.Name;
-                BuildApp(name, ImageType.Dotnet);
-                CreateDockerfile(name, ImageType.Dotnet);
-                BuildImage(name, ImageType.Dotnet);
-                CreateContainer(name, $"--ip={Const.IP._daemon}", $"-p {Const.Port._daemon}:{Const.Port._daemon}");
-            }
-        }
-
-        private static void DeployServices()
-        {
-            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x =>
-            x.Name.EndsWith("Service")
-            );
-
-            //dotnet build
-            foreach (var dic in targets)
-            {
-                BuildApp(dic.Name, ImageType.Dotnet);
-            }
-
-            foreach (var item in targets)
-            {
-                CreateDockerfile(item.Name, ImageType.Dotnet);
-                BuildImage(item.Name, ImageType.Dotnet);
-            }
-
-            foreach (var service in targets)
-            {
-                for (int i = 0; i < serviceNum; i++)
+            await Task.Run(() => {
+                DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Gateway"));
+                if (target != null)
                 {
-                    CreateContainer(service.Name, null, null, i);
+                    var name = target.Name;
+                    BuildApp(name, ImageType.Dotnet);
+                    CreateDockerfile(name, ImageType.Dotnet);
+                    BuildImage(name, ImageType.Dotnet);
+                    CreateContainer(name, $"--ip={Const.IP._gateway}", $"-p {Const.Port._gateway}:{Const.Port._gateway}");
                 }
-            }
+            });
         }
 
-        private static void DeployVue()
+        private async static Task DeployDaemon()
         {
-            IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x => x.Name.StartsWith("ly.vue"));
+            await Task.Run(() => {
+                DirectoryInfo target = workspace.GetDirectories().FirstOrDefault(x => x.Name.EndsWith("Daemon"));
+                if (target != null)
+                {
+                    var name = target.Name;
+                    BuildApp(name, ImageType.Dotnet);
+                    CreateDockerfile(name, ImageType.Dotnet);
+                    BuildImage(name, ImageType.Dotnet);
+                    CreateContainer(name, $"--ip={Const.IP._daemon}", $"-p {Const.Port._daemon}:{Const.Port._daemon}");
+                }
+            });
 
-            foreach (var dic in targets)
-            {
-                BuildApp(dic.Name, ImageType.Vue);
-            }
+        }
 
-            foreach (var item in targets)
-            {
-                CreateDockerfile(item.Name, ImageType.Vue);
-                BuildImage(item.Name, ImageType.Vue);
-            }
+        private async static Task DeployServices()
+        {
+            await Task.Run(()=>{
+                IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x =>
+                x.Name.EndsWith("Service")
+                );
 
-            var t1 = targets.FirstOrDefault(x => x.Name == "ly.vue.pc");
-            if (t1 != null)
+                //dotnet build
+                foreach (var dic in targets)
+                {
+                    BuildApp(dic.Name, ImageType.Dotnet);
+                }
+
+                foreach (var item in targets)
+                {
+                    CreateDockerfile(item.Name, ImageType.Dotnet);
+                    BuildImage(item.Name, ImageType.Dotnet);
+                }
+
+                foreach (var service in targets)
+                {
+                    for (int i = 0; i < serviceNum; i++)
+                    {
+                        CreateContainer(service.Name, null, null, i);
+                    }
+                }
+            });
+
+        }
+
+        private async static Task DeployVue()
+        {
+            await Task.Run(() =>
             {
-                CreateContainer(t1.Name, null, "-p 8081:80");
-            }
-            var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.mobile");
-            if (t2 != null)
-            {
-                CreateContainer(t2.Name, null, "-p 8082:80");
-            }
+                IEnumerable<DirectoryInfo> targets = workspace.GetDirectories().Where(x => x.Name.StartsWith("ly.vue"));
+
+                foreach (var dic in targets)
+                {
+                    BuildApp(dic.Name, ImageType.Vue);
+                }
+
+                foreach (var item in targets)
+                {
+                    CreateDockerfile(item.Name, ImageType.Vue);
+                    BuildImage(item.Name, ImageType.Vue);
+                }
+
+                var t1 = targets.FirstOrDefault(x => x.Name == "ly.vue.pc");
+                if (t1 != null)
+                {
+                    CreateContainer(t1.Name, null, "-p 8081:80");
+                }
+                var t2 = targets.FirstOrDefault(x => x.Name == "ly.vue.mobile");
+                if (t2 != null)
+                {
+                    CreateContainer(t2.Name, null, "-p 8082:80");
+                }
+            });
+
         }
 
         /// <summary>
@@ -380,14 +403,13 @@ namespace LY.AutoStart
             sbDockerCmd.AppendLine($"{docker} network create --subnet={Const.IP._network} lynet");
 
             #region jenkins(dood)
-            sbDockerCmd.AppendLine($"{docker} pull pitkley/jenkins-dood");
-            sbDockerCmd.AppendLine($"{docker} docker run -d --name=jenkins-server --network=lynet -p 10000:{Const.Port._jenkins} -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/your/jenkins/home:/var/jenkins_home pitkley/jenkins-dood");
+            //sudo chown -R 1000:1000 /data/docker/jenkins/
+            sbDockerCmd.AppendLine($"{docker} run -d --name=jenkins-server --network=lynet  -p 10000:{Const.Port._jenkins} -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /path/to/your/jenkins/home:/var/jenkins_home pitkley/jenkins-dood:latest");
             #endregion
 
             #region mysql master and slave
-            sbDockerCmd.AppendLine($"{docker} pull mysql");
-            sbDockerCmd.AppendLine($"{docker} run --network=lynet --ip={Const.IP._mysqlMaster} -itd --name=mysql-master -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
-            sbDockerCmd.AppendLine($"{docker} run --network=lynet --ip={Const.IP._mysqlSlave} -itd --name=mysql-master -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
+            sbDockerCmd.AppendLine($"{docker} run -d --name=mysql-master --network=lynet --ip={Const.IP._mysqlMaster} -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql:latest");
+            //sbDockerCmd.AppendLine($"{docker} run --network=lynet --ip={Const.IP._mysqlSlave} -itd --name=mysql-slave -p 3307:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql");
 
             //CREATE USER 'slave'@'%' IDENTIFIED BY '123456';
             //GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%';
@@ -442,8 +464,7 @@ namespace LY.AutoStart
             #endregion
 
             #region redis
-            sbDockerCmd.AppendLine($"{docker} pull redis");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._redis} -p {Const.Port._redis}:{Const.Port._redis} --name=redis-server redis ");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._redis} -p {Const.Port._redis}:{Const.Port._redis} --name=redis-server redis:latest");
             //mkdir redis-cluster
             //cd redis-cluster
             //touch redis-cluster.tmpl
@@ -454,7 +475,7 @@ protected-mode no
 cluster-enabled yes
 cluster-config-file nodes.conf
 cluster-node-timeout 5000
-cluster-announce-ip 192.168.123.6
+cluster-announce-ip 172.16.30.195
 cluster-announce-port ${PORT}
 cluster-announce-bus-port 1${PORT}
 appendonly yes
@@ -479,27 +500,25 @@ done
             */
 
             //sodu docker exec -it redis-7000 bash
-            //redis-cli -p 7001 -h 192.168.123.6
+            //redis-cli -p 7001 -h 172.16.30.195
 
             /*
-redis-cli --cluster create 192.168.123.6:7000 192.168.123.6:7001 \
-192.168.123.6:7002 192.168.123.6:7003 192.168.123.6:7004 192.168.123.6:7005 \
+redis-cli --cluster create 172.16.30.195:7000 172.16.30.195:7001 \
+172.16.30.195:7002 172.16.30.195:7003 172.16.30.195:7004 172.16.30.195:7005 \
 --cluster-replicas 1
              */
 
             #endregion
 
             #region consul
-            sbDockerCmd.AppendLine($"{docker} pull consul");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.1 --name=consul-server consul agent -server -bootstrap-expect=2");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.2 --name=consul-server1 consul agent -server -join 172.19.202.1");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.3 --name=consul-server2 consul agent -server -join 172.19.202.1");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._consul} -p {Const.Port._consul}:{Const.Port._consul}  --name=consul-server3 consul agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.1 --name=consul-server consul:latest agent -server -bootstrap-expect=2");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.2 --name=consul-server1 consul:latest agent -server -join 172.19.202.1");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.3 --name=consul-server2 consul:latest agent -server -join 172.19.202.1");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._consul} -p {Const.Port._consul}:{Const.Port._consul}  --name=consul-server3 consul:latest agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
             #endregion
 
             #region rabbitmq
-            sbDockerCmd.AppendLine($"{docker} pull rabbitmq");
-            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._rabbitmq}:{Const.Port._rabbitmq} -p 15672:15672 --net=lynet --ip={Const.IP._rabbitmq} --name=rabbitmq-server rabbitmq ");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._rabbitmq}:{Const.Port._rabbitmq} -p 15672:15672 --net=lynet --ip={Const.IP._rabbitmq} --name=rabbitmq-server rabbitmq:latest");
             //docker run -d -p 5672:5672 -p 15672:15672 --net=lynet --ip=172.19.203.1 --name=rabbitmq-server1 --hostname=rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
             //docker run -d --net=lynet --ip=172.19.203.2 --name=rabbitmq-server2 --hostname=rabbit2 --link rabbitmq-server1:rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
             //docker run -d --net=lynet --ip=172.19.203.3 --name=rabbitmq-server3 --hostname=rabbit3 --link rabbitmq-server1:rabbit1 --link rabbitmq-server2:rabbit2 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie'  rabbitmq:management
@@ -600,12 +619,10 @@ networks:
     external:
       name: lynet
              */
-            sbDockerCmd.AppendLine($"{docker} pull elasticsearch:6.6.1");
-            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1"); 
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\"  -e ES_JAVA_OPTS=\" - Xms256m - Xmx256m\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1"); 
             #endregion
 
-            sbDockerCmd.AppendLine($"{docker} pull kibana:6.6.1");
-            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._kibana}:{Const.Port._kibana} -e \"elasticsearch.hosts=http://{Const.IP._elasticsearch}:{Const.Port._elasticsearch}\" --net=lynet --ip={Const.IP._kibana}--name=kibana-server kibana:6.6.1");
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._kibana}:{Const.Port._kibana} -e \"elasticsearch.hosts=http://{Const.IP._elasticsearch}:{Const.Port._elasticsearch}\" --net=lynet --ip={Const.IP._kibana} --name=kibana-server kibana:6.6.1");
             //docker cp kibana-server:/usr/share/kibana/config/kibana.yml C:\Users\liuyu\Desktop\mysql
             //docker cp C:\Users\liuyu\Desktop\mysql\kibana.yml kibana-server:/usr/share/kibana/config/kibana.yml
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -29,11 +30,17 @@ namespace LY.Common.API
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            string token = context.HttpContext.Request.Headers["Authorization"];
-            if (!string.IsNullOrEmpty(token) && string.IsNullOrEmpty(context.HttpContext.User.Identity.Name))
+            string token = context.HttpContext.Request.Headers["Authorization"].ToString().TrimStart(JwtBearerDefaults.AuthenticationScheme.ToArray()).Trim();
+            if (!string.IsNullOrEmpty(token) && token!= "undefined" && string.IsNullOrEmpty(context.HttpContext.User.Identity.Name))
             {
-                token = token.TrimStart(JwtBearerDefaults.AuthenticationScheme.ToArray()).Trim();
-                context.HttpContext.User = JwtUtil.GetClaimsPrincipal(token);
+                try
+                {
+                    context.HttpContext.User = JwtUtil.GetClaimsPrincipal(token);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex.ToString());
+                }
             }
         }
 

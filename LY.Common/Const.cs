@@ -26,7 +26,8 @@ namespace LY.Common
 
         public static class IP
         {
-            public static string _host = "192.168.123.6";
+            public const string _host = "172.16.30.195";
+            public const string _address = "http://172.16.30.195:9000";
             public static string _network = "172.19.0.0/16";
             static readonly string _prefix = _network.Substring(0, 6);
             public static string _mysqlMaster = $"{_prefix}.200.1";

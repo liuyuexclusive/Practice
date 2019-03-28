@@ -1,4 +1,4 @@
-using LY.Common;
+ï»¿using LY.Common;
 using LY.Common.Utils;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,14 +17,14 @@ namespace LY.Application.Test
         //[TestMethod]
         //public void TestMethod1()
         //{
-        //    var client = new ElasticClient(new Uri("http://192.168.123.6:9200"));
-        //    //client.Index(new ElasticTest() { Name = "ÎÒµÄ±¦Âí·¢¶¯»ú¶àÉÙ", Age = 333 },a=>a.Index("ly"));
+        //    var client = new ElasticClient(new Uri("http://172.16.30.195:9200"));
+        //    //client.Index(new ElasticTest() { Name = "æˆ‘çš„å®é©¬å‘åŠ¨æœºå¤šå°‘", Age = 333 },a=>a.Index("ly"));
         //    var xx = client.Search<ElasticTest>(a =>
         //    a.From(0)
         //    .Size(10)
         //    .Index("ly")
         //    .Query(x =>
-        //    x.Match(t => t.Field(p => p.Name).Query("±¦Âí"))
+        //    x.Match(t => t.Field(p => p.Name).Query("å®é©¬"))
         //    || x.Term(t => t.Age, 111)
         //    )
         //    );

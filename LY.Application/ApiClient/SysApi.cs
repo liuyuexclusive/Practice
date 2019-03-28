@@ -9,7 +9,7 @@ using WebApiClient.Attributes;
 
 namespace LY.Application.ApiClient
 {
-    [HttpHost("http://192.168.123.6:9000")]
+    [HttpHost("http://172.16.30.195:9000")]
     public interface ISysApi : IHttpApi
     {
         [HttpGet("/Role/GetList")]

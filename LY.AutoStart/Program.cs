@@ -52,7 +52,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "all" };
+                args = new string[] { "practice", "vue" };
 #endif
                 if (args == null || args.Length == 0)
                 {

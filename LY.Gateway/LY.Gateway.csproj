@@ -33,11 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Remove="Dockerfile" />
   </ItemGroup>
-
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

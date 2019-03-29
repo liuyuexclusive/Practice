@@ -1,4 +1,4 @@
-﻿{
+﻿
   "ConnectionStrings": {
     "MasterConnection": "server=172.19.200.1;port=3306;uid=root;pwd=123456;DataBase=ly;charset=utf8;max pool size=1000;AllowUserVariables=True;",
     "HangfireConnection": "server=172.19.200.1;port=3306;uid=root;pwd=123456;DataBase=ly_hangfire;charset=utf8;max pool size=1000;AllowUserVariables=True;",

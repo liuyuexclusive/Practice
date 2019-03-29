@@ -1,18 +1,15 @@
-﻿using DotNetCore.CAP;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DotNetCore.CAP;
 using LY.Common;
 using LY.Common.Middlewares;
 using LY.Common.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using NLog.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LY.Initializer
 {
@@ -32,7 +29,7 @@ namespace LY.Initializer
             factory.AddNLog();
             appLifetime.ApplicationStarted.Register(() =>
             {
-#if DEBUG //debug调试时不注册consul,网关指向本服务
+#if DEBUG //debug调试时不注册consul,网关指向自己
                 publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray(),true));
 #else
                 publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));

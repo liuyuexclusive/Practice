@@ -14,8 +14,22 @@ namespace LY.Gateway.Controllers
     public class SubscribeController : ControllerBase
     {
         [UnAuthorize]
-        [CapSubscribe("GatewayConfigUtilGen")]
+        [CapSubscribe("GatewayConfigUtilGen",Group = "GatewayConfigUtilGenGroup1")]
         public Task GatewayConfigUtilGen(IList<GatewayReRoute> list)
+        {
+            GatewayConfigUtil.Update("configuration.json", list);
+            return Task.CompletedTask;
+        }
+        [UnAuthorize]
+        [CapSubscribe("GatewayConfigUtilGen", Group = "GatewayConfigUtilGenGroup1")]
+        public Task GatewayConfigUtilGen2(IList<GatewayReRoute> list)
+        {
+            GatewayConfigUtil.Update("configuration.json", list);
+            return Task.CompletedTask;
+        }
+        [UnAuthorize]
+        [CapSubscribe("GatewayConfigUtilGen", Group = "GatewayConfigUtilGenGroup2")]
+        public Task GatewayConfigUtilGen3(IList<GatewayReRoute> list)
         {
             GatewayConfigUtil.Update("configuration.json", list);
             return Task.CompletedTask;

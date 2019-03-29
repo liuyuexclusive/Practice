@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Remove="Properties\launchSettings.json~RF39c0a81.TMP" />
+    <None Remove="Dockerfile" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,15 +42,6 @@
     <Content Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Properties\launchSettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>

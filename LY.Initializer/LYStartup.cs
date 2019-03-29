@@ -18,10 +18,8 @@ namespace LY.Initializer
 
         public virtual IServiceProvider ConfigureServices (IServiceCollection services)
         {
-            var result =  new LYRegister().Register(services);
+            var result = new LYRegister().Register(services);
             return result;
         }
-
-        public Action<ModelBuilder> EntityToTable { get; set; }
     }
 }

@@ -4,5 +4,11 @@
         <name>LY.SysService</name>
     </assembly>
     <members>
+        <member name="M:LY.SysService.Controllers.RoleController.Test">
+            <summary>
+            Test this instance.
+            </summary>
+            <returns>The test.</returns>
+        </member>
     </members>
 </doc>

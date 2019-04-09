@@ -57,6 +57,7 @@ namespace LY.Common.API
             var request = context.HttpContext.Request;
             log.Url = $"{ConfigUtil.ApplicationUrl}{request.Path.ToString()}";
             log.Method = request.Method;
+            log.Identity = context.HttpContext.User.Identity.Name;
             log.Headers = request.Headers.ToDictionary(k => k.Key, v => string.Join(";", v.Value.ToList()));
             request.EnableBuffering();
             request.Body.Position = 0;
@@ -84,16 +85,18 @@ namespace LY.Common.API
 
         public double Elapsed { get; set; }
 
-        public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
-
         public string RequestBody { get; set; }
 
         public string Result { get; set; }
 
+        public string Identity { get; set; }
+
+        public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+
         public override string ToString()
         {
             string headers = "[" + string.Join(",", this.Headers.Select(i => "{" + $"\"{i.Key}\":\"{i.Value}\"" + "}")) + "]";
-            return $"Url: {this.Url},\r\nMethod: {this.Method},\r\nElapsed: {this.Elapsed},\r\nHeaders: {headers},\r\nRequestBody: {this.RequestBody},\r\nResult: {this.Result}";
+            return $"Url: {this.Url},\r\nMethod: {this.Method},\r\nIdentity: {this.Identity},\r\nElapsed: {this.Elapsed},\r\nHeaders: {headers},\r\nRequestBody: {this.RequestBody},\r\nResult: {this.Result}";
         }
     }
 }

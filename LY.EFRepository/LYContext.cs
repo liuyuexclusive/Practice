@@ -27,6 +27,7 @@ namespace LY.EFRepository
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+            //optionsBuilder.UseMySql(ConfigUtil.MasterConnectionString);
             optionsBuilder.UseLoggerFactory(MyLoggerFactory).UseMySql(ConfigUtil.MasterConnectionString);
         }
     }

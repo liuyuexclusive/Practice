@@ -27,7 +27,7 @@ namespace LY.AutoStart
         static StringBuilder sbDockerCmd = new StringBuilder();
 
         const string netcoreappVersion = "netcoreapp2.2";
-        const int serviceNum = 2; //服务数量
+        const int serviceNum = 1; //服务数量
         const bool isPublishToLinux = true;
         const string docker = isPublishToLinux ? "docker" : "docker";
         const string deployFolder = @"/users/liuyu/code/practice-release";
@@ -52,7 +52,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "vue" };
+                args = new string[] { "practice", "gateway,daemon,services" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -475,7 +475,7 @@ protected-mode no
 cluster-enabled yes
 cluster-config-file nodes.conf
 cluster-node-timeout 5000
-cluster-announce-ip 172.16.30.195
+cluster-announce-ip 172.16.30.37
 cluster-announce-port ${PORT}
 cluster-announce-bus-port 1${PORT}
 appendonly yes
@@ -500,21 +500,23 @@ done
             */
 
             //sodu docker exec -it redis-7000 bash
-            //redis-cli -p 7001 -h 172.16.30.195
+            //redis-cli -p 7001 -h 172.16.30.37
 
             /*
-redis-cli --cluster create 172.16.30.195:7000 172.16.30.195:7001 \
-172.16.30.195:7002 172.16.30.195:7003 172.16.30.195:7004 172.16.30.195:7005 \
+redis-cli --cluster create 172.16.30.37:7000 172.16.30.37:7001 \
+172.16.30.37:7002 172.16.30.37:7003 172.16.30.37:7004 172.16.30.37:7005 \
 --cluster-replicas 1
              */
 
             #endregion
 
             #region consul
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.1 --name=consul-server consul:latest agent -server -bootstrap-expect=2");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.2 --name=consul-server1 consul:latest agent -server -join 172.19.202.1");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.3 --name=consul-server2 consul:latest agent -server -join 172.19.202.1");
-            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._consul} -p {Const.Port._consul}:{Const.Port._consul}  --name=consul-server3 consul:latest agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
+            sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.4 -p {Const.Port._consul}:{Const.Port._consul} --name=consul-server consul:latest");
+
+            //sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.1 --name=consul-server consul:latest agent -server -bootstrap-expect=2");
+            //sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.2 --name=consul-server1 consul:latest agent -server -join 172.19.202.1");
+            //sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip=172.19.202.3 --name=consul-server2 consul:latest agent -server -join 172.19.202.1");
+            //sbDockerCmd.AppendLine($"{docker} run -d  --net=lynet --ip={Const.IP._consul} -p {Const.Port._consul}:{Const.Port._consul}  --name=consul-server3 consul:latest agent -join 172.19.202.1 -client=\"0.0.0.0\" -ui");
             #endregion
 
             #region rabbitmq

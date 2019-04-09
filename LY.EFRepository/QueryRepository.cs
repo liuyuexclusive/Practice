@@ -8,7 +8,7 @@ namespace LY.EFRepository
     /// 资源库基类。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public class QueryRepository<TEntity> :  IQueryRepository<TEntity> where TEntity : Entity
+    public class QueryRepository<TEntity> :  IQueryRepository<TEntity> where TEntity : Entity, IEntity
     {
         public LYSlaveContext Context { get; set; }
 

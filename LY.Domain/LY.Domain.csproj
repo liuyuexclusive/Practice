@@ -8,4 +8,8 @@
     <ProjectReference Include="..\LY.Common\LY.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Sys\Sys_Role %28副本%29.cs" />
+    <Compile Remove="Sys\Sys_Role %28副本%29.cs" />
+  </ItemGroup>
 </Project>

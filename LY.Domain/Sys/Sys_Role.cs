@@ -18,7 +18,6 @@ namespace LY.Domain.Sys
         /// </summary>
         public string Description { set; get; }
 
-
         public IList<Sys_RoleUserMapping> RoleUserMappingList { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace LY.Common
     ///  代表一个资源库。
     /// </summary>
     /// <typeparam name="TEntity">实体类型。</typeparam>
-    public interface IRepository<TEntity> : IQueryRepository<TEntity>  where TEntity : Entity
+    public interface IRepository<TEntity> : IQueryRepository<TEntity>  where TEntity : IEntity
     {
         /// <summary>
         /// 获取实体

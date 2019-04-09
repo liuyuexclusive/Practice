@@ -17,7 +17,7 @@ namespace LY.Application.Test
         //[TestMethod]
         //public void TestMethod1()
         //{
-        //    var client = new ElasticClient(new Uri("http://172.16.30.195:9200"));
+        //    var client = new ElasticClient(new Uri("http://172.16.30.37:9200"));
         //    //client.Index(new ElasticTest() { Name = "我的宝马发动机多少", Age = 333 },a=>a.Index("ly"));
         //    var xx = client.Search<ElasticTest>(a =>
         //    a.From(0)

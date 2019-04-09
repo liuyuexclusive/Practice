@@ -22,17 +22,17 @@ namespace LY.EFRepository
         {
         }
 
-        public virtual void RegisterAdded(Entity entity)
+        public virtual void RegisterAdded<T>(T entity) where T : Entity
         {
             Context.Set<Entity>().Add(entity);
         }
 
-        public virtual void RegisterUpdated(Entity entity)
+        public virtual void RegisterUpdated(IEntity entity)
         {
             Context.Entry(entity).State = EntityState.Modified;
         }
 
-        public virtual void RegisterDeleted(Entity entity)
+        public virtual void RegisterDeleted(IEntity entity)
         {
             Context.Entry(entity).State = EntityState.Deleted;
         }
@@ -56,8 +56,8 @@ namespace LY.EFRepository
                     {
                         continue;
                     }
-                    var type = typeof(Repository<>).MakeGenericType(grnericType);
-                    var value = type.GetMethod("GetAll").Invoke(Activator.CreateInstance(type, this, Context), null);
+                    var repoType = typeof(Repository<>).MakeGenericType(grnericType);
+                    var value = repoType.GetMethod("GetAll").Invoke(Activator.CreateInstance(repoType, this, Context), null);
 
                     Cache.SetStringAsync(typeName, JsonConvert.SerializeObject(value)).Wait();
                 }

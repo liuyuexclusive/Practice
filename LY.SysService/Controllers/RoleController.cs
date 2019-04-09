@@ -23,17 +23,31 @@ namespace LY.SysService.Controllers
         public RoleService RoleService { get; set; }
         public IEntityCache<Sys_Role> RoleCache { get; set; }
         public ILogger<RoleController> Logger { get; set; }
+        public IRepository<Sys_Role> RoleRepo { get; set; }
+        public IEventRepository<Sys_RoleEvent> RoleEventRepo { get; set; }
         public RoleController()
         {
         }
-    
+
+        /// <summary>
+        /// Test this instance.
+        /// </summary>
+        /// <returns>The test.</returns>
+        [HttpGet]
+        [Route("test")]
+        public async Task Test()
+        {
+            var xx = RoleRepo.GetAll();
+            await Task.CompletedTask;
+        }
+
         [HttpGet]
         [Route("GetList")]
         public async Task<OutputList<RoleOutput>> GetList([FromQuery]BasePageQueryInput value)
         {
             Logger.LogInformation("测试日志hahaha");
 
-            var data = RoleCache.List();
+            var data = await RoleEventRepo.Play<Sys_Role>(x=>true);
             return await OKList(
                 data.Select(x => new { x.ID, x.Name, x.Description }.Adapt<RoleOutput>()).ToList(),
                 data.Count()

@@ -8,7 +8,7 @@
               <el-input v-model="formModel.Email" placeholder="邮箱"></el-input>
             </el-form-item>
             <el-form-item prop="Password">
-              <el-input type="password" v-model="formModel.Password" placeholder="密码"></el-input>
+              <el-input type="password" v-model="formModel.Password" placeholder="密码" @keyup.enter.native="submitForm('formModel')"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button @click="register">注册</el-button>

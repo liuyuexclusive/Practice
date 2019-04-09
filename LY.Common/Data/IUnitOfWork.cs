@@ -7,9 +7,9 @@ namespace LY.Common
     /// </summary>
     public interface IUnitOfWork
     {
-        void RegisterAdded(Entity entity);
-        void RegisterUpdated(Entity entity);
-        void RegisterDeleted(Entity entity);
+        void RegisterAdded<T>(T entity) where T : Entity;
+        void RegisterUpdated(IEntity entity);
+        void RegisterDeleted(IEntity entity);
         void Commit();
     }
 }

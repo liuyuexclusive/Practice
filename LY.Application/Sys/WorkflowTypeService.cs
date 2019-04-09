@@ -63,7 +63,6 @@ namespace LY.Application.Sys
                 WorkflowTypeRepo.Add(type);
             }
             UnitOfWork.Commit();
-            var xxx = WorkflowTypeRepo.GetAll();
         }
     }
 }

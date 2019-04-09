@@ -29,20 +29,20 @@ namespace LY.Initializer
             factory.AddNLog();
             appLifetime.ApplicationStarted.Register(() =>
             {
-#if DEBUG //debug调试时不注册consul,网关指向自己
-                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray(),true));
-#else
-                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
-                ConsulUtil.ServiceRegister().Wait();
-#endif
-            });
-            appLifetime.ApplicationStopping.Register(() =>
-            {
-#if DEBUG //服务停止时网关重新指向consul
-                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
-#else
-                ConsulUtil.ServiceDeRegister().Wait();
-#endif
+//#if DEBUG //debug调试时不注册consul,网关指向自己
+//                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray(),true));
+//#else
+//                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
+//                ConsulUtil.ServiceRegister().Wait();
+//#endif
+//            });
+//            appLifetime.ApplicationStopping.Register(() =>
+//            {
+//#if DEBUG //服务停止时网关重新指向consul
+//                publisher.Publish<IList<GatewayReRoute>>("GatewayConfigUtilGen", GatewayConfigUtil.Gen(LYRegister.ControllerTypes.ToArray()));
+//#else
+//                ConsulUtil.ServiceDeRegister().Wait();
+//#endif
             });
             if (env.IsDevelopment())
             {

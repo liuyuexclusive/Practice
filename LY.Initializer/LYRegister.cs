@@ -32,6 +32,12 @@ namespace LY.Initializer
 
         #region private
 
+        public void RegisterCommon()
+        {
+            //var assembly = Assembly.Load(new AssemblyName("LY.Common"));
+            //var types = assembly.ExportedTypes;
+        }
+
         private void RegisterRepository()
         {
             var assembly = Assembly.Load(new AssemblyName("LY.EFRepository"));
@@ -58,12 +64,22 @@ namespace LY.Initializer
                 .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("Repository`1")))
                 .As(typeof(IRepository<>))
                 .PropertiesAutowired();
-
+                
             IOCManager.ContainerBuilder
                 .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("QueryRepository`1")))
                 .As(typeof(IQueryRepository<>))
                 .PropertiesAutowired();
 
+            IOCManager.ContainerBuilder
+             .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EventHandler`1")))
+             .As(typeof(IEventHandler<>))
+             .PropertiesAutowired();
+
+            IOCManager.ContainerBuilder
+                .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EventRepository`1")))
+                .As(typeof(IEventRepository<>))
+                .PropertiesAutowired();
+              
             IOCManager.ContainerBuilder
                 .RegisterAssemblyTypes(assembly)
                 .Where(t => t.Name.Equals("UnitOfWork")  || t.Name.EndsWith("Repository") || t.Name.EndsWith("Repo"))
@@ -106,6 +122,7 @@ namespace LY.Initializer
 
         public IServiceProvider Register(IServiceCollection services)
         {
+        
             //registCAP
             services.AddCap(x =>
             {
@@ -158,6 +175,8 @@ namespace LY.Initializer
 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             //autofac
+            RegisterCommon();
+
             RegisterRepository();
 
             RegisterService();

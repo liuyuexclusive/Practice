@@ -12,7 +12,7 @@ namespace LY.EFRepository
     /// 资源库基类。
     /// </summary>
     /// <typeparam name="TEventEntity">实体类型。</typeparam>
-    public class EventRepository<TEventEntity> : IEventRepository<TEventEntity> where TEventEntity : EventEntity , new()
+    public class EventRepository<TEventEntity> : IEventRepository<TEventEntity> where TEventEntity : EventEntity, new()
     {
         IUnitOfWork _unitOfWork;
         LYMasterContext _context;

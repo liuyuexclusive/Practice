@@ -1,16 +1,11 @@
-﻿using LY.Common;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using LY.Common;
 namespace LY.AutoStart
 {
     public enum ImageType
@@ -24,7 +19,7 @@ namespace LY.AutoStart
     {
         static DirectoryInfo workspace = null;
         static string workspaceDir = string.Empty;
-        static StringBuilder sbDockerCmd = new StringBuilder();
+        static readonly StringBuilder sbDockerCmd = new StringBuilder();
 
         const string netcoreappVersion = "netcoreapp2.2";
         const int serviceNum = 1; //服务数量
@@ -52,7 +47,7 @@ namespace LY.AutoStart
             try
             {
 #if DEBUG
-                args = new string[] { "practice", "gateway,daemon,services" };
+                args = new string[] { "practice", "base" };
 #endif
                 if (args == null || args.Length == 0)
                 {
@@ -621,7 +616,7 @@ networks:
     external:
       name: lynet
              */
-            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\"  -e ES_JAVA_OPTS=\" - Xms256m - Xmx256m\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1"); 
+            sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._elasticsearch}:{Const.Port._elasticsearch} -p 9300:9300 -e \"discovery.type=single-node\"  -e \"ES_JAVA_OPTS= - Xms256m - Xmx256m\" --net=lynet --ip={Const.IP._elasticsearch} --name=elasticsearch-server elasticsearch:6.6.1"); 
             #endregion
 
             sbDockerCmd.AppendLine($"{docker} run -d -p {Const.Port._kibana}:{Const.Port._kibana} -e \"elasticsearch.hosts=http://{Const.IP._elasticsearch}:{Const.Port._elasticsearch}\" --net=lynet --ip={Const.IP._kibana} --name=kibana-server kibana:6.6.1");

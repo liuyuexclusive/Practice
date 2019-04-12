@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LY.Common;
 
-namespace LY.EFRepository
+namespace LY.Common
 {
     public class EventHandler<TEvent> : IEventHandler<TEvent> where TEvent:IEvent
     {
@@ -22,7 +22,7 @@ namespace LY.EFRepository
                     SetValueFromEvent(typeof(T), result, eventObj);
                     break;
                 case EventType.Update:
-                    if(result!=default(T))
+                    if (!result.Equals(default(T)))
                     {
                         SetValueFromEvent(typeof(T), result, eventObj);
                     }
@@ -55,7 +55,7 @@ namespace LY.EFRepository
                     SetValueFromEvent(type, result, eventObj);
                     break;
                 case EventType.Update:
-                    if (result.Equals(default(object)))
+                    if (!result.Equals(default(object)))
                     {
                         SetValueFromEvent(type, result, eventObj);
                     }

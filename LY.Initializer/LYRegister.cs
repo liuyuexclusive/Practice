@@ -34,8 +34,13 @@ namespace LY.Initializer
 
         public void RegisterCommon()
         {
-            //var assembly = Assembly.Load(new AssemblyName("LY.Common"));
-            //var types = assembly.ExportedTypes;
+            var assembly = Assembly.Load(new AssemblyName("LY.Common"));
+            var types = assembly.ExportedTypes;
+
+            IOCManager.ContainerBuilder
+ .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EventHandler`1")))
+ .As(typeof(IEventHandler<>))
+ .PropertiesAutowired();
         }
 
         private void RegisterRepository()
@@ -69,11 +74,6 @@ namespace LY.Initializer
                 .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("QueryRepository`1")))
                 .As(typeof(IQueryRepository<>))
                 .PropertiesAutowired();
-
-            IOCManager.ContainerBuilder
-             .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EventHandler`1")))
-             .As(typeof(IEventHandler<>))
-             .PropertiesAutowired();
 
             IOCManager.ContainerBuilder
                 .RegisterGeneric(types.FirstOrDefault(t => t.Name.Equals("EventRepository`1")))
